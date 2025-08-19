@@ -130,7 +130,6 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
       {/* Header - Fixed */}
       <HeaderWithClose
         title={`Choose a ${getCompanyDisplayName()} Form`}
-        progress="2/6"
         onClose={handleClose}
         className="flex-shrink-0"
       />

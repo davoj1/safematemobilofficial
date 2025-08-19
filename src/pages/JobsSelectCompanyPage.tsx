@@ -7,6 +7,7 @@ import monaIcon from '../assets/history/monaicon.svg'
 
 interface JobsSelectCompanyPageProps {
   onNavigate?: (view: string) => void
+  onNavigateToHome?: (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home') => void
   onCompanySelect?: (company: Company) => void
 }
 
@@ -20,6 +21,7 @@ interface Company {
 
 const JobsSelectCompanyPage: React.FC<JobsSelectCompanyPageProps> = ({ 
   onNavigate,
+  onNavigateToHome,
   onCompanySelect 
 }) => {
   const companies: Company[] = [
@@ -54,7 +56,8 @@ const JobsSelectCompanyPage: React.FC<JobsSelectCompanyPageProps> = ({
   }
 
   const handleBack = () => {
-    onNavigate?.('home')
+    // Go back to the jobs tab (for job creation flow)
+    onNavigateToHome?.('jobs')
   }
 
   return (

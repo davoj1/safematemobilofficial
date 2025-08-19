@@ -67,7 +67,6 @@ const BHPSiteSelectionPage: React.FC<BHPSiteSelectionPageProps> = ({
       {/* Header - Fixed */}
       <HeaderWithBack
         title="Choose a Site"
-        progress="1/6"
         onBack={handleBack}
         className="flex-shrink-0"
       />

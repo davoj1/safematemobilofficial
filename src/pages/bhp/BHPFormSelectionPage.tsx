@@ -83,7 +83,6 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
       {/* Header - Fixed */}
       <HeaderWithClose
         title="Choose a Form"
-        progress="2/6"
         onClose={handleClose}
         className="flex-shrink-0"
       />

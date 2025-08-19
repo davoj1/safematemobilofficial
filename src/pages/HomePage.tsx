@@ -21,6 +21,7 @@ import reportHazardIcon from '../assets/history/reporthazardicon.svg'
 import noJobsIcon from '../assets/jobs/nojobsicon.svg'
 // Jobs assets
 import jobDescriptionIcon from '../assets/jobs/jobdescriptionicon.svg'
+import workOrderNumberIcon from '../assets/jobs/workordernumbericon.svg'
 import siteIcon from '../assets/jobs/siteicon.svg'
 import chatIcon from '../assets/jobs/chaticon.svg'
 import notesIcon from '../assets/jobs/notesicon.svg'
@@ -256,20 +257,34 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
 
   const companies = [
     {
-      id: 'bhp',
-      name: 'BHP',
-      logo: bhpLogo,
+      id: 'warrikal',
+      name: 'Warrikal',
+      logo: warrikalIcon,
+      status: 'active',
+      role: 'Supervisor',
     },
     {
-      id: 'fmg',
-      name: 'Fortescue Metals Group',
-      logo: fortescuLogo,
+      id: 'linkforce',
+      name: 'Linkforce',
+      logo: linkforceIcon,
+      status: 'active',
+      role: 'HSE',
+    },
+    {
+      id: 'mona',
+      name: 'Monadelphous',
+      logo: monaIcon,
+      status: 'pending',
+      role: 'Admin',
     },
   ]
 
   const handleCompanySelect = (companyId: string) => {
     setSelectedCompany(companyId)
-    if (companyId === 'bhp' || companyId === 'fmg') {
+    if (companyId === 'warrikal' || companyId === 'linkforce' || companyId === 'mona') {
+      // Navigate to mine company selection for contractor companies
+      onNavigate?.('forms-select-mine-company')
+    } else if (companyId === 'bhp' || companyId === 'fmg') {
       setMineFlowStep('site')
     }
     console.log('Selected company:', companyId)
@@ -669,7 +684,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
               /* Company Selection */
               <div className="space-y-2">
                 <h2 className="text-[#475467] text-base font-semibold leading-6">
-                  Choose a Mine Company
+                  Select your company
                 </h2>
                 
                 <div className="space-y-2">
@@ -679,6 +694,8 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
                         key={company.id}
                         name={company.name}
                         logo={company.logo}
+                        status={company.status}
+                        role={company.role}
                         onClick={() => handleCompanySelect(company.id)}
                       />
                     ))
@@ -780,7 +797,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
                     {/* Info rows */}
                     <div className="mt-3 space-y-1.5">
                       <div className="flex items-center gap-1">
-                        <img src={jobDescriptionIcon} alt="WO" className="w-5 h-5" />
+                        <img src={workOrderNumberIcon} alt="WO" className="w-5 h-5" />
                         <span className="text-[#344054] text-sm font-medium">Work Order Number:</span>
                         <span className="text-[#667085] text-sm ml-1">{job.workOrderNumber}</span>
                       </div>

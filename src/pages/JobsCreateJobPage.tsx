@@ -3,6 +3,7 @@ import { HeaderWithBack } from '../components/layout'
 import { Button, Input, TextareaInput, FileUpload, MineCompanyModal, MineSiteModal, AddTeamMemberModal } from '../components/ui'
 import addTeamMemberIcon from '../assets/jobs/addteammembericon.svg'
 import qrCodeIcon from '../assets/jobs/QrCode.svg'
+import workOrderNumberIcon from '../assets/jobs/workordernumbericon.svg'
 import arleneIcon from '../assets/jobs/arlene.svg'
 import bessieIcon from '../assets/jobs/besse.svg'
 import marvinIcon from '../assets/jobs/marvin.svg'
@@ -202,6 +203,7 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
               placeholder="Enter work order number"
               value={formData.workOrderNumber}
               onChange={(e) => handleInputChange('workOrderNumber', e.target.value)}
+              icon={<img src={workOrderNumberIcon} alt="Work Order Number" className="w-5 h-5" />}
             />
           </div>
 

@@ -94,7 +94,6 @@ const SiteSelectionPage: React.FC<SiteSelectionPageProps> = ({
       {/* Header - Fixed */}
       <HeaderWithBack
         title={`Choose a ${getCompanyDisplayName()} Site`}
-        progress="1/6"
         onBack={handleBack}
         className="flex-shrink-0"
       />

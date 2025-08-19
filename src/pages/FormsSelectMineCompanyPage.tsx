@@ -1,0 +1,155 @@
+import React, { useState } from 'react'
+import { HeaderWithBack } from '../components/layout'
+import bhpLogo from '../assets/bhplogo.svg'
+import fortescuLogo from '../assets/fortesculogo.png'
+
+interface FormsSelectMineCompanyPageProps {
+  onNavigate?: (view: string) => void
+  onNavigateToHome?: (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home') => void
+  onMineCompanySelect?: (mineCompany: MineCompany) => void
+  selectedCompany?: string
+}
+
+interface MineCompany {
+  id: string
+  name: string
+  logo?: string
+  type: 'company' | 'other'
+}
+
+const FormsSelectMineCompanyPage: React.FC<FormsSelectMineCompanyPageProps> = ({ 
+  onNavigate,
+  onNavigateToHome,
+  onMineCompanySelect,
+  selectedCompany 
+}) => {
+  const [selectedMineCompany, setSelectedMineCompany] = useState<string>('')
+
+  const mineCompanies: MineCompany[] = [
+    {
+      id: 'bhp',
+      name: 'BHP',
+      logo: bhpLogo,
+      type: 'company'
+    },
+    {
+      id: 'fmg',
+      name: 'Fortescue Metals Group',
+      logo: fortescuLogo,
+      type: 'company'
+    },
+    {
+      id: 'other',
+      name: 'Other',
+      type: 'other'
+    }
+  ]
+
+  const handleMineCompanySelect = (mineCompany: MineCompany) => {
+    setSelectedMineCompany(mineCompany.id)
+    onMineCompanySelect?.(mineCompany)
+    console.log('Selected mine company:', mineCompany.name)
+    
+    // Navigate to specific site selection based on mine company
+    if (mineCompany.id === 'bhp') {
+      onNavigate?.('forms-bhp-site-selection')
+    } else if (mineCompany.id === 'fmg') {
+      onNavigate?.('forms-fmg-site-selection')
+    } else if (mineCompany.id === 'other') {
+      // TODO: Handle other selection - could go directly to forms
+      console.log('Other selected - handle accordingly')
+    }
+  }
+
+  const handleBack = () => {
+    // Go back to the forms template tab (select your company)
+    onNavigateToHome?.('forms')
+  }
+
+  return (
+    <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
+      {/* Header */}
+      <HeaderWithBack 
+        title="Choose a mine company"
+        onBack={handleBack}
+      />
+
+      {/* Main Content */}
+      <div className="flex-1 px-5 py-5 space-y-5 overflow-y-auto overscroll-contain touch-pan-y">
+        {/* Title and Description */}
+        <div className="flex flex-col gap-1.5 items-center text-center">
+          <h1 className="font-bold text-[#24262d] text-2xl leading-[32px]">
+            Choose a mine company
+          </h1>
+          <p className="font-normal text-[#667085] text-sm leading-5 max-w-[350px]">
+            Select the mining company you'll be working with.
+          </p>
+        </div>
+
+        {/* Mine Company List */}
+        <div className="flex flex-col gap-1.5">
+          {mineCompanies.map((mineCompany) => (
+            <div key={mineCompany.id}>
+              <button
+                onClick={() => handleMineCompanySelect(mineCompany)}
+                className="w-full bg-white rounded-[20px] border border-[#eaecf0] p-4 flex items-center gap-3 transition-all duration-200 hover:border-[#266273] hover:shadow-sm"
+              >
+                {/* Mine Company Logo or Radio for Other */}
+                {mineCompany.type === 'company' ? (
+                  <div className="w-11 h-11 bg-white rounded-[10px] border border-[#eaecf0] flex items-center justify-center p-[5.5px] flex-shrink-0">
+                    <img
+                      src={mineCompany.logo}
+                      alt={mineCompany.name}
+                      className="w-full h-full object-contain"
+                    />
+                  </div>
+                ) : (
+                  /* Radio button for Other option */
+                  <div className="w-11 h-11 flex items-center justify-center flex-shrink-0">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                      selectedMineCompany === mineCompany.id 
+                        ? 'border-[#266273] bg-[#266273]' 
+                        : 'border-[#d0d5dd] bg-white'
+                    }`}>
+                      {selectedMineCompany === mineCompany.id && (
+                        <div className="w-2 h-2 rounded-full bg-white"></div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Mine Company Info */}
+                <div className="flex-1 flex flex-col items-start justify-center text-left">
+                  <span className="font-medium text-[#101828] text-base leading-6">
+                    {mineCompany.name}
+                  </span>
+                </div>
+
+                {/* Arrow Icon */}
+                <div className="w-6 h-6 flex items-center justify-center">
+                  <svg 
+                    width="24" 
+                    height="24" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    className="text-[#709da9]"
+                  >
+                    <path 
+                      d="M9 18L15 12L9 6" 
+                      stroke="currentColor" 
+                      strokeWidth="2" 
+                      strokeLinecap="round" 
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </div>
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default FormsSelectMineCompanyPage
