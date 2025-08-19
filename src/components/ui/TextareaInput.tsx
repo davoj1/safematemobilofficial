@@ -23,7 +23,7 @@ const TextareaInput: React.FC<TextareaInputProps> = ({
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         rows={rows}
-        className="w-full bg-white border border-[#d5d7da] rounded-xl px-3.5 py-3 text-[#1e2028] text-base placeholder-[#717680] focus:outline-none focus:border-[#266273] focus:ring-1 focus:ring-[#266273] transition-colors resize-none"
+        className="w-full bg-white border border-[#d5d7da] rounded-xl px-3.5 py-3 text-[#101828] text-base placeholder-[#667085] focus:outline-none focus:border-[#266273] focus:ring-1 focus:ring-[#266273] transition-colors resize-none"
       />
     </div>
   )

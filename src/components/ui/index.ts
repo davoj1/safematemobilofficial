@@ -14,8 +14,10 @@ export { default as TextareaInput } from './TextareaInput'
 export { default as FileUpload } from './FileUpload'
 export { default as ExposureQuestion } from './ExposureQuestion'
 export { default as WarningMessage } from './WarningMessage'
-export { default as HazardSelector } from './HazardSelector'
-export { default as ControlSelector } from './ControlSelector'
+export { default as Radio } from './Radio'
+export { default as SignaturePadModal } from './SignaturePadModal'
+// HazardSelector moved to src/pages/rio/take5/ for Rio Tinto specific use
+// ControlSelector moved to src/pages/rio/take5/ for Rio Tinto specific use
 export { default as HistoryEmptyState } from './HistoryEmptyState'
 export { default as FormHistoryItem } from './FormHistoryItem'
 export { default as FormHistoryList } from './FormHistoryList'

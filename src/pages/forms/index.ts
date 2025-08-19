@@ -1,3 +1,6 @@
 export { default as TakeControlFormPage } from './TakeControlFormPage'
 export { default as MyExposuresFormPage } from './MyExposuresFormPage'
-export { default as HazardSelectionPage } from './HazardSelectionPage' 
+export { default as HazardIdentificationPage } from './HazardIdentificationPage'
+export { default as CompanyWorkerDetailsPage } from './CompanyWorkerDetailsPage'
+export { default as TakeControlReviewPage } from './TakeControlReviewPage'
+export { default as TakeControlSuccessPage } from './TakeControlSuccessPage' 

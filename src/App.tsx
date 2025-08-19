@@ -7,7 +7,7 @@ import JobTeamChatPage from './pages/JobTeamChatPage'
 import FormsSelectMineCompanyPage from './pages/FormsSelectMineCompanyPage'
 import { SiteSelectionPage, FormSelectionPage } from './pages/mines'
 import { BHPFormSelectionPage } from './pages/bhp'
-import { TakeControlFormPage, MyExposuresFormPage, HazardSelectionPage } from './pages/forms'
+import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage } from './pages/forms'
 import CreateAccountPage from './pages/auth/CreateAccountPage'
 import VerifyEmailPage from './pages/auth/VerifyEmailPage'
 import SuccessPage from './pages/auth/SuccessPage'
@@ -20,12 +20,12 @@ import EnterFullNamePage from './pages/profile/EnterFullNamePage'
 import ProfileCreatedSuccessPage from './pages/profile/ProfileCreatedSuccessPage'
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-selection' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
   const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home'>('jobs')
 
   const navigateTo = (view: typeof currentView) => {
     // Set the appropriate home tab when navigating to flows
-    if (view === 'forms-select-mine-company' || view === 'forms-bhp-site-selection' || view === 'forms-fmg-site-selection' || view === 'forms-bhp-form-selection' || view === 'forms-fmg-form-selection' || view === 'forms-take-control' || view === 'forms-my-exposures' || view === 'forms-hazard-selection') {
+    if (view === 'forms-select-mine-company' || view === 'forms-bhp-site-selection' || view === 'forms-fmg-site-selection' || view === 'forms-bhp-form-selection' || view === 'forms-fmg-form-selection' || view === 'forms-take-control' || view === 'forms-my-exposures' || view === 'forms-hazard-identification' || view === 'forms-company-worker-details' || view === 'forms-take-control-review' || view === 'forms-take-control-success') {
       setHomeActiveTab('forms')
     } else if (view === 'jobs-select-company') {
       setHomeActiveTab('jobs')
@@ -122,21 +122,48 @@ function App() {
 
       {currentView === 'forms-my-exposures' && (
         <MyExposuresFormPage 
-          onBack={() => navigateTo('forms-fmg-form-selection')}
+          onBack={() => navigateTo('forms-take-control')}
           onNext={(formData) => {
             console.log('My Exposures step 2 completed:', formData)
-            navigateTo('forms-hazard-selection')
+            navigateTo('forms-hazard-identification')
           }}
         />
       )}
 
-      {currentView === 'forms-hazard-selection' && (
-        <HazardSelectionPage 
+      {currentView === 'forms-hazard-identification' && (
+        <HazardIdentificationPage 
           onBack={() => navigateTo('forms-my-exposures')}
           onNext={(formData) => {
-            console.log('Hazard Selection step 3 completed:', formData)
-            // TODO: Navigate to step 4 or completion
+            console.log('Hazard Identification step 3 completed:', formData)
+            navigateTo('forms-company-worker-details')
           }}
+          onClose={() => navigateToHome('forms')}
+        />
+      )}
+
+      {currentView === 'forms-company-worker-details' && (
+        <CompanyWorkerDetailsPage 
+          onBack={() => navigateTo('forms-hazard-identification')}
+          onComplete={(formData) => {
+            console.log('Take Control form step 4 completed:', formData)
+            navigateTo('forms-take-control-review')
+          }}
+          onClose={() => navigateToHome('forms')}
+        />
+      )}
+
+      {currentView === 'forms-take-control-review' && (
+        <TakeControlReviewPage 
+          onBack={() => navigateTo('forms-company-worker-details')}
+          onSubmit={() => {
+            console.log('Take Control form submitted successfully!')
+            navigateTo('forms-take-control-success')
+          }}
+        />
+      )}
+      {currentView === 'forms-take-control-success' && (
+        <TakeControlSuccessPage 
+          onGoHome={() => navigateToHome('forms')}
         />
       )}
       

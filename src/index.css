@@ -92,7 +92,7 @@
 
   /* Input styles optimized for mobile */
   .input {
-    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#266273] focus:border-[#266273];
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#266273] focus:border-[#266273] text-[#101828] placeholder:text-[#667085];
     min-height: 44px;
   }
 }

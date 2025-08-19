@@ -6,6 +6,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg'
   fullWidth?: boolean
   loading?: boolean
+  loadingText?: string
   children: React.ReactNode
 }
 
@@ -14,6 +15,7 @@ const Button: React.FC<ButtonProps> = ({
   size = 'md',
   fullWidth = false,
   loading = false,
+  loadingText = 'Loading...',
   className,
   disabled,
   children,
@@ -51,7 +53,7 @@ const Button: React.FC<ButtonProps> = ({
       {loading ? (
         <div className="flex items-center justify-center">
           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-          Loading...
+          {loadingText}
         </div>
       ) : (
         children

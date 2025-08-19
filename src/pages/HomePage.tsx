@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { BottomNavigation } from '../components/layout'
 import { SearchInput, TabNavigation, CompanyCard, HistoryEmptyState, HistoryFormsState, FilterSlideUp, Button } from '../components/ui'
 import { SiteSelectionPage, FormSelectionPage } from './mines'
-import { TakeControlFormPage, MyExposuresFormPage, HazardSelectionPage } from './forms'
+import { TakeControlFormPage, MyExposuresFormPage } from './forms'
 import { LeaderboardProfilePage, LeaderboardPage, StreakDetailPage } from './leaderboard'
 import logo from '../assets/logo.svg'
 import trophyIcon from '../assets/leaderboardicon.svg'
@@ -528,11 +528,12 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
         )
       } else if (formStep === 3) {
         return (
-          <HazardSelectionPage
-            selectedSite={selectedSite}
-            onBack={() => setFormStep(2)}
-            onNext={handleFormNext}
-          />
+          <div className="h-screen flex flex-col bg-[#f8f7f2] items-center justify-center">
+            <p className="text-lg">Step 3 - Ready for new FMG Take Control implementation</p>
+            <button onClick={() => setFormStep(prev => prev - 1)} className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+              Back to Step 2
+            </button>
+          </div>
         )
       }
       // Add more steps here as needed
