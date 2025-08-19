@@ -7,14 +7,13 @@ import { LeaderboardProfilePage, LeaderboardPage, StreakDetailPage } from './lea
 import logo from '../assets/logo.svg'
 import trophyIcon from '../assets/leaderboardicon.svg'
 import notificationIcon from '../assets/notificationicon.svg'
-import bhpLogo from '../assets/bhplogo.svg'
-import rioLogo from '../assets/riologo.svg'
-import fortescuLogo from '../assets/fortesculogo.png'
+import bhpLogo from '../assets/companylogo/bhplogo.svg'
+import fmgLogo from '../assets/companylogo/fmglogo.svg'
 
-// History icons
-import warrikalIcon from '../assets/history/warrikalicon.svg'
-import linkforceIcon from '../assets/history/linkforceicon.svg'
-import monaIcon from '../assets/history/monaicon.svg'
+// Company logos
+import warrikalIcon from '../assets/companylogo/warrikallogo.svg'
+import linkforceIcon from '../assets/companylogo/linkforcelogo.svg'
+import monaIcon from '../assets/companylogo/monalogo.svg'
 import vehiclePrestartIcon from '../assets/history/vehicleprestarticon.svg'
 import take5Icon from '../assets/history/take5icon.svg'
 import reportHazardIcon from '../assets/history/reporthazardicon.svg'

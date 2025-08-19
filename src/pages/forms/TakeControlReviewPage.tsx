@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { HeaderWithBack } from '../../components/layout'
 import { Button } from '../../components/ui'
-import bhpLogo from '../../assets/bhplogo.svg'
+import fmgLogo from '../../assets/companylogo/fmglogo.svg'
 import bmaAustraliaImage from '../../assets/minesites/bhp/BMAaustralia.png'
-import warrikalLogo from '../../assets/takecontrol/warrikal.png'
+import warrikalLogo from '../../assets/companylogo/warrikallogo.svg'
 import photo1 from '../../assets/takecontrol/photo1.png'
 import photo2 from '../../assets/takecontrol/photo2.png'
 
@@ -100,10 +100,10 @@ const TakeControlReviewPage: React.FC<TakeControlReviewPageProps> = ({
                   <div className="flex flex-col gap-1">
                     <div className="text-[#344054] text-sm font-medium leading-5">Mine Company</div>
                     <div className="flex items-center gap-2">
-                      <div className="w-9 h-9 bg-white rounded-md border border-[#eaecf0] flex items-center justify-center p-1">
-                        <img src={bhpLogo} alt="BHP" className="w-full h-full object-contain" />
+                      <div className="w-9 h-9 rounded-md flex items-center justify-center">
+                        <img src={fmgLogo} alt="FMG" className="w-full h-6" />
                       </div>
-                      <span className="text-[#101828] text-sm font-medium leading-5">BHP</span>
+                      <span className="text-[#101828] text-sm font-medium leading-5">FMG</span>
                     </div>
                   </div>
 
@@ -225,8 +225,8 @@ const TakeControlReviewPage: React.FC<TakeControlReviewPageProps> = ({
                   <div className="flex flex-col gap-1">
                     <div className="text-[#344054] text-sm font-medium leading-5">Company name</div>
                     <div className="flex items-center gap-1">
-                      <div className="w-9 h-9 bg-white rounded-md border border-[#eaecf0] flex items-center justify-center p-1">
-                        <img src={warrikalLogo} alt="Warrikal" className="w-full h-full object-contain" />
+                      <div className="w-9 h-9 rounded-md flex items-center justify-center">
+                        <img src={warrikalLogo} alt="Warrikal" className="w-full h-6" />
                       </div>
                       <span className="text-[#101828] text-sm font-medium leading-5">
                         {formData?.company || "Warrikal"}

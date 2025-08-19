@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { ArrowLeft, ChevronDown, Trophy } from 'lucide-react'
 import CompanySelectionModal from './CompanySelectionModal'
 import avataricon from '../../assets/leaderboard/avataricon.png'
-import warikalicon from '../../assets/leaderboard/warikalicon.png'
-import linkforcelogo from '../../assets/leaderboard/linkforcelogo.png'
-import monologo from '../../assets/leaderboard/monologo.png'
+import warikalicon from '../../assets/companylogo/warrikallogo.svg'
+import linkforcelogo from '../../assets/companylogo/linkforcelogo.svg'
+import monologo from '../../assets/companylogo/monalogo.svg'
 import firstbadge from '../../assets/leaderboard/firstbadge.png'
 import secondbadge from '../../assets/leaderboard/secondbadge.png'
 import thirdbadge from '../../assets/leaderboard/thirdbadge.png'
@@ -249,7 +249,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
     if (company.id === 'all') {
       setActiveTab('all')
     }
-    setShowCompanyModal(false)
+    // Don't immediately close - let the modal handle its own closing animation
   }
 
   const handleCompanyModalClose = () => {
@@ -298,7 +298,10 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       <div className="relative z-10 px-4 pb-6">
         <div className="flex bg-white/10 rounded-lg p-1">
           <button
-            onClick={() => setActiveTab('all')}
+            onClick={() => {
+              setActiveTab('all')
+              setSelectedCompany('all')
+            }}
             className={`flex-1 py-2 px-4 rounded-md font-medium transition-colors ${
               activeTab === 'all'
                 ? 'bg-white text-[#266273]'
@@ -316,7 +319,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
             }`}
           >
             {selectedCompany !== 'all' && (
-              <img src={warikalicon} alt="Company" className="w-4 h-4" />
+              <img src={getCompanyIcon(selectedCompany)} alt="Company" className="w-4 h-4" />
             )}
             {getSelectedCompanyName()}
             <ChevronDown size={16} />
@@ -339,7 +342,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
               <img 
                 src={getCompanyIcon('linkforce')} 
                 alt="Company" 
-                className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white"
+                className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white bg-white"
               />
               <img 
                 src={secondbadge} 
@@ -369,7 +372,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
               <img 
                 src={getCompanyIcon('warrikal')} 
                 alt="Company" 
-                className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white"
+                className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white bg-white"
               />
               <img 
                 src={firstbadge} 
@@ -395,7 +398,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
               <img 
                 src={getCompanyIcon('monadelphous')} 
                 alt="Company" 
-                className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white"
+                className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white bg-white"
               />
               <img 
                 src={thirdbadge} 
@@ -471,7 +474,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                   <img 
                     src={getCompanyIcon(user.company)} 
                     alt="Company" 
-                    className="w-5 h-5 rounded-full"
+                    className="w-5 h-5 rounded-full bg-white border border-white"
                   />
 
                   {/* Profile Picture */}
@@ -516,7 +519,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                   <img 
                     src={getCompanyIcon(user.company)} 
                     alt="Company" 
-                    className="w-5 h-5 rounded-full"
+                    className="w-5 h-5 rounded-full bg-white border border-white"
                   />
 
                   {/* Profile Picture */}

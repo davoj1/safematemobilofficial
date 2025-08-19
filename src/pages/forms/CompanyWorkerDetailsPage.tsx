@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { HeaderWithClose } from '../../components/layout'
 import { Button, Input, Radio, SignaturePadModal } from '../../components/ui'
-import warrikalLogo from '../../assets/takecontrol/warrikal.png'
+import warrikalLogo from '../../assets/companylogo/warrikallogo.svg'
 
 interface WorkerDetails {
   firstName: string

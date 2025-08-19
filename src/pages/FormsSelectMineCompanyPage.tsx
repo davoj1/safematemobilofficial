@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { HeaderWithBack } from '../components/layout'
-import bhpLogo from '../assets/bhplogo.svg'
-import fortescuLogo from '../assets/fortesculogo.png'
+import bhpLogo from '../assets/companylogo/bhplogo.svg'
+import fmgLogo from '../assets/companylogo/fmglogo.svg'
 
 interface FormsSelectMineCompanyPageProps {
   onNavigate?: (view: string) => void
@@ -35,7 +35,7 @@ const FormsSelectMineCompanyPage: React.FC<FormsSelectMineCompanyPageProps> = ({
     {
       id: 'fmg',
       name: 'Fortescue Metals Group',
-      logo: fortescuLogo,
+      logo: fmgLogo,
       type: 'company'
     },
     {
@@ -96,7 +96,7 @@ const FormsSelectMineCompanyPage: React.FC<FormsSelectMineCompanyPageProps> = ({
               >
                 {/* Mine Company Logo or Radio for Other */}
                 {mineCompany.type === 'company' ? (
-                  <div className="w-11 h-11 bg-white rounded-[10px] border border-[#eaecf0] flex items-center justify-center p-[5.5px] flex-shrink-0">
+                  <div className="w-11 h-11 flex items-center justify-center flex-shrink-0">
                     <img
                       src={mineCompany.logo}
                       alt={mineCompany.name}

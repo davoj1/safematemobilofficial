@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '../../utils/cn';
-import warikalicon from '../../assets/leaderboard/warikalicon.png';
-import linkforcelogo from '../../assets/leaderboard/linkforcelogo.png';
-import monologo from '../../assets/leaderboard/monologo.png';
+import warikalicon from '../../assets/companylogo/warrikallogo.svg';
+import linkforcelogo from '../../assets/companylogo/linkforcelogo.svg';
+import monologo from '../../assets/companylogo/monalogo.svg';
 
 interface Company {
   id: string;
@@ -115,7 +115,7 @@ export default function CompanySelectionModal({
               </div>
 
               {/* Company Logo */}
-              <div className="w-11 h-11 bg-white rounded-[10px] border border-[#eaecf0] flex items-center justify-center flex-shrink-0 p-[5.5px]">
+              <div className="w-11 h-11 flex items-center justify-center flex-shrink-0">
                 {company.id === 'all' ? (
                   <span className="text-gray-600 font-bold text-lg">🏆</span>
                 ) : (

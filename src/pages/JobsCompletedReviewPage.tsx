@@ -3,7 +3,7 @@ import { MobileLayout } from '../components/layout';
 
 // Import images and icons
 import backArrowIcon from '../assets/backarrowicon.svg';
-import bhpLogo from '../assets/bhplogo.svg';
+import bhpLogo from '../assets/companylogo/bhplogo.svg';
 import bmaAustralia from '../assets/minesites/bhp/BMAaustralia.png';
 
 interface JobsCompletedReviewPageProps {
@@ -67,8 +67,8 @@ export default function JobsCompletedReviewPage({ onBackToHome }: JobsCompletedR
             <div>
               <span className="text-sm font-medium text-[#344054]">Mine Company</span>
               <div className="flex items-center gap-2 mt-1">
-                <div className="w-9 h-9 rounded-md border border-[#eaecf0] flex items-center justify-center">
-                  <img src={bhpLogo} alt="BHP" className="w-7 h-3" />
+                <div className="w-9 h-9 rounded-md flex items-center justify-center">
+                  <img src={bhpLogo} alt="BHP" className="w-full h-6" />
                 </div>
                 <span className="text-sm font-medium text-[#101828]">BHP</span>
               </div>

@@ -21,7 +21,7 @@ import ProfileCreatedSuccessPage from './pages/profile/ProfileCreatedSuccessPage
 
 function App() {
   const [currentView, setCurrentView] = useState<'home' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
-  const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home'>('jobs')
+  const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home'>('forms')
 
   const navigateTo = (view: typeof currentView) => {
     // Set the appropriate home tab when navigating to flows

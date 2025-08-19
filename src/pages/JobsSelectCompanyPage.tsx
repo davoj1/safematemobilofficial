@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { MobileLayout, HeaderWithBack } from '../components/layout'
 import { Button } from '../components/ui'
-import warrikalIcon from '../assets/history/warrikalicon.svg'
-import linkforceIcon from '../assets/history/linkforceicon.svg'
-import monaIcon from '../assets/history/monaicon.svg'
+import warrikalIcon from '../assets/companylogo/warrikallogo.svg'
+import linkforceIcon from '../assets/companylogo/linkforcelogo.svg'
+import monaIcon from '../assets/companylogo/monalogo.svg'
 
 interface JobsSelectCompanyPageProps {
   onNavigate?: (view: string) => void
@@ -94,7 +94,7 @@ const JobsSelectCompanyPage: React.FC<JobsSelectCompanyPageProps> = ({
                   }`}
                 >
                   {/* Company Logo */}
-                  <div className="w-11 h-11 bg-white rounded-[10px] border border-[#eaecf0] flex items-center justify-center p-[5.5px] flex-shrink-0">
+                  <div className="w-11 h-11 flex items-center justify-center flex-shrink-0">
                     <img
                       src={company.logo}
                       alt={company.name}

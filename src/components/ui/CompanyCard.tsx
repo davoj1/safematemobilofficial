@@ -34,7 +34,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
       )}
     >
       {/* Company Logo */}
-      <div className="w-11 h-11 bg-white rounded-[10px] border border-[#eaecf0] flex items-center justify-center p-[5.5px] flex-shrink-0">
+      <div className="w-11 h-11 flex items-center justify-center flex-shrink-0">
         <img
           src={logo}
           alt={name}

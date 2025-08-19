@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { Button, Input, TextareaInput } from './index'
 import { cn } from '../../utils/cn'
-import bhplogo from '../../assets/bhplogo.svg'
-import riologo from '../../assets/riologo.svg'
-import fortesculogo from '../../assets/fortesculogo.png'
+import bhplogo from '../../assets/companylogo/bhplogo.svg'
+import fmglogo from '../../assets/companylogo/fmglogo.svg'
 
 interface MineCompany {
 	id: string
@@ -27,7 +26,7 @@ const MineCompanyModal: React.FC<MineCompanyModalProps> = ({ isOpen, onClose, on
 
 	const companies: MineCompany[] = [
 		{ id: 'bhp', name: 'BHP', logo: bhplogo, role: 'Supervisor' },
-		{ id: 'fortescue', name: 'Fortescue Metals', logo: fortesculogo, role: 'Admin' },
+		{ id: 'fmg', name: 'Fortescue Metals Group', logo: fmglogo, role: 'Admin' },
 	]
 
 	const handleCompanySelect = (companyId: string) => {
@@ -123,10 +122,10 @@ const MineCompanyModal: React.FC<MineCompanyModalProps> = ({ isOpen, onClose, on
 									{selectedCompany === company.id && <div className="w-3 h-3 rounded-full bg-white" />}
 								</div>
 
-								{/* Company Logo */}
-								<div className="w-11 h-11 bg-white rounded-[10px] border border-[#eaecf0] flex items-center justify-center p-[5.5px] flex-shrink-0">
-									<img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
-								</div>
+																        {/* Company Logo */}
+        <div className="w-11 h-11 flex items-center justify-center flex-shrink-0">
+          <img src={company.logo} alt={company.name} className="w-full h-full object-contain" />
+        </div>
 
 								{/* Company Info */}
 								<div className="flex-1">
