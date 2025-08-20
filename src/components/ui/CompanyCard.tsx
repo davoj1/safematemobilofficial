@@ -27,7 +27,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
       className={cn(
         `w-full bg-white rounded-[20px] border border-[#eaecf0] p-4 flex items-center gap-3 transition-all duration-200 ${
           isPending 
-            ? 'opacity-40 cursor-not-allowed' 
+            ? 'opacity-60 cursor-not-allowed' 
             : 'hover:border-[#266273] hover:shadow-sm'
         }`,
         className
@@ -49,11 +49,9 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
             {name}
           </span>
           {isPending && (
-            <div className="bg-[#f2f4f7] border border-[#eaf0f2] rounded-full px-2 py-[3px]">
-              <span className="font-medium text-[#667085] text-xs leading-[18px]">
-                Pending
-              </span>
-            </div>
+            <span className="bg-[#fef3c7] text-[#d97706] text-xs font-medium px-2 py-0.5 rounded-full">
+              Pending
+            </span>
           )}
         </div>
         {role && (

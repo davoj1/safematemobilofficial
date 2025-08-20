@@ -7,7 +7,7 @@ import JobTeamChatPage from './pages/JobTeamChatPage'
 import FormsSelectMineCompanyPage from './pages/FormsSelectMineCompanyPage'
 import { SiteSelectionPage, FormSelectionPage } from './pages/mines'
 import { BHPFormSelectionPage } from './pages/bhp'
-import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage } from './pages/forms'
+import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage, ReportHazardStep1Page, ReportHazardStep2Page, ReportHazardStep3Page, ReportHazardStep4Page, ReportHazardReviewPage } from './pages/forms'
 // Site images
 import BMAaustralia from './assets/minesites/bhp/BMAaustralia.png'
 import BMAblackwateraustralia from './assets/minesites/bhp/BMAblackwateraustralia.png'
@@ -33,10 +33,11 @@ import PasswordChangedSuccessPage from './pages/auth/PasswordChangedSuccessPage'
 import UploadProfilePicturePage from './pages/profile/UploadProfilePicturePage'
 import EnterFullNamePage from './pages/profile/EnterFullNamePage'
 import ProfileCreatedSuccessPage from './pages/profile/ProfileCreatedSuccessPage'
+import CompanyTabPage from './pages/CompanyTabPage'
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
-  const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home'>('forms')
+  const [currentView, setCurrentView] = useState<'home' | 'company' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
+  const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company'>('forms')
   const [previousFormSelectionView, setPreviousFormSelectionView] = useState<'forms-bhp-form-selection' | 'forms-fmg-form-selection' | null>(null)
   const [selectedSite, setSelectedSite] = useState<{id: string, name: string, location: string, image: string} | null>(null)
   
@@ -93,7 +94,7 @@ function App() {
 
   const navigateTo = (view: typeof currentView) => {
     // Set the appropriate home tab when navigating to flows
-    if (view === 'forms-select-mine-company' || view === 'forms-bhp-site-selection' || view === 'forms-fmg-site-selection' || view === 'forms-bhp-form-selection' || view === 'forms-fmg-form-selection' || view === 'forms-take-control' || view === 'forms-my-exposures' || view === 'forms-hazard-identification' || view === 'forms-company-worker-details' || view === 'forms-take-control-review' || view === 'forms-take-control-success' || view === 'forms-fatigue-management-step1' || view === 'forms-fatigue-management-step2' || view === 'forms-fatigue-management-step3' || view === 'forms-fatigue-management-step4' || view === 'forms-fatigue-management-step5' || view === 'forms-fatigue-management-step6' || view === 'forms-fatigue-management-review' || view === 'forms-fatigue-management-success') {
+    if (view === 'forms-select-mine-company' || view === 'forms-bhp-site-selection' || view === 'forms-fmg-site-selection' || view === 'forms-bhp-form-selection' || view === 'forms-fmg-form-selection' || view === 'forms-take-control' || view === 'forms-my-exposures' || view === 'forms-hazard-identification' || view === 'forms-company-worker-details' || view === 'forms-take-control-review' || view === 'forms-take-control-success' || view === 'forms-fatigue-management-step1' || view === 'forms-fatigue-management-step2' || view === 'forms-fatigue-management-step3' || view === 'forms-fatigue-management-step4' || view === 'forms-fatigue-management-step5' || view === 'forms-fatigue-management-step6' || view === 'forms-fatigue-management-review' || view === 'forms-fatigue-management-success' || view === 'forms-report-hazard-step1' || view === 'forms-report-hazard-step2' || view === 'forms-report-hazard-step3' || view === 'forms-report-hazard-step4' || view === 'forms-report-hazard-review') {
       setHomeActiveTab('forms')
     } else if (view === 'jobs-select-company') {
       setHomeActiveTab('jobs')
@@ -101,9 +102,13 @@ function App() {
     setCurrentView(view)
   }
 
-  const navigateToHome = (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' = 'jobs') => {
+  const navigateToHome = (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' = 'jobs') => {
     setHomeActiveTab(activeTab)
-    setCurrentView('home')
+    if (activeTab === 'company') {
+      setCurrentView('company')
+    } else {
+      setCurrentView('home')
+    }
   }
 
   return (
@@ -111,6 +116,10 @@ function App() {
       {/* Render current view */}
       {currentView === 'home' && (
         <HomePage onNavigate={navigateTo} initialActiveTab={homeActiveTab} />
+      )}
+
+      {currentView === 'company' && (
+        <CompanyTabPage onNavigateToHome={navigateToHome} />
       )}
       
       {currentView === 'jobs-select-company' && (
@@ -181,6 +190,9 @@ function App() {
                 wellbeingRating: '0-2'
               })
               navigateTo('forms-fatigue-management-step1')
+            } else if (formId === 'report-hazard-issue') {
+              setPreviousFormSelectionView('forms-bhp-form-selection')
+              navigateTo('forms-report-hazard-step1')
             } else {
               console.log('Selected BHP form:', formId)
             }
@@ -211,6 +223,9 @@ function App() {
                 wellbeingRating: '0-2'
               })
               navigateTo('forms-fatigue-management-step1')
+            } else if (formId === 'report-hazard-issue') {
+              setPreviousFormSelectionView('forms-fmg-form-selection')
+              navigateTo('forms-report-hazard-step1')
             } else {
               console.log('Selected FMG form:', formId)
             }
@@ -404,6 +419,70 @@ function App() {
       {currentView === 'forms-fatigue-management-success' && (
         <FatigueManagementSuccessPage 
           onGoHome={() => navigateToHome('forms')}
+        />
+      )}
+
+      {currentView === 'forms-report-hazard-step1' && (
+        <ReportHazardStep1Page 
+          selectedSite={selectedSite}
+          onBack={() => {
+            // Navigate back to the appropriate form selection screen
+            if (previousFormSelectionView) {
+              navigateTo(previousFormSelectionView)
+            } else {
+              // Fallback to forms home if no previous view tracked
+              navigateToHome('forms')
+            }
+          }}
+          onNext={(formData) => {
+            console.log('Report Hazard Step 1 completed:', formData)
+            navigateTo('forms-report-hazard-step2')
+          }}
+        />
+      )}
+
+      {currentView === 'forms-report-hazard-step2' && (
+        <ReportHazardStep2Page 
+          selectedSite={selectedSite}
+          onBack={() => navigateTo('forms-report-hazard-step1')}
+          onNext={(formData) => {
+            console.log('Report Hazard Step 2 completed:', formData)
+            navigateTo('forms-report-hazard-step3')
+          }}
+        />
+      )}
+
+      {currentView === 'forms-report-hazard-step3' && (
+        <ReportHazardStep3Page 
+          selectedSite={selectedSite}
+          onBack={() => navigateTo('forms-report-hazard-step2')}
+          onNext={(formData) => {
+            console.log('Report Hazard Step 3 completed:', formData)
+            navigateTo('forms-report-hazard-step4')
+          }}
+        />
+      )}
+
+      {currentView === 'forms-report-hazard-step4' && (
+        <ReportHazardStep4Page 
+          selectedSite={selectedSite}
+          onBack={() => navigateTo('forms-report-hazard-step3')}
+          onNext={(formData) => {
+            console.log('Report Hazard Step 4 completed:', formData)
+            navigateTo('forms-report-hazard-review')
+          }}
+                />
+      )}
+
+      {currentView === 'forms-report-hazard-review' && (
+        <ReportHazardReviewPage 
+          selectedSite={selectedSite}
+          onBack={() => navigateTo('forms-report-hazard-step4')}
+          onSubmit={() => {
+            console.log('Report Hazard form submitted successfully!')
+            // TODO: Navigate to success page
+            console.log('Navigate to success page')
+          }}
         />
       )}
       

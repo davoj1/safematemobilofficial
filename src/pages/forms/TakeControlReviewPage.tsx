@@ -6,6 +6,9 @@ import bmaAustraliaImage from '../../assets/minesites/bhp/BMAaustralia.png'
 import warrikalLogo from '../../assets/companylogo/warrikallogo.svg'
 import photo1 from '../../assets/takecontrol/photo1.png'
 import photo2 from '../../assets/takecontrol/photo2.png'
+import goodSmileIcon from '../../assets/takecontrol/goodsmileicon.svg'
+import moderateIcon from '../../assets/takecontrol/morerateicon.svg'
+import flaggedIcon from '../../assets/takecontrol/flaggedicon.svg'
 
 interface TakeControlReviewPageProps {
   onBack?: () => void
@@ -23,6 +26,17 @@ interface TakeControlReviewPageProps {
     signature: string
   }
 }
+
+// Mock data for exposures and hazards
+const myExposures = [
+  "Noise", "X", "Dust", "", "Vibration", "", "Heat", "", "Cold", "", "Radiation", "", "Chemical", "", "Biological", ""
+]
+
+const hazards = [
+  { hazard: "Poor ventilation in the underground tunnel", control: "Turn on exhaust fans and check airflow before starting the task" },
+  { hazard: "Slippery surfaces due to water accumulation", control: "Use non-slip footwear and install warning signs" },
+  { hazard: "Falling objects from overhead work", control: "Wear hard hat and ensure proper barricading" }
+]
 
 // Mock safety checklist data
 const safetyChecklist = [
@@ -56,6 +70,55 @@ const TakeControlReviewPage: React.FC<TakeControlReviewPageProps> = ({
     setIsSubmitting(false)
     onSubmit?.()
   }
+
+  // Calculate status based on exposures and hazards
+  const getFormStatus = () => {
+    // Check if any exposures are selected (marked with 'X')
+    const hasExposures = myExposures.some(exposure => exposure === 'X')
+    
+    // Count the number of hazards
+    const hazardCount = hazards.length
+    
+    // If any exposures are selected, form is flagged
+    if (hasExposures) {
+      return {
+        type: 'flagged',
+        title: 'Please speak with your supervisor',
+        message: "This form has been flagged for safety concerns. Check the form again or report to your supervisor.",
+        bgColor: 'bg-[#fef3f2]',
+        borderColor: 'border-[#f97066]',
+        tagColor: 'bg-[#d92d20]',
+        icon: flaggedIcon
+      }
+    }
+    
+    // If no exposures and 2 or fewer hazards, status is moderate
+    if (hazardCount <= 2) {
+      return {
+        type: 'moderate',
+        title: 'Needs review',
+        message: "Your form looks mostly good, but we suggest reviewing a few details before submission.",
+        bgColor: 'bg-[#fefbe8]',
+        borderColor: 'border-[#fde272]',
+        tagColor: 'bg-[#eaaa08]',
+        icon: moderateIcon
+      }
+    }
+    
+    // If no exposures and 3+ hazards, status is good
+    return {
+      type: 'good',
+      title: 'Everything looks great',
+      message: "Your form has been reviewed and marked as safe. You're good to go! ✅",
+      bgColor: 'bg-[#edfcf2]',
+      borderColor: 'border-[#73e2a3]',
+      tagColor: 'bg-[#17b26a]',
+      icon: goodSmileIcon
+    }
+  }
+
+  const formStatus = getFormStatus()
+
   const getAnswerStyling = (answer: string) => {
     switch (answer) {
       case "YES":
@@ -81,6 +144,23 @@ const TakeControlReviewPage: React.FC<TakeControlReviewPageProps> = ({
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 py-3">
         <div className="flex flex-col gap-5">
+          {/* Status Section */}
+          <div className={`${formStatus.bgColor} border ${formStatus.borderColor} rounded-xl p-3 flex flex-col gap-2`}>
+            {/* Status Tag */}
+            <div className={`${formStatus.tagColor} border ${formStatus.tagColor} rounded-md px-2 py-0.5 flex items-center gap-0.5 self-start`}>
+              <img src={formStatus.icon} alt={`${formStatus.type} status`} className="w-5 h-5" />
+              <span className="text-white text-sm font-medium leading-5 capitalize">{formStatus.type}</span>
+            </div>
+            
+            {/* Status Content */}
+            <div className="flex flex-col gap-0.5">
+              <h3 className="text-[#101828] text-base font-medium leading-6">{formStatus.title}</h3>
+              <p className="text-[#475467] text-sm font-normal leading-5">
+                {formStatus.message}
+              </p>
+            </div>
+          </div>
+
           {/* Form Detail Header */}
           <div className="flex flex-col gap-3">
             <div className="flex justify-between items-center">
@@ -195,22 +275,26 @@ const TakeControlReviewPage: React.FC<TakeControlReviewPageProps> = ({
               <div className="flex flex-col gap-2.5">
                 <h3 className="text-[#266273] text-base font-bold leading-6">Hazard Identification</h3>
                 
-                <div className="flex flex-col gap-2">
-                  {/* Hazard */}
-                  <div className="flex flex-col gap-1">
-                    <div className="text-[#344054] text-sm font-medium leading-5">Hazard</div>
-                    <div className="text-[#667085] text-sm font-normal leading-5">
-                      {formData?.hazards?.[0]?.hazard || "Poor ventilation in the underground tunnel"}
-                    </div>
-                  </div>
+                <div className="flex flex-col gap-4">
+                  {(formData?.hazards && formData.hazards.length > 0 ? formData.hazards : hazards).map((hazardItem, index) => (
+                    <div key={index} className="flex flex-col gap-2">
+                      {/* Hazard */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-[#344054] text-sm font-medium leading-5">Hazard {index + 1}</div>
+                        <div className="text-[#667085] text-sm font-normal leading-5">
+                          {hazardItem.hazard}
+                        </div>
+                      </div>
 
-                  {/* Control */}
-                  <div className="flex flex-col gap-1">
-                    <div className="text-[#344054] text-sm font-medium leading-5">Control</div>
-                    <div className="text-[#667085] text-sm font-normal leading-5">
-                      {formData?.hazards?.[0]?.control || "Turn on exhaust fans and check airflow before starting the task"}
+                      {/* Control */}
+                      <div className="flex flex-col gap-1">
+                        <div className="text-[#344054] text-sm font-medium leading-5">Control {index + 1}</div>
+                        <div className="text-[#667085] text-sm font-normal leading-5">
+                          {hazardItem.control}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ))}
                 </div>
               </div>
             </div>

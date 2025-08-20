@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Button } from './index'
 import noResultsFoundIcon from '../../assets/history/noresultsfoundicon.png'
-import arrowIcon from '../../assets/arrowicon.svg'
+import arrowsClockwiseIcon from '../../assets/history/ArrowsClockwise.svg'
 
 interface HistoryEmptyStateProps {
   onResetFilter?: () => void
@@ -56,7 +56,7 @@ const HistoryEmptyState: React.FC<HistoryEmptyStateProps> = ({ onResetFilter }) 
               className="flex items-center gap-2"
             >
               <img
-                src={arrowIcon}
+                src={arrowsClockwiseIcon}
                 alt="Reset filter"
                 className={`w-6 h-6 transition-transform duration-500 ${
                   isResetting ? 'animate-spin' : ''

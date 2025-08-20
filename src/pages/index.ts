@@ -5,6 +5,7 @@ export { default as OnboardingPageFixed } from './OnboardingPageFixed'
 export { default as JobsCreateJobPage } from './JobsCreateJobPage'
 export { default as JobsCompletedReviewPage } from './JobsCompletedReviewPage'
 export { default as JobTeamChatPage } from './JobTeamChatPage'
+export { default as CompanyTabPage } from './CompanyTabPage'
 
 // Auth pages
 export * from './auth'

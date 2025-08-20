@@ -11,6 +11,7 @@ interface BHPForm {
   id: string
   name: string
   icon: string
+  status?: 'active' | 'coming-soon'
 }
 
 interface BHPFormSelectionPageProps {
@@ -43,21 +44,31 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
       id: 'take-5',
       name: 'Take 5',
       icon: takeFiveIcon,
-    },
-    {
-      id: 'vehicle-pre-start',
-      name: 'Vehicle Pre Start',
-      icon: vehiclePreStartIcon,
-    },
-    {
-      id: 'report-hazard-issue',
-      name: 'Report Hazard / Issue',
-      icon: reportHazardsIcon,
+      status: 'active',
     },
     {
       id: 'fatigue-management',
       name: 'Fatigue Management',
       icon: fatigueManagementIcon,
+      status: 'active',
+    },
+    {
+      id: 'jha-builder',
+      name: 'JHA Builder',
+      icon: takeFiveIcon,
+      status: 'coming-soon',
+    },
+    {
+      id: 'vehicle-pre-start',
+      name: 'Vehicle Pre Start',
+      icon: vehiclePreStartIcon,
+      status: 'coming-soon',
+    },
+    {
+      id: 'report-hazard-issue',
+      name: 'Report Hazard / Issue',
+      icon: reportHazardsIcon,
+      status: 'coming-soon',
     },
   ]
 
@@ -104,12 +115,22 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
           </h2>
           
           <div className="space-y-2">
-            {bhpForms.map((form) => (
+            {[...bhpForms]
+              .sort((a, b) => {
+                const aComing = a.status === 'coming-soon'
+                const bComing = b.status === 'coming-soon'
+                if (aComing && !bComing) return 1
+                if (!aComing && bComing) return -1
+                return 0
+              })
+              .map((form) => (
               <FormCard
                 key={form.id}
                 name={form.name}
                 icon={form.icon}
-                onClick={() => handleFormSelect(form.id)}
+                onClick={() => form.status !== 'coming-soon' && handleFormSelect(form.id)}
+                status={form.status}
+                disabled={form.status === 'coming-soon'}
                 className={selectedForm === form.id ? 'bg-gray-50' : ''}
               />
             ))}

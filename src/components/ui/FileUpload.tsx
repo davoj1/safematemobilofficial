@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import { cn } from '../../utils/cn'
+import PhotoSelectionModal from './PhotoSelectionModal'
 
 interface FileUploadProps {
   onFileSelect?: (file: File) => void
@@ -13,16 +14,28 @@ interface FileUploadProps {
 const FileUpload: React.FC<FileUploadProps> = ({
   onFileSelect,
   className,
-  title = 'Add Photos (Optional)',
+  title = 'Add Photos',
   description = 'Photos have maximum size of 10Mb',
-  buttonText = 'Click to upload photo',
+  buttonText = 'Select to add photos',
   fileTypes = 'SVG, PNG, JPG or GIF files up to 10MB',
 }) => {
+  const [showPhotoModal, setShowPhotoModal] = useState(false)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const libraryInputRef = useRef<HTMLInputElement>(null)
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (file && onFileSelect) {
       onFileSelect(file)
     }
+  }
+
+  const handleTakePhoto = () => {
+    cameraInputRef.current?.click()
+  }
+
+  const handleChooseFromLibrary = () => {
+    libraryInputRef.current?.click()
   }
 
   return (
@@ -46,13 +59,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
           </div>
           
           <div className="flex-1">
-            <label className="cursor-pointer">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-              />
+            <button
+              onClick={() => setShowPhotoModal(true)}
+              className="w-full text-left"
+            >
               <div className="space-y-0.5">
                 <p className="font-semibold text-[#558998] text-sm leading-5 cursor-pointer">
                   {buttonText}
@@ -61,10 +71,35 @@ const FileUpload: React.FC<FileUploadProps> = ({
                   {fileTypes}
                 </p>
               </div>
-            </label>
+            </button>
+
+            {/* Hidden file inputs */}
+            <input
+              ref={cameraInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <input
+              ref={libraryInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
           </div>
         </div>
       </div>
+
+      {/* Photo Selection Modal */}
+      <PhotoSelectionModal
+        isOpen={showPhotoModal}
+        onClose={() => setShowPhotoModal(false)}
+        onTakePhoto={handleTakePhoto}
+        onChooseFromLibrary={handleChooseFromLibrary}
+      />
     </div>
   )
 }

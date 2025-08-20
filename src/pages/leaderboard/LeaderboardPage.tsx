@@ -246,9 +246,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
 
   const handleCompanySelect = (company: { id: string; name: string; logo: string; role: string }) => {
     setSelectedCompany(company.id)
-    if (company.id === 'all') {
-      setActiveTab('all')
-    }
+    setActiveTab('company')
     // Don't immediately close - let the modal handle its own closing animation
   }
 
@@ -257,7 +255,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
   }
 
   // Filter users based on selected company
-  const leaderboardUsers = selectedCompany === 'all' 
+  const leaderboardUsers = selectedCompany === 'all' || !selectedCompany
     ? allLeaderboardUsers 
     : allLeaderboardUsers.filter(user => user.company === selectedCompany)
 
@@ -318,7 +316,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                 : 'text-white'
             }`}
           >
-            {selectedCompany !== 'all' && (
+            {selectedCompany !== 'all' && selectedCompany && (
               <img src={getCompanyIcon(selectedCompany)} alt="Company" className="w-4 h-4" />
             )}
             {getSelectedCompanyName()}

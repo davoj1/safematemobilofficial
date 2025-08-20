@@ -37,11 +37,6 @@ const FormsSelectMineCompanyPage: React.FC<FormsSelectMineCompanyPageProps> = ({
       name: 'Fortescue Metals Group',
       logo: fmgLogo,
       type: 'company'
-    },
-    {
-      id: 'other',
-      name: 'Other',
-      type: 'other'
     }
   ]
 
@@ -55,9 +50,6 @@ const FormsSelectMineCompanyPage: React.FC<FormsSelectMineCompanyPageProps> = ({
       onNavigate?.('forms-bhp-site-selection')
     } else if (mineCompany.id === 'fmg') {
       onNavigate?.('forms-fmg-site-selection')
-    } else if (mineCompany.id === 'other') {
-      // TODO: Handle other selection - could go directly to forms
-      console.log('Other selected - handle accordingly')
     }
   }
 

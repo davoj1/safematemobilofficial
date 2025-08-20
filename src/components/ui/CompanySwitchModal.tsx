@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '../../utils/cn';
-import warikalicon from '../../assets/companylogo/warrikallogo.svg';
-import linkforcelogo from '../../assets/companylogo/linkforcelogo.svg';
-import monologo from '../../assets/companylogo/monalogo.svg';
+import warrikalLogo from '../../assets/companylogo/warrikallogo.svg';
+import linkforceLogo from '../../assets/companylogo/linkforcelogo.svg';
+import monaLogo from '../../assets/companylogo/monalogo.svg';
 
 interface Company {
   id: string;
@@ -13,22 +13,28 @@ interface Company {
   status?: 'active' | 'pending';
 }
 
-interface CompanySelectionModalProps {
+interface CompanySwitchModalProps {
+  isOpen: boolean;
   onClose: () => void;
   onCompanySelect: (company: Company) => void;
   selectedCompany?: string;
 }
 
-export default function CompanySelectionModal({ 
+export default function CompanySwitchModal({ 
+  isOpen, 
   onClose, 
   onCompanySelect,
   selectedCompany 
-}: CompanySelectionModalProps) {
+}: CompanySwitchModalProps) {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsVisible(true);
-  }, []);
+    if (isOpen) {
+      setIsVisible(true);
+    } else {
+      setIsVisible(false);
+    }
+  }, [isOpen]);
 
   const handleClose = () => {
     setIsVisible(false);
@@ -41,7 +47,7 @@ export default function CompanySelectionModal({
     {
       id: 'warrikal',
       name: 'Warrikal',
-      logo: warikalicon,
+      logo: warrikalLogo,
       role: 'Supervisor',
       isSelected: selectedCompany === 'warrikal',
       status: 'active'
@@ -49,7 +55,7 @@ export default function CompanySelectionModal({
     {
       id: 'linkforce',
       name: 'Linkforce',
-      logo: linkforcelogo,
+      logo: linkforceLogo,
       role: 'Worker',
       isSelected: selectedCompany === 'linkforce',
       status: 'active'
@@ -57,7 +63,7 @@ export default function CompanySelectionModal({
     {
       id: 'monadelphous',
       name: 'Monadelphous',
-      logo: monologo,
+      logo: monaLogo,
       role: 'Admin',
       isSelected: selectedCompany === 'monadelphous',
       status: 'pending'
@@ -71,6 +77,8 @@ export default function CompanySelectionModal({
     onCompanySelect(company);
     handleClose();
   };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end">
@@ -88,6 +96,16 @@ export default function CompanySelectionModal({
       }`}>
         {/* Drag handle */}
         <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-[54px] h-[5px] bg-gray-300 rounded-full" />
+
+        {/* Header */}
+        <div className="mb-6">
+          <h2 className="text-[#101828] text-xl font-semibold leading-7 text-center">
+            Switch Company
+          </h2>
+          <p className="text-[#667085] text-sm font-normal leading-5 text-center mt-1">
+            Select a company to switch to
+          </p>
+        </div>
 
         {/* Company List */}
         <div className="flex-1 space-y-3">

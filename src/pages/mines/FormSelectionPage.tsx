@@ -12,6 +12,7 @@ interface MineForm {
   id: string
   name: string
   icon: string
+  status?: 'active' | 'coming-soon'
 }
 
 interface FormSelectionPageProps {
@@ -62,21 +63,31 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
         id: 'take-5',
         name: 'Take 5',
         icon: takeFiveIcon,
+        status: 'active',
       },
       {
         id: 'vehicle-pre-start',
         name: 'Vehicle Pre Start',
         icon: vehiclePreStartIcon,
+        status: 'coming-soon',
       },
       {
         id: 'report-hazard-issue',
         name: 'Report Hazard / Issue',
         icon: reportHazardsIcon,
+        status: 'coming-soon',
       },
       {
         id: 'fatigue-management',
         name: 'Fatigue Management',
         icon: fatigueManagementIcon,
+        status: 'active',
+      },
+      {
+        id: 'jha-builder',
+        name: 'JHA Builder',
+        icon: takeFiveIcon,
+        status: 'coming-soon',
       },
     ],
     fmg: [
@@ -84,26 +95,44 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
         id: 'take-control',
         name: 'Take Control',
         icon: takeFiveIcon,
+        status: 'active',
       },
       {
         id: 'vehicle-pre-start',
         name: 'Vehicle Pre Start',
         icon: vehiclePreStartIcon,
+        status: 'coming-soon',
       },
       {
         id: 'report-hazard-issue',
         name: 'Report Hazard / Issue',
         icon: reportHazardsIcon,
+        status: 'coming-soon',
       },
       {
         id: 'fatigue-management',
         name: 'Fatigue Management',
         icon: fatigueManagementIcon,
+        status: 'active',
+      },
+      {
+        id: 'jha-builder',
+        name: 'JHA Builder',
+        icon: takeFiveIcon,
+        status: 'coming-soon',
       },
     ],
   }
 
   const forms = mineForms[company] || []
+  // Order forms: active first, then coming-soon
+  const orderedForms = [...forms].sort((a, b) => {
+    const aComing = a.status === 'coming-soon'
+    const bComing = b.status === 'coming-soon'
+    if (aComing && !bComing) return 1
+    if (!aComing && bComing) return -1
+    return 0
+  })
 
   const handleFormSelect = (formId: string) => {
     setSelectedForm(formId)
@@ -151,12 +180,14 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
           </h2>
           
           <div className="space-y-2">
-            {forms.map((form) => (
+            {orderedForms.map((form) => (
               <FormCard
                 key={form.id}
                 name={form.name}
                 icon={form.icon}
-                onClick={() => handleFormSelect(form.id)}
+                onClick={() => form.status !== 'coming-soon' && handleFormSelect(form.id)}
+                status={form.status}
+                disabled={form.status === 'coming-soon'}
                 className={selectedForm === form.id ? 'bg-gray-50' : ''}
               />
             ))}

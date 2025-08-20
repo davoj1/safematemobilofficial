@@ -179,7 +179,7 @@ const FatigueManagementReviewPage: React.FC<FatigueManagementReviewPageProps> = 
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
       {/* Header */}
       <HeaderWithBack
-        title="Fatigue Management detail"
+        title="Where are you working?"
         onBack={onBack}
         className="flex-shrink-0"
       />

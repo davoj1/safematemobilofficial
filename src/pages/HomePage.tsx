@@ -51,13 +51,13 @@ import fmgSolomon from '../assets/minesites/fmg/fmgsolomon.png'
 
 interface HomePageProps {
   onNavigate?: (view: string) => void
-  initialActiveTab?: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home'
+  initialActiveTab?: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company'
 }
 
 const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'forms' }) => {
   const [searchValue, setSearchValue] = useState('')
   const [activeTab, setActiveTab] = useState('templates')
-  const [activeBottomTab, setActiveBottomTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home'>(initialActiveTab)
+  const [activeBottomTab, setActiveBottomTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company'>(initialActiveTab)
   const [jobsActiveTab, setJobsActiveTab] = useState<'active' | 'completed'>('active')
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
   const [selectedSite, setSelectedSite] = useState<any>(null)
@@ -314,9 +314,14 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
 
   const handleBottomTabChange = (tab: string) => {
     // Keep structure intact; just swap content sections
-    setActiveBottomTab(tab as 'home' | 'forms' | 'jobs' | 'leaderboard' | 'profile')
-    if (tab === 'leaderboard') {
-      setLeaderboardFlow('main')
+    if (tab === 'company') {
+      // Navigate to dedicated company page
+      onNavigate?.('company')
+    } else {
+      setActiveBottomTab(tab as 'home' | 'forms' | 'jobs' | 'leaderboard' | 'profile')
+      if (tab === 'leaderboard') {
+        setLeaderboardFlow('main')
+      }
     }
   }
 
