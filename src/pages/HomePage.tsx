@@ -14,6 +14,7 @@ import fmgLogo from '../assets/companylogo/fmglogo.svg'
 import warrikalIcon from '../assets/companylogo/warrikallogo.svg'
 import linkforceIcon from '../assets/companylogo/linkforcelogo.svg'
 import monaIcon from '../assets/companylogo/monalogo.svg'
+import goodlineIcon from '../assets/companylogo/goodlinelogo.svg'
 import vehiclePrestartIcon from '../assets/history/vehicleprestarticon.svg'
 import take5Icon from '../assets/history/take5icon.svg'
 import reportHazardIcon from '../assets/history/reporthazardicon.svg'
@@ -51,13 +52,14 @@ import fmgSolomon from '../assets/minesites/fmg/fmgsolomon.png'
 
 interface HomePageProps {
   onNavigate?: (view: string) => void
-  initialActiveTab?: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company'
+  onContractorSelect?: (contractor: 'warrikal' | 'linkforce' | 'monadelphous' | 'goodline') => void
+  initialActiveTab?: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings'
 }
 
-const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'forms' }) => {
+const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, initialActiveTab = 'forms' }) => {
   const [searchValue, setSearchValue] = useState('')
   const [activeTab, setActiveTab] = useState('templates')
-  const [activeBottomTab, setActiveBottomTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company'>(initialActiveTab)
+  const [activeBottomTab, setActiveBottomTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings'>(initialActiveTab)
   const [jobsActiveTab, setJobsActiveTab] = useState<'active' | 'completed'>('active')
   const [selectedCompany, setSelectedCompany] = useState<string | null>(null)
   const [selectedSite, setSelectedSite] = useState<any>(null)
@@ -256,11 +258,11 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
 
   const companies = [
     {
-      id: 'warrikal',
-      name: 'Warrikal',
-      logo: warrikalIcon,
+      id: 'goodline',
+      name: 'Goodline',
+      logo: goodlineIcon,
       status: 'active',
-      role: 'Supervisor',
+      role: 'Worker',
     },
     {
       id: 'linkforce',
@@ -276,12 +278,29 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
       status: 'pending',
       role: 'Admin',
     },
+    {
+      id: 'warrikal',
+      name: 'Warrikal',
+      logo: warrikalIcon,
+      status: 'active',
+      role: 'Supervisor',
+    },
   ]
 
   const handleCompanySelect = (companyId: string) => {
     setSelectedCompany(companyId)
-    if (companyId === 'warrikal' || companyId === 'linkforce' || companyId === 'mona') {
-      // Navigate to mine company selection for contractor companies
+    if (companyId === 'warrikal' || companyId === 'linkforce' || companyId === 'mona' || companyId === 'goodline') {
+      // Set the selected contractor and navigate to mine company selection
+      const contractorMap: Record<string, 'warrikal' | 'linkforce' | 'monadelphous' | 'goodline'> = {
+        'warrikal': 'warrikal',
+        'linkforce': 'linkforce',
+        'mona': 'monadelphous',
+        'goodline': 'goodline'
+      }
+      const contractor = contractorMap[companyId]
+      if (contractor) {
+        onContractorSelect?.(contractor)
+      }
       onNavigate?.('forms-select-mine-company')
     } else if (companyId === 'bhp' || companyId === 'fmg') {
       setMineFlowStep('site')
@@ -317,6 +336,9 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, initialActiveTab = 'for
     if (tab === 'company') {
       // Navigate to dedicated company page
       onNavigate?.('company')
+    } else if (tab === 'settings') {
+      // Navigate to settings page
+      onNavigate?.('settings')
     } else {
       setActiveBottomTab(tab as 'home' | 'forms' | 'jobs' | 'leaderboard' | 'profile')
       if (tab === 'leaderboard') {

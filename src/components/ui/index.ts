@@ -15,6 +15,7 @@ export { default as FileUpload } from './FileUpload'
 export { default as ExposureQuestion } from './ExposureQuestion'
 export { default as WarningMessage } from './WarningMessage'
 export { default as Radio } from './Radio'
+export { default as Select } from './Select'
 export { default as SignaturePadModal } from './SignaturePadModal'
 // HazardSelector moved to src/pages/rio/take5/ for Rio Tinto specific use
 // ControlSelector moved to src/pages/rio/take5/ for Rio Tinto specific use
@@ -30,3 +31,4 @@ export { default as CompanySwitchModal } from './CompanySwitchModal'
 export { default as PhotoSelectionModal } from './PhotoSelectionModal'
 export { default as InteractiveMap } from './InteractiveMap'
 export { default as SelectSupervisorModal } from './SelectSupervisorModal'
+export { default as FormRequestSlideUp } from './FormRequestSlideUp'

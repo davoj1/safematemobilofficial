@@ -5,6 +5,7 @@ import takeFiveIcon from '../../assets/takefiveicon.svg'
 import vehiclePreStartIcon from '../../assets/vehicleprestarticon.svg'
 import reportHazardsIcon from '../../assets/reporthazardsicon.svg'
 import fatigueManagementIcon from '../../assets/fatiguemanagementicon.svg'
+import workOrderNumberIcon from '../../assets/jobs/workordernumbericon.svg'
 import BMAaustralia from '../../assets/minesites/bhp/BMAaustralia.png'
 import fmgPortHedland from '../../assets/minesites/fmg/fmgporthedland.png'
 
@@ -17,6 +18,7 @@ interface MineForm {
 
 interface FormSelectionPageProps {
   company: 'bhp' | 'fmg'
+  contractor?: 'warrikal' | 'linkforce' | 'monadelphous' | 'goodline'
   selectedSite?: {
     id: string
     name: string
@@ -30,6 +32,7 @@ interface FormSelectionPageProps {
 
 const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
   company,
+  contractor,
   selectedSite,
   onClose,
   onEditSite,
@@ -56,7 +59,70 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
   // Use provided selectedSite or default for the company
   const currentSite = selectedSite || defaultSites[company]
 
-  // Define forms for each company with company-specific naming
+  // Define contractor-specific forms based on mine company
+  const contractorForms: { [key: string]: MineForm[] } = {
+    warrikal: [
+      // Take Control is only available for Warrikal on FMG
+      ...(company === 'fmg' ? [{
+        id: 'take-control',
+        name: 'Take Control',
+        icon: takeFiveIcon,
+        status: 'active',
+      }] : []),
+      // Fatigue Management is available for Warrikal on all mine sites
+      {
+        id: 'fatigue-management',
+        name: 'Fatigue Management',
+        icon: fatigueManagementIcon,
+        status: 'active',
+      },
+      // Report Hazard is available for all contractors on all mine sites
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+    linkforce: [
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+    monadelphous: [
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+    goodline: [
+      {
+        id: 'pace-cards',
+        name: 'Pace Cards',
+        icon: takeFiveIcon,
+        status: 'active',
+      },
+      {
+        id: 'fatigue-management',
+        name: 'Fatigue Management',
+        icon: fatigueManagementIcon,
+        status: 'active',
+      },
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+  }
+
+  // Define forms for each company with company-specific naming (for direct mine company access)
   const mineForms: { [key: string]: MineForm[] } = {
     bhp: [
       {
@@ -87,6 +153,12 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
         id: 'jha-builder',
         name: 'JHA Builder',
         icon: takeFiveIcon,
+        status: 'coming-soon',
+      },
+      {
+        id: 'supervisor-checklist',
+        name: 'Supervisor Checklist',
+        icon: workOrderNumberIcon,
         status: 'coming-soon',
       },
     ],
@@ -121,10 +193,17 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
         icon: takeFiveIcon,
         status: 'coming-soon',
       },
+      {
+        id: 'supervisor-checklist',
+        name: 'Supervisor Checklist',
+        icon: workOrderNumberIcon,
+        status: 'coming-soon',
+      },
     ],
   }
 
-  const forms = mineForms[company] || []
+  // Use contractor forms if contractor is selected, otherwise use mine company forms
+  const forms = contractor ? contractorForms[contractor] || [] : mineForms[company] || []
   // Order forms: active first, then coming-soon
   const orderedForms = [...forms].sort((a, b) => {
     const aComing = a.status === 'coming-soon'
@@ -151,6 +230,15 @@ const FormSelectionPage: React.FC<FormSelectionPageProps> = ({
   }
 
   const getCompanyDisplayName = () => {
+    if (contractor) {
+      const contractorNames = {
+        warrikal: 'Warrikal',
+        linkforce: 'Linkforce',
+        monadelphous: 'Monadelphous',
+        goodline: 'Goodline'
+      }
+      return contractorNames[contractor]
+    }
     return company === 'bhp' ? 'BHP' : 'Fortescue Metals Group'
   }
 

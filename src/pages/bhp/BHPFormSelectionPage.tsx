@@ -5,6 +5,7 @@ import takeFiveIcon from '../../assets/takefiveicon.svg'
 import vehiclePreStartIcon from '../../assets/vehicleprestarticon.svg'
 import reportHazardsIcon from '../../assets/reporthazardsicon.svg'
 import fatigueManagementIcon from '../../assets/fatiguemanagementicon.svg'
+import workOrderNumberIcon from '../../assets/jobs/workordernumbericon.svg'
 import BMAaustralia from '../../assets/minesites/bhp/BMAaustralia.png'
 
 interface BHPForm {
@@ -15,6 +16,7 @@ interface BHPForm {
 }
 
 interface BHPFormSelectionPageProps {
+  contractor?: 'warrikal' | 'linkforce' | 'monadelphous' | 'goodline'
   selectedSite?: {
     id: string
     name: string
@@ -27,6 +29,7 @@ interface BHPFormSelectionPageProps {
 }
 
 const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
+  contractor,
   selectedSite = {
     id: 'bma-australia',
     name: 'BMA Australia',
@@ -38,6 +41,63 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
   onFormSelect,
 }) => {
   const [selectedForm, setSelectedForm] = useState<string | null>(null)
+
+  // Define contractor-specific forms based on mine company
+  const contractorForms: { [key: string]: BHPForm[] } = {
+    warrikal: [
+      // Take Control is only available for Warrikal on FMG (not BHP)
+      // Fatigue Management is available for Warrikal on all mine sites
+      {
+        id: 'fatigue-management',
+        name: 'Fatigue Management',
+        icon: fatigueManagementIcon,
+        status: 'active',
+      },
+      // Report Hazard is available for all contractors on all mine sites
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+    linkforce: [
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+    monadelphous: [
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+    goodline: [
+      {
+        id: 'pace-cards',
+        name: 'Pace Cards',
+        icon: takeFiveIcon,
+        status: 'active',
+      },
+      {
+        id: 'fatigue-management',
+        name: 'Fatigue Management',
+        icon: fatigueManagementIcon,
+        status: 'active',
+      },
+      {
+        id: 'report-hazard-issue',
+        name: 'Report Hazard / Issue',
+        icon: reportHazardsIcon,
+        status: 'active',
+      },
+    ],
+  }
 
   const bhpForms: BHPForm[] = [
     {
@@ -70,6 +130,12 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
       icon: reportHazardsIcon,
       status: 'coming-soon',
     },
+    {
+      id: 'supervisor-checklist',
+      name: 'Supervisor Checklist',
+      icon: workOrderNumberIcon,
+      status: 'coming-soon',
+    },
   ]
 
   const handleFormSelect = (formId: string) => {
@@ -93,7 +159,7 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
       {/* Header - Fixed */}
       <HeaderWithClose
-        title="Choose a Form"
+        title={contractor ? `Choose a ${contractor.charAt(0).toUpperCase() + contractor.slice(1)} Form` : "Choose a BHP Form"}
         onClose={handleClose}
         className="flex-shrink-0"
       />
@@ -115,25 +181,29 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
           </h2>
           
           <div className="space-y-2">
-            {[...bhpForms]
-              .sort((a, b) => {
-                const aComing = a.status === 'coming-soon'
-                const bComing = b.status === 'coming-soon'
-                if (aComing && !bComing) return 1
-                if (!aComing && bComing) return -1
-                return 0
-              })
-              .map((form) => (
-              <FormCard
-                key={form.id}
-                name={form.name}
-                icon={form.icon}
-                onClick={() => form.status !== 'coming-soon' && handleFormSelect(form.id)}
-                status={form.status}
-                disabled={form.status === 'coming-soon'}
-                className={selectedForm === form.id ? 'bg-gray-50' : ''}
-              />
-            ))}
+            {(() => {
+              // Use contractor forms if contractor is selected, otherwise use BHP forms
+              const forms = contractor ? contractorForms[contractor] || [] : bhpForms
+              return [...forms]
+                .sort((a, b) => {
+                  const aComing = a.status === 'coming-soon'
+                  const bComing = b.status === 'coming-soon'
+                  if (aComing && !bComing) return 1
+                  if (!aComing && bComing) return -1
+                  return 0
+                })
+                .map((form) => (
+                <FormCard
+                  key={form.id}
+                  name={form.name}
+                  icon={form.icon}
+                  onClick={() => form.status !== 'coming-soon' && handleFormSelect(form.id)}
+                  status={form.status}
+                  disabled={form.status === 'coming-soon'}
+                  className={selectedForm === form.id ? 'bg-gray-50' : ''}
+                />
+              ))
+            })()}
           </div>
         </div>
       </div>

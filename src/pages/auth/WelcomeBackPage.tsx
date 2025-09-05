@@ -6,12 +6,14 @@ interface WelcomeBackPageProps {
   onSignIn?: (email: string, password: string) => void
   onCreateAccount?: () => void
   onForgotPassword?: () => void
+  onNavigate?: (view: 'create-account' | 'sign-in' | 'home' | 'company' | 'settings' | 'onboarding' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'verify-email' | 'success' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success') => void
 }
 
 const WelcomeBackPage: React.FC<WelcomeBackPageProps> = ({
   onSignIn,
   onCreateAccount,
   onForgotPassword,
+  onNavigate,
 }) => {
   const [formData, setFormData] = useState({
     email: '',
@@ -190,6 +192,17 @@ const WelcomeBackPage: React.FC<WelcomeBackPageProps> = ({
                 ) : (
                   'Log in'
                 )}
+              </button>
+            </div>
+
+            {/* Development: Skip to Forms Tab */}
+            <div className="pt-2">
+              <button
+                type="button"
+                onClick={() => onNavigate?.('home')}
+                className="w-full py-2 px-4 rounded-xl font-medium text-sm transition-all duration-200 bg-orange-100 text-orange-700 hover:bg-orange-200 border border-orange-300"
+              >
+                🚀 DEV: Skip to Forms Tab
               </button>
             </div>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { MobileLayout } from '../components/layout';
-import { Button } from '../components/ui';
+import { Button, FormRequestSlideUp, ProgressIndicator } from '../components/ui';
 import AddTeamMemberModal from '../components/ui/AddTeamMemberModal';
 
 // Import team chat assets
@@ -33,11 +33,29 @@ interface ChatMessage {
     url: string;
     caption?: string;
   }[];
+  formRequest?: {
+    formId: string;
+    formName: string;
+    memberStatuses: Array<{ id: string; name: string; avatar?: string; status: 'pending' | 'submitted' }>
+  };
+  formHistory?: {
+    activities: Array<{
+      id: string;
+      formName: string;
+      memberName: string;
+      memberAvatar?: string;
+      completedAt: string;
+      formType: string;
+    }>
+  };
 }
 
 export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
   const [message, setMessage] = useState('');
   const [showAddTeamMatesModal, setShowAddTeamMatesModal] = useState(false);
+  const [showFormRequest, setShowFormRequest] = useState(false);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [showSlashHelp, setShowSlashHelp] = useState(false);
 
   // Sample chat messages based on Figma design
   const chatMessages: ChatMessage[] = [
@@ -82,12 +100,95 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     }
   ];
 
-  const handleSendMessage = () => {
-    if (message.trim()) {
-      // TODO: Implement send message logic
-      console.log('Sending message:', message);
-      setMessage('');
+  // In a real app, teammates would be dynamic
+  const teamMembers = [
+    { id: 'linda', name: 'Linda', avatar: lindaAvatar },
+    { id: 'josh', name: 'Josh', avatar: joshAvatar },
+    { id: 'david', name: 'David' },
+    { id: 'jack', name: 'Jack' },
+  ]
+
+  const formOptions = [
+    { id: 'report-hazard', name: 'Report a Hazard' },
+    { id: 'take-control', name: 'Take Control (Warrikal FMG)' },
+    { id: 'fatigue-management', name: 'Fatigue Management (Warrikal)' },
+    { id: 'pace-cards', name: 'Pace Cards (Goodline)' },
+  ]
+
+  const slashCommands = [
+    { id: 'formrequest', label: 'Form Request', description: 'Request teammates to submit a safety form' },
+    { id: 'formhistory', label: 'Form History', description: 'Show recent form activity from the last 24 hours' },
+  ]
+
+  // Mock form history data for the last 24 hours
+  const recentFormHistory = [
+    {
+      id: '1',
+      formName: 'Report a Hazard',
+      memberName: 'Linda',
+      memberAvatar: lindaAvatar,
+      completedAt: '2 hours ago',
+      formType: 'hazard'
+    },
+    {
+      id: '2',
+      formName: 'Take Control',
+      memberName: 'Josh',
+      memberAvatar: joshAvatar,
+      completedAt: '4 hours ago',
+      formType: 'take-control'
+    },
+    {
+      id: '3',
+      formName: 'Fatigue Management',
+      memberName: 'David',
+      memberAvatar: undefined,
+      completedAt: '6 hours ago',
+      formType: 'fatigue'
+    },
+    {
+      id: '4',
+      formName: 'Pace Cards',
+      memberName: 'Jack',
+      memberAvatar: undefined,
+      completedAt: '8 hours ago',
+      formType: 'pace-cards'
     }
+  ];
+
+  const handleSendMessage = () => {
+    if (!message.trim()) return;
+    if (message.trim().startsWith('/formrequest')) {
+      setShowFormRequest(true);
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('/formhistory')) {
+      const newMsg: ChatMessage = {
+        id: Date.now().toString(),
+        sender: { name: 'You', role: '', avatar: '' },
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        message: 'Form History',
+        isOwnMessage: true,
+        formHistory: {
+          activities: recentFormHistory
+        }
+      };
+      setMessages(prev => [...prev, newMsg]);
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: message.trim(),
+      isOwnMessage: true,
+    }
+    setMessages(prev => [...prev, newMsg]);
+    setMessage('');
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -102,6 +203,26 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     console.log('Added team mates:', addedMates);
     setShowAddTeamMatesModal(false);
   };
+
+  const handleFormRequestSubmit = (payload: { formId: string, formName: string, memberIds: string[] }) => {
+    const requestedMembers = teamMembers.filter(m => payload.memberIds.includes(m.id))
+    const memberStatuses = requestedMembers.map(m => ({ id: m.id, name: m.name, avatar: m.avatar, status: 'pending' as const }))
+
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: `Form request: ${payload.formName}`,
+      isOwnMessage: true,
+      mentions: requestedMembers.map(m => m.name),
+      formRequest: {
+        formId: payload.formId,
+        formName: payload.formName,
+        memberStatuses,
+      },
+    }
+    setMessages(prev => [...prev, newMsg]);
+  }
 
   const header = (
     <div className="px-4 h-[72px] flex items-center justify-between">
@@ -133,7 +254,7 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
 
       {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-3">
-        {chatMessages.map((msg) => (
+        {[...chatMessages, ...messages].map((msg) => (
           <div
             key={msg.id}
             className={`flex gap-3 ${msg.isOwnMessage ? 'justify-end' : 'justify-start'}`}
@@ -174,6 +295,81 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                     return `@${part}`;
                   })}
                 </p>
+
+                {/* Form request block */}
+                {msg.formRequest && (
+                  <div className="mt-3 bg-white rounded-xl border border-[#e9eaeb] p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[#344054] text-sm font-medium">Requested: {msg.formRequest.formName}</span>
+                    </div>
+                    <div className="space-y-2">
+                      {msg.formRequest.memberStatuses.map((m) => (
+                        <div key={m.id} className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 bg-[#266273] rounded-full flex items-center justify-center text-white overflow-hidden">
+                              {m.avatar ? <img src={m.avatar} alt={m.name} className="w-full h-full object-cover" /> : <span className="text-xs font-medium">{m.name.split(' ').map(n => n[0]).join('').slice(0,2)}</span>}
+                            </div>
+                            <span className="text-sm text-[#101828]">{m.name}</span>
+                          </div>
+                          <span className={`text-xs font-medium ${m.status === 'submitted' ? 'text-[#16a34a]' : 'text-[#dc6803]'}`}>
+                            {m.status === 'submitted' ? 'Submitted' : 'Pending'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {/* Overall progress */}
+                    <div className="mt-3">
+                      {(() => {
+                        const total = msg.formRequest!.memberStatuses.length
+                        const submitted = msg.formRequest!.memberStatuses.filter(m => m.status === 'submitted').length
+                        const percent = Math.round((submitted / total) * 100)
+                        return (
+                          <div>
+                            <div className="flex justify-between text-xs text-[#667085] mb-1">
+                              <span>Overall progress</span>
+                              <span>{submitted}/{total}</span>
+                            </div>
+                            <div className="w-full h-2 bg-[#eaecf0] rounded-full overflow-hidden">
+                              <div className="h-full bg-[#266273]" style={{ width: `${percent}%` }} />
+                            </div>
+                          </div>
+                        )
+                      })()}
+                    </div>
+                  </div>
+                )}
+
+                {/* Form history block */}
+                {msg.formHistory && (
+                  <div className="mt-3 bg-white rounded-xl border border-[#e9eaeb] p-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-[#344054] text-sm font-medium">Recent Form Activity (Last 24h)</span>
+                      <span className="text-xs text-[#667085]">{msg.formHistory.activities.length} activities</span>
+                    </div>
+                    <div className="space-y-3">
+                      {msg.formHistory.activities.map((activity) => (
+                        <div key={activity.id} className="flex items-center gap-3 p-2 rounded-lg bg-[#f8f9fa]">
+                          <div className="w-8 h-8 bg-[#266273] rounded-full flex items-center justify-center text-white overflow-hidden flex-shrink-0">
+                            {activity.memberAvatar ? (
+                              <img src={activity.memberAvatar} alt={activity.memberName} className="w-full h-full object-cover" />
+                            ) : (
+                              <span className="text-xs font-medium">{activity.memberName.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-[#101828]">{activity.memberName}</span>
+                              <span className="text-xs text-[#667085]">completed</span>
+                              <span className="text-sm font-medium text-[#266273]">{activity.formName}</span>
+                            </div>
+                            <div className="text-xs text-[#667085]">{activity.completedAt}</div>
+                          </div>
+                          <div className="w-2 h-2 bg-[#16a34a] rounded-full flex-shrink-0" title="Completed" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Attachments */}
@@ -201,7 +397,45 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
       </div>
 
       {/* Message Input */}
-      <div className="flex-shrink-0 bg-white px-3 py-2.5 border-t border-gray-200">
+      <div className="relative flex-shrink-0 bg-white px-3 py-2.5 border-t border-gray-200">
+        {/* Slash command helper */}
+        {showSlashHelp && (
+          <div className="absolute bottom-[64px] left-3 right-3 bg-white border border-[#eaecf0] rounded-xl shadow-lg p-2 z-10">
+            <div className="px-2 py-1 text-xs text-[#667085]">Available commands</div>
+            {slashCommands.map(cmd => (
+              <button
+                key={cmd.id}
+                onClick={() => {
+                  if (cmd.id === 'formrequest') {
+                    setShowFormRequest(true)
+                    setMessage('')
+                  } else if (cmd.id === 'formhistory') {
+                    const newMsg: ChatMessage = {
+                      id: Date.now().toString(),
+                      sender: { name: 'You', role: '', avatar: '' },
+                      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                      message: 'Form History',
+                      isOwnMessage: true,
+                      formHistory: {
+                        activities: recentFormHistory
+                      }
+                    };
+                    setMessages(prev => [...prev, newMsg]);
+                    setMessage('');
+                  } else {
+                    setMessage(`/${cmd.id} `)
+                  }
+                  setShowSlashHelp(false)
+                }}
+                className="w-full text-left px-2 py-2 rounded-lg hover:bg-[#f8f9fa]"
+              >
+                <div className="text-sm font-medium text-[#101828]">/{cmd.id} — {cmd.label}</div>
+                <div className="text-xs text-[#667085]">{cmd.description}</div>
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex items-center gap-3">
           {/* Action buttons */}
           <div className="flex gap-1.5">
@@ -220,7 +454,15 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                 type="text"
                 placeholder="Message"
                 value={message}
-                onChange={(e) => setMessage(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setMessage(val)
+                  if (val === '/' || val.startsWith('/')) {
+                    setShowSlashHelp(true)
+                  } else {
+                    setShowSlashHelp(false)
+                  }
+                }}
                 onKeyPress={handleKeyPress}
                 className="flex-1 bg-transparent text-[#181d27] placeholder-[#717680] focus:outline-none text-base leading-6"
               />
@@ -235,6 +477,15 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Form Request Slide Up */}
+      <FormRequestSlideUp
+        isOpen={showFormRequest}
+        onClose={() => setShowFormRequest(false)}
+        formOptions={formOptions}
+        teamMembers={teamMembers}
+        onSubmit={handleFormRequestSubmit}
+      />
 
       {/* Add Team Mates Modal */}
       <AddTeamMemberModal

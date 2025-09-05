@@ -6,6 +6,7 @@ export { default as JobsCreateJobPage } from './JobsCreateJobPage'
 export { default as JobsCompletedReviewPage } from './JobsCompletedReviewPage'
 export { default as JobTeamChatPage } from './JobTeamChatPage'
 export { default as CompanyTabPage } from './CompanyTabPage'
+export { default as SettingsPage } from './SettingsPage'
 
 // Auth pages
 export * from './auth'

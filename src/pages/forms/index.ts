@@ -1,19 +1,13 @@
-export { default as TakeControlFormPage } from './TakeControlFormPage'
+// Generic forms that can be used across contractors
 export { default as MyExposuresFormPage } from './MyExposuresFormPage'
 export { default as HazardIdentificationPage } from './HazardIdentificationPage'
 export { default as CompanyWorkerDetailsPage } from './CompanyWorkerDetailsPage'
-export { default as TakeControlReviewPage } from './TakeControlReviewPage'
-export { default as TakeControlSuccessPage } from './TakeControlSuccessPage'
-export { default as FatigueManagementStep1Page } from './FatigueManagementStep1Page'
-export { default as FatigueManagementStep2Page } from './FatigueManagementStep2Page'
-export { default as FatigueManagementStep3Page } from './FatigueManagementStep3Page'
-export { default as FatigueManagementStep4Page } from './FatigueManagementStep4Page'
-export { default as FatigueManagementStep5Page } from './FatigueManagementStep5Page'
-export { default as FatigueManagementStep6Page } from './FatigueManagementStep6Page'
-export { default as FatigueManagementReviewPage } from './FatigueManagementReviewPage'
-export { default as FatigueManagementSuccessPage } from './FatigueManagementSuccessPage'
-export { default as ReportHazardStep1Page } from './ReportHazardStep1Page'
-export { default as ReportHazardStep2Page } from './ReportHazardStep2Page'
-export { default as ReportHazardStep3Page } from './ReportHazardStep3Page'
-export { default as ReportHazardStep4Page } from './ReportHazardStep4Page'
-export { default as ReportHazardReviewPage } from './ReportHazardReviewPage' 
+
+// General forms that all contractors can use
+export * from './general'
+
+// Contractor-specific forms
+export * from './warrikal'
+export * from './linkforce'
+export * from './monadelphous'
+export * from './goodline' 

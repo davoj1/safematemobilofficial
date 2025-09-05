@@ -10,7 +10,7 @@ import orangeScanIcon from '../assets/companytab/orangescan.svg'
 import arrowsClockwiseIcon from '../assets/companytab/ArrowsClockwise.svg'
 
 interface CompanyTabPageProps {
-  onNavigateToHome?: (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company') => void
+  onNavigateToHome?: (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings') => void
 }
 
 const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => {
@@ -21,7 +21,7 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
   const [selectedCompany, setSelectedCompany] = useState('warrikal')
 
   const handleBottomTabChange = (tab: string) => {
-    onNavigateToHome?.(tab as 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company')
+    onNavigateToHome?.(tab as 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings')
   }
 
   const handleSwitchCompany = () => {

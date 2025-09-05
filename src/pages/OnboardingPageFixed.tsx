@@ -1,106 +1,60 @@
-import React, { useState } from 'react'
-import { motion, AnimatePresence, PanInfo } from 'framer-motion'
-import { MobileLayout } from '../components/layout'
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion'
 import { Button } from '../components/ui'
 
-// Simple progress indicator without external component first
-const SimpleProgressIndicator: React.FC<{ current: number; total: number }> = ({ current, total }) => (
-  <div className="flex justify-center space-x-2 mb-12">
-    {Array.from({ length: total }, (_, index) => (
-      <div
-        key={index}
-        className={`h-2 rounded-full transition-all duration-300 ${
-          index === current 
-            ? 'bg-teal-600 w-6' 
-            : 'bg-gray-300 w-2'
-        }`}
-      />
-    ))}
-  </div>
-)
+// Import onboarding images
+import safemateonboard1 from '../assets/safemateonboard1.png'
+import safemateonboard2 from '../assets/safemateonboard2.png'
+import safemateonboard3 from '../assets/safemateonboard3.png'
 
-// Simple slide component without external dependencies
-const SimpleSlide: React.FC<{ title: string; subtitle: string; image?: string }> = ({ title, subtitle, image }) => (
-  <div className="flex flex-col items-center text-center px-6">
-    {/* Image placeholder for now */}
-    <div className="w-full max-w-sm mx-auto mb-8">
-      <div className="aspect-square rounded-3xl overflow-hidden bg-gradient-to-br from-teal-100 to-teal-200 flex items-center justify-center">
-        {image ? (
-          <img 
-            src={image} 
-            alt={title}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              target.style.display = 'none'
-              target.parentElement!.innerHTML = `
-                <div class="w-full h-full flex items-center justify-center text-teal-600 text-6xl">
-                  🏗️
-                </div>
-              `
-            }}
-          />
-        ) : (
-          <div className="text-teal-600 text-6xl">🏗️</div>
-        )}
-      </div>
-    </div>
-
-    {/* Content */}
-    <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-gray-900 leading-tight px-4">
-        {title}
-      </h2>
-      <p className="text-gray-600 text-base leading-relaxed max-w-sm mx-auto px-4">
-        {subtitle}
-      </p>
-    </div>
-  </div>
-)
-
-// Onboarding data
+// Onboarding data matching the Figma design
 const onboardingData = [
   {
     id: 1,
     title: 'Start Safe, Stay Safe',
     subtitle: 'Begin every shift with a quick risk check to protect yourself and your team.',
+    image: safemateonboard1,
   },
   {
     id: 2,
     title: 'Stay On Track',
     subtitle: 'Complete short safety check-ins throughout the day to stay alert and compliant.',
+    image: safemateonboard2,
   },
   {
     id: 3,
     title: 'Report Fast, Act Fast',
     subtitle: 'Easily flag issues or hazards so your team can act before it\'s too late.',
+    image: safemateonboard3,
   },
 ]
 
-const OnboardingPageFixed: React.FC = () => {
+interface OnboardingPageFixedProps {
+  onNavigate?: (view: 'create-account' | 'sign-in' | 'home' | 'company' | 'settings' | 'onboarding' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'verify-email' | 'success' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success') => void;
+}
+
+const OnboardingPageFixed: React.FC<OnboardingPageFixedProps> = ({ onNavigate }) => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [direction, setDirection] = useState(0)
 
-  const nextSlide = () => {
-    if (currentSlide < onboardingData.length - 1) {
+  // Auto-advance slides every 4 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
       setDirection(1)
-      setCurrentSlide(currentSlide + 1)
-    }
-  }
+      setCurrentSlide((prev) => (prev + 1) % onboardingData.length)
+    }, 4000)
 
-  const prevSlide = () => {
-    if (currentSlide > 0) {
-      setDirection(-1)
-      setCurrentSlide(currentSlide - 1)
-    }
-  }
+    return () => clearInterval(timer)
+  }, [])
 
   const handleDragEnd = (event: any, info: PanInfo) => {
     const threshold = 50
-    if (info.offset.x > threshold) {
-      prevSlide()
-    } else if (info.offset.x < -threshold) {
-      nextSlide()
+    if (info.offset.x > threshold && currentSlide > 0) {
+      setDirection(-1)
+      setCurrentSlide(currentSlide - 1)
+    } else if (info.offset.x < -threshold && currentSlide < onboardingData.length - 1) {
+      setDirection(1)
+      setCurrentSlide(currentSlide + 1)
     }
   }
 
@@ -119,79 +73,112 @@ const OnboardingPageFixed: React.FC = () => {
     }),
   }
 
+  const handleCreateAccount = () => {
+    onNavigate?.('create-account')
+  }
+
+  const handleSignIn = () => {
+    onNavigate?.('sign-in')
+  }
+
   return (
-    <MobileLayout safeArea={true} padding={false}>
-      <div className="flex flex-col h-full bg-white">
-        {/* Main content area */}
-        <div className="flex-1 relative overflow-hidden">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
-            <motion.div
-              key={currentSlide}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: 'spring', stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 },
+    <div className="bg-white h-screen w-full flex flex-col">
+      {/* Image Section - 40% of screen height with curved bottom */}
+      <div className="relative h-[40vh] w-full overflow-hidden">
+        <AnimatePresence initial={false} custom={direction} mode="wait">
+          <motion.div
+            key={currentSlide}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: 'spring', stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={handleDragEnd}
+            className="absolute inset-0"
+          >
+            <div 
+              className="w-full h-full"
+              style={{
+                clipPath: 'ellipse(100% 100% at 50% 0%)',
               }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragEnd={handleDragEnd}
-              className="absolute inset-0 flex items-center justify-center pt-20 pb-8"
             >
-              <SimpleSlide
-                title={onboardingData[currentSlide].title}
-                subtitle={onboardingData[currentSlide].subtitle}
+              <img 
+                src={onboardingData[currentSlide].image} 
+                alt={onboardingData[currentSlide].title}
+                className="w-full h-full object-cover"
               />
-            </motion.div>
-          </AnimatePresence>
-        </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-        {/* Bottom section */}
-        <div className="flex-shrink-0 px-6 pb-8 space-y-8">
-          {/* Progress Indicator */}
-          <SimpleProgressIndicator
-            current={currentSlide}
-            total={onboardingData.length}
-          />
+      {/* Content Section - Remaining 60% with centered content */}
+      <div className="flex-1 flex flex-col justify-center px-5">
+        {/* Centered content area */}
+        <div className="flex flex-col items-center justify-center flex-1 space-y-8">
+          {/* Title and Subtitle */}
+          <div className="flex flex-col gap-3 items-center justify-center text-center w-full">
+            <div className="font-bold text-[#182230] text-[30px] w-full">
+              <p className="block leading-[38px]">{onboardingData[currentSlide].title}</p>
+            </div>
+            <div className="font-normal text-[#667085] text-[16px] w-full">
+              <p className="block leading-[24px]">
+                {onboardingData[currentSlide].subtitle}
+              </p>
+            </div>
+          </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-4">
-            <Button
-              fullWidth
-              size="lg"
-              className="bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-2xl py-4"
-              onClick={() => console.log('Create account clicked')}
-            >
-              Create account
-            </Button>
-            
-            <Button
-              fullWidth
-              size="lg"
-              variant="outline"
-              className="border-2 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold rounded-2xl py-4"
-              onClick={() => console.log('Sign in clicked')}
-            >
-              Sign in
-            </Button>
+          {/* Pagination Dots with smooth transitions */}
+          <div className="flex flex-row gap-1.5 items-center justify-center">
+            {onboardingData.map((_, index) => (
+              <motion.div
+                key={index}
+                animate={{
+                  width: index === currentSlide ? '40px' : '8px',
+                  backgroundColor: index === currentSlide ? '#266273' : '#eaecf0',
+                }}
+                transition={{
+                  duration: 0.3,
+                  ease: 'easeInOut',
+                }}
+                className="h-1.5 rounded-[9999px]"
+              />
+            ))}
           </div>
         </div>
 
-        {/* Skip button */}
-        <div className="absolute top-16 right-6">
-          <button
-            onClick={() => setCurrentSlide(onboardingData.length - 1)}
-            className="text-gray-500 text-sm font-medium hover:text-gray-700 transition-colors"
+        {/* Action Buttons - Fixed at bottom with proper spacing */}
+        <div className="flex flex-col gap-4 w-full pb-8">
+          {/* Create Account Button */}
+          <Button
+            fullWidth
+            size="lg"
+            onClick={handleCreateAccount}
+            className="bg-[#266273] hover:bg-[#1e4d59] text-white font-semibold rounded-2xl py-4"
           >
-            Skip
-          </button>
+            Create account
+          </Button>
+
+          {/* Sign In Button */}
+          <Button
+            fullWidth
+            size="lg"
+            variant="outline"
+            onClick={handleSignIn}
+            className="border-2 border-[#2a6c7e] text-[#1e4d59] hover:bg-[#f8f9fa] font-semibold rounded-2xl py-4"
+          >
+            Sign in
+          </Button>
         </div>
       </div>
-    </MobileLayout>
+    </div>
   )
 }
 

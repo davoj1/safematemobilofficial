@@ -7,7 +7,7 @@ import JobTeamChatPage from './pages/JobTeamChatPage'
 import FormsSelectMineCompanyPage from './pages/FormsSelectMineCompanyPage'
 import { SiteSelectionPage, FormSelectionPage } from './pages/mines'
 import { BHPFormSelectionPage } from './pages/bhp'
-import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage, ReportHazardStep1Page, ReportHazardStep2Page, ReportHazardStep3Page, ReportHazardStep4Page, ReportHazardReviewPage } from './pages/forms'
+import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage, ReportHazardStep1Page, ReportHazardStep2Page, ReportHazardStep3Page, ReportHazardStep4Page, ReportHazardReviewPage, GoodlinePaceCardsFormPage, GoodlineFatigueFormPage } from './pages/forms'
 // Site images
 import BMAaustralia from './assets/minesites/bhp/BMAaustralia.png'
 import BMAblackwateraustralia from './assets/minesites/bhp/BMAblackwateraustralia.png'
@@ -34,12 +34,16 @@ import UploadProfilePicturePage from './pages/profile/UploadProfilePicturePage'
 import EnterFullNamePage from './pages/profile/EnterFullNamePage'
 import ProfileCreatedSuccessPage from './pages/profile/ProfileCreatedSuccessPage'
 import CompanyTabPage from './pages/CompanyTabPage'
+import SettingsPage from './pages/SettingsPage'
+import OnboardingPageFixed from './pages/OnboardingPageFixed'
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'company' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
-  const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company'>('forms')
+  const [currentView, setCurrentView] = useState<'home' | 'company' | 'settings' | 'onboarding' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'forms-linkforce-take-control' | 'forms-monadelphous-take-control' | 'forms-goodline-take-control' | 'forms-goodline-fatigue' | 'forms-pace-cards' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
+  const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings'>('forms')
   const [previousFormSelectionView, setPreviousFormSelectionView] = useState<'forms-bhp-form-selection' | 'forms-fmg-form-selection' | null>(null)
   const [selectedSite, setSelectedSite] = useState<{id: string, name: string, location: string, image: string} | null>(null)
+  const [selectedContractor, setSelectedContractor] = useState<'warrikal' | 'linkforce' | 'monadelphous' | 'goodline' | null>(null)
+  const [selectedMineCompany, setSelectedMineCompany] = useState<'fmg' | 'bhp' | 'rio' | null>(null)
   
   // Fatigue Management Form Data
   const [fatigueFormData, setFatigueFormData] = useState<{
@@ -98,14 +102,18 @@ function App() {
       setHomeActiveTab('forms')
     } else if (view === 'jobs-select-company') {
       setHomeActiveTab('jobs')
+    } else if (view === 'settings') {
+      setHomeActiveTab('settings')
     }
     setCurrentView(view)
   }
 
-  const navigateToHome = (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' = 'jobs') => {
+  const navigateToHome = (activeTab: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings' = 'jobs') => {
     setHomeActiveTab(activeTab)
     if (activeTab === 'company') {
       setCurrentView('company')
+    } else if (activeTab === 'settings') {
+      setCurrentView('settings')
     } else {
       setCurrentView('home')
     }
@@ -115,12 +123,27 @@ function App() {
     <div className="App">
       {/* Render current view */}
       {currentView === 'home' && (
-        <HomePage onNavigate={navigateTo} initialActiveTab={homeActiveTab} />
+        <HomePage 
+          onNavigate={navigateTo} 
+          onContractorSelect={setSelectedContractor}
+          initialActiveTab={homeActiveTab} 
+        />
       )}
 
       {currentView === 'company' && (
         <CompanyTabPage onNavigateToHome={navigateToHome} />
       )}
+
+      {currentView === 'settings' && (
+        <SettingsPage 
+          onNavigateToHome={navigateToHome} 
+          onSignOut={() => navigateTo('onboarding')}
+        />
+      )}
+
+                        {currentView === 'onboarding' && (
+                    <OnboardingPageFixed onNavigate={navigateTo} />
+                  )}
       
       {currentView === 'jobs-select-company' && (
         <JobsSelectCompanyPage 
@@ -172,25 +195,36 @@ function App() {
 
       {currentView === 'forms-bhp-form-selection' && (
         <BHPFormSelectionPage 
+          contractor={selectedContractor}
           onClose={() => navigateToHome('forms')}
           onEditSite={() => navigateTo('forms-bhp-site-selection')}
           onFormSelect={(formId) => {
-            if (formId === 'fatigue-management') {
+            if (formId === 'pace-cards') {
+              setSelectedMineCompany('bhp')
               setPreviousFormSelectionView('forms-bhp-form-selection')
-              resetFatigueFormData()
-              // Add some test data to see risk calculation working
-              setFatigueFormData({
-                sleep24h: 'Less than 5',
-                sleep48h: 'Less than 12', 
-                alertness: 'Sleepy, groggy, hard to concentrate.',
-                gender: 'male',
-                alcoholIntake: 'More than 6',
-                medication: 'Yes',
-                stress: 'Yes',
-                wellbeingRating: '0-2'
-              })
-              navigateTo('forms-fatigue-management-step1')
+              navigateTo('forms-pace-cards')
+            } else if (formId === 'fatigue-management') {
+              setSelectedMineCompany('bhp')
+              setPreviousFormSelectionView('forms-bhp-form-selection')
+              if (selectedContractor === 'goodline') {
+                navigateTo('forms-goodline-fatigue')
+              } else {
+                resetFatigueFormData()
+                // Add some test data to see risk calculation working
+                setFatigueFormData({
+                  sleep24h: 'Less than 5',
+                  sleep48h: 'Less than 12', 
+                  alertness: 'Sleepy, groggy, hard to concentrate.',
+                  gender: 'male',
+                  alcoholIntake: 'More than 6',
+                  medication: 'Yes',
+                  stress: 'Yes',
+                  wellbeingRating: '0-2'
+                })
+                navigateTo('forms-fatigue-management-step1')
+              }
             } else if (formId === 'report-hazard-issue') {
+              setSelectedMineCompany('bhp')
               setPreviousFormSelectionView('forms-bhp-form-selection')
               navigateTo('forms-report-hazard-step1')
             } else {
@@ -203,27 +237,39 @@ function App() {
       {currentView === 'forms-fmg-form-selection' && (
         <FormSelectionPage 
           company="fmg"
+          contractor={selectedContractor}
           onClose={() => navigateToHome('forms')}
           onEditSite={() => navigateTo('forms-fmg-site-selection')}
           onFormSelect={(formId) => {
             if (formId === 'take-control') {
+              setSelectedMineCompany('fmg')
               navigateTo('forms-take-control')
-            } else if (formId === 'fatigue-management') {
+            } else if (formId === 'pace-cards') {
+              setSelectedMineCompany('fmg')
               setPreviousFormSelectionView('forms-fmg-form-selection')
-              resetFatigueFormData()
-              // Add some test data to see risk calculation working
-              setFatigueFormData({
-                sleep24h: 'Less than 5',
-                sleep48h: 'Less than 12', 
-                alertness: 'Sleepy, groggy, hard to concentrate.',
-                gender: 'male',
-                alcoholIntake: 'More than 6',
-                medication: 'Yes',
-                stress: 'Yes',
-                wellbeingRating: '0-2'
-              })
-              navigateTo('forms-fatigue-management-step1')
+              navigateTo('forms-pace-cards')
+            } else if (formId === 'fatigue-management') {
+              setSelectedMineCompany('fmg')
+              setPreviousFormSelectionView('forms-fmg-form-selection')
+              if (selectedContractor === 'goodline') {
+                navigateTo('forms-goodline-fatigue')
+              } else {
+                resetFatigueFormData()
+                // Add some test data to see risk calculation working
+                setFatigueFormData({
+                  sleep24h: 'Less than 5',
+                  sleep48h: 'Less than 12', 
+                  alertness: 'Sleepy, groggy, hard to concentrate.',
+                  gender: 'male',
+                  alcoholIntake: 'More than 6',
+                  medication: 'Yes',
+                  stress: 'Yes',
+                  wellbeingRating: '0-2'
+                })
+                navigateTo('forms-fatigue-management-step1')
+              }
             } else if (formId === 'report-hazard-issue') {
+              setSelectedMineCompany('fmg')
               setPreviousFormSelectionView('forms-fmg-form-selection')
               navigateTo('forms-report-hazard-step1')
             } else {
@@ -233,15 +279,45 @@ function App() {
         />
       )}
 
-      {currentView === 'forms-take-control' && (
+
+
+      {currentView === 'forms-take-control' && selectedContractor === 'warrikal' && selectedMineCompany === 'fmg' && (
         <TakeControlFormPage 
           onBack={() => navigateTo('forms-fmg-form-selection')}
           onNext={(formData) => {
-            console.log('Take Control step 1 completed:', formData)
+            console.log('Warrikal Take Control step 1 completed:', formData)
             navigateTo('forms-my-exposures')
           }}
         />
       )}
+
+      {currentView === 'forms-pace-cards' && selectedContractor === 'goodline' && (
+        <GoodlinePaceCardsFormPage
+          selectedSite={selectedSite || undefined}
+          onBack={() => navigateTo(previousFormSelectionView || 'forms-fmg-form-selection')}
+          onNext={(formData, submissionData) => {
+            console.log('Pace Cards form completed:', formData)
+            console.log('Pace Cards submission data:', submissionData)
+            // Navigate to success or back to form selection
+            navigateTo('forms-fmg-form-selection')
+          }}
+        />
+      )}
+
+      {currentView === 'forms-goodline-fatigue' && selectedContractor === 'goodline' && (
+        <GoodlineFatigueFormPage
+          mineCompany={selectedMineCompany || 'fmg'}
+          selectedSite={selectedSite || undefined}
+          onBack={() => navigateTo(previousFormSelectionView || 'forms-fmg-form-selection')}
+          onNext={(formData) => {
+            console.log('Goodline Fatigue form completed:', formData)
+            // Navigate back to the appropriate form selection based on mine company
+            navigateTo(previousFormSelectionView || 'forms-fmg-form-selection')
+          }}
+        />
+      )}
+
+
 
       {currentView === 'forms-my-exposures' && (
         <MyExposuresFormPage 
@@ -287,6 +363,7 @@ function App() {
       {currentView === 'forms-take-control-success' && (
         <TakeControlSuccessPage 
           onGoHome={() => navigateToHome('forms')}
+          onViewRank={() => navigateToHome('leaderboard')}
         />
       )}
 
@@ -419,6 +496,7 @@ function App() {
       {currentView === 'forms-fatigue-management-success' && (
         <FatigueManagementSuccessPage 
           onGoHome={() => navigateToHome('forms')}
+          onViewRank={() => navigateToHome('leaderboard')}
         />
       )}
 
@@ -508,13 +586,14 @@ function App() {
         />
       )}
 
-      {currentView === 'sign-in' && (
-        <WelcomeBackPage 
-          onSignIn={(email, password) => alert(`Signing in with ${email}...`)}
-          onCreateAccount={() => navigateTo('create-account')}
-          onForgotPassword={() => navigateTo('forgot-password')}
-        />
-      )}
+                        {currentView === 'sign-in' && (
+                    <WelcomeBackPage 
+                      onSignIn={(email, password) => alert(`Signing in with ${email}...`)}
+                      onCreateAccount={() => navigateTo('create-account')}
+                      onForgotPassword={() => navigateTo('forgot-password')}
+                      onNavigate={navigateTo}
+                    />
+                  )}
 
       {currentView === 'forgot-password' && (
         <ForgotPasswordPage 
