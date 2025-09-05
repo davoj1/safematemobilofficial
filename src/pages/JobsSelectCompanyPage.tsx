@@ -36,7 +36,7 @@ const JobsSelectCompanyPage: React.FC<JobsSelectCompanyPageProps> = ({
       id: 'linkforce',
       name: 'Linkforce',
       logo: linkforceIcon,
-      role: 'HSE',
+      role: 'Worker',
       status: 'active'
     },
     {

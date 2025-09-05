@@ -269,7 +269,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       name: 'Linkforce',
       logo: linkforceIcon,
       status: 'active',
-      role: 'HSE',
+      role: 'Worker',
     },
     {
       id: 'mona',
