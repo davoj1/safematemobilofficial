@@ -5,14 +5,12 @@ import { SiteSelectionPage, FormSelectionPage } from './mines'
 import { TakeControlFormPage, MyExposuresFormPage } from './forms'
 import { LeaderboardProfilePage, LeaderboardPage, StreakDetailPage } from './leaderboard'
 import logo from '../assets/logo.svg'
+import safemateShieldLogo from '../assets/safemateshieldlogo.svg'
 import trophyIcon from '../assets/leaderboardicon.svg'
 import notificationIcon from '../assets/notificationicon.svg'
-import bhpLogo from '../assets/companylogo/bhplogo.svg'
-import fmgLogo from '../assets/companylogo/fmglogo.svg'
 
 // Company logos
 import warrikalIcon from '../assets/companylogo/warrikallogo.svg'
-import linkforceIcon from '../assets/companylogo/linkforcelogo.svg'
 import monaIcon from '../assets/companylogo/monalogo.svg'
 import goodlineIcon from '../assets/companylogo/goodlinelogo.svg'
 import vehiclePrestartIcon from '../assets/history/vehicleprestarticon.svg'
@@ -51,8 +49,8 @@ import fmgIronBridge from '../assets/minesites/fmg/fmgironbridge.png'
 import fmgSolomon from '../assets/minesites/fmg/fmgsolomon.png'
 
 interface HomePageProps {
-  onNavigate?: (view: string) => void
-  onContractorSelect?: (contractor: 'warrikal' | 'linkforce' | 'monadelphous' | 'goodline') => void
+  onNavigate?: (view: "home" | "company" | "settings" | "onboarding" | "jobs-select-company" | "jobs-create-job" | "jobs-completed-review" | "job-team-chat" | "forms-select-mine-company" | "forms-bhp-site-selection" | "forms-warrikal-take-control" | "forms-warrikal-take-control-review" | "forms-warrikal-take-control-success" | "forms-warrikal-fatigue-management-step1" | "forms-warrikal-fatigue-management-step2" | "forms-warrikal-fatigue-management-step3" | "forms-warrikal-fatigue-management-step4" | "forms-warrikal-fatigue-management-step5" | "forms-warrikal-fatigue-management-step6" | "forms-warrikal-fatigue-management-success" | "forms-goodline-fatigue-form" | "forms-goodline-fatigue-step1" | "forms-goodline-fatigue-step2" | "forms-goodline-fatigue-step3" | "forms-goodline-fatigue-step4" | "forms-goodline-fatigue-step5" | "forms-goodline-fatigue-summary" | "forms-goodline-take-control-form" | "forms-goodline-take-control-review" | "forms-goodline-take-control-success" | "forms-goodline-pace-cards-form" | "forms-linkforce-take-control-form" | "forms-linkforce-take-control-review" | "forms-linkforce-take-control-success" | "forms-monadelphous-take-control-form" | "forms-monadelphous-take-control-review" | "forms-monadelphous-take-control-success" | "forms-rio-take5-control-selector" | "forms-rio-take5-step1" | "forms-rio-take5-step2" | "forms-rio-take5-step3" | "forms-rio-take5-step4" | "forms-rio-take5-step5" | "forms-rio-take5-step6" | "forms-rio-take5-success" | "forms-hazard-identification" | "forms-company-worker-details" | "leaderboard" | "leaderboard-company-selection" | "leaderboard-team-selection" | "leaderboard-results" | "profile-enter-full-name" | "profile-created-success" | "forms-bhp-form-selection" | "forms-fmg-form-selection" | "forms-fmg-site-selection" | "forms-goodline-fatigue" | "forms-fatigue-management-step6" | "forms-fatigue-management-review" | "forms-fatigue-management-success" | "forms-take-control" | "forms-take-control-review" | "forms-take-control-success" | "forms-pace-cards" | "forms-pace-cards-review" | "forms-pace-cards-success" | "forms-linkforce-take-control" | "forms-linkforce-take-control-review" | "forms-linkforce-take-control-success" | "forms-monadelphous-take-control" | "forms-monadelphous-take-control-review" | "forms-monadelphous-take-control-success" | "forms-rio-take5" | "forms-rio-take5-step1" | "forms-rio-take5-step2" | "forms-rio-take5-step3" | "forms-rio-take5-step4" | "forms-rio-take5-step5" | "forms-rio-take5-step6" | "forms-rio-take5-success" | "forms-report-hazard-step1" | "forms-report-hazard-step2" | "forms-report-hazard-step3" | "forms-report-hazard-step4" | "forms-report-hazard-review" | "forms-hazard-identification" | "forms-company-worker-details" | "forms-safemate-take5" | "forms-safemate-general-selection" | "leaderboard" | "leaderboard-company-selection" | "leaderboard-team-selection" | "leaderboard-results" | "profile-enter-full-name" | "profile-created-success") => void
+  onContractorSelect?: (contractor: 'warrikal' | 'monadelphous' | 'goodline') => void
   initialActiveTab?: 'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings'
 }
 
@@ -76,11 +74,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
   } | null>(null)
   const [showStreakDetail, setShowStreakDetail] = useState(false)
   const [showFilterModal, setShowFilterModal] = useState(false)
-  const [activeFilters, setActiveFilters] = useState({
-    forms: [] as string[],
-    dateRange: '',
-    companies: [] as string[]
-  })
 
   // Sample form history data
   const sampleForms = [
@@ -96,22 +89,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
         <img 
           src={vehiclePrestartIcon} 
           alt="Vehicle Pre-Start" 
-          className="w-6 h-6"
-        />
-      )
-    },
-    {
-      id: '2',
-      title: 'Take 5 – Cloudbreak',
-      description: 'Quick 5-step safety check before starting work.',
-      companyName: 'Linkforce',
-      companyLogo: linkforceIcon,
-      timestamp: '2024-01-14T15:01:00Z',
-      status: 'completed' as const,
-      icon: (
-        <img 
-          src={take5Icon} 
-          alt="Take 5" 
           className="w-6 h-6"
         />
       )
@@ -149,22 +126,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       )
     },
     {
-      id: '5',
-      title: 'Take 5 – Iron Bridge',
-      description: 'Safety check before commencing shift activities.',
-      companyName: 'Linkforce',
-      companyLogo: linkforceIcon,
-      timestamp: '2024-01-11T07:45:00Z',
-      status: 'completed' as const,
-      icon: (
-        <img 
-          src={take5Icon} 
-          alt="Take 5" 
-          className="w-6 h-6"
-        />
-      )
-    },
-    {
       id: '6',
       title: 'Hazard Report – Processing Plant',
       description: 'Identified potential safety risk in equipment operation.',
@@ -196,22 +157,6 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
         />
       )
     },
-    {
-      id: '8',
-      title: 'Take 5 – Maintenance Bay',
-      description: 'Safety check before entering maintenance area.',
-      companyName: 'Linkforce',
-      companyLogo: linkforceIcon,
-      timestamp: '2024-01-08T13:10:00Z',
-      status: 'completed' as const,
-      icon: (
-        <img 
-          src={take5Icon} 
-          alt="Take 5" 
-          className="w-6 h-6"
-        />
-      )
-    }
   ]
 
   // Sample jobs data (created jobs state) - add completed job
@@ -259,41 +204,46 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
   const companies = [
     {
       id: 'goodline',
-      name: 'Goodline',
+      name: 'Goodline Forms',
       logo: goodlineIcon,
       status: 'active',
       role: 'Worker',
     },
     {
-      id: 'linkforce',
-      name: 'Linkforce',
-      logo: linkforceIcon,
-      status: 'active',
-      role: 'Worker',
-    },
-    {
       id: 'mona',
-      name: 'Monadelphous',
+      name: 'Monadelphous Forms',
       logo: monaIcon,
       status: 'pending',
       role: 'Admin',
     },
     {
       id: 'warrikal',
-      name: 'Warrikal',
+      name: 'Warrikal Forms',
       logo: warrikalIcon,
       status: 'active',
       role: 'Supervisor',
     },
   ]
 
+  const safemateGeneralForms = [
+    {
+      id: 'safemate-general-forms',
+      name: 'Safemate General Forms',
+      logo: safemateShieldLogo, // Using the Safemate shield logo
+      status: 'active',
+      role: 'General Forms',
+    },
+  ]
+
   const handleCompanySelect = (companyId: string) => {
     setSelectedCompany(companyId)
-    if (companyId === 'warrikal' || companyId === 'linkforce' || companyId === 'mona' || companyId === 'goodline') {
+    if (companyId === 'safemate-general-forms') {
+      // Navigate to Safemate general forms selection
+      onNavigate?.('forms-safemate-general-selection')
+    } else if (companyId === 'warrikal' || companyId === 'mona' || companyId === 'goodline') {
       // Set the selected contractor and navigate to mine company selection
-      const contractorMap: Record<string, 'warrikal' | 'linkforce' | 'monadelphous' | 'goodline'> = {
+      const contractorMap: Record<string, 'warrikal' | 'monadelphous' | 'goodline'> = {
         'warrikal': 'warrikal',
-        'linkforce': 'linkforce',
         'mona': 'monadelphous',
         'goodline': 'goodline'
       }
@@ -318,17 +268,11 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
 
   const handleFilterApply = (filters: any) => {
     console.log('Filters applied:', filters)
-    setActiveFilters(filters)
     setShowFilterModal(false)
   }
 
   const handleFilterReset = () => {
     console.log('Filters reset')
-    setActiveFilters({
-      forms: [],
-      dateRange: '',
-      companies: []
-    })
   }
 
   const handleBottomTabChange = (tab: string) => {
@@ -708,29 +652,61 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
 
             {/* Forms content based on active tab */}
             {activeTab === 'templates' ? (
-              /* Company Selection */
-              <div className="space-y-2">
-                <h2 className="text-[#475467] text-base font-semibold leading-6">
-                  Select your company
-                </h2>
-                
+              /* Company Selection and Safemate General Forms */
+              <div className="space-y-6">
+                {/* Company Forms Section */}
                 <div className="space-y-2">
-                  {filteredCompanies.length > 0 ? (
-                    filteredCompanies.map((company) => (
+                  <h2 className="text-[#475467] text-base font-semibold leading-6">
+                    Select your company
+                  </h2>
+                  
+                  <div className="space-y-2">
+                    {filteredCompanies.length > 0 ? (
+                      filteredCompanies.map((company) => (
+                        <CompanyCard
+                          key={company.id}
+                          name={company.name}
+                          logo={company.logo}
+                          status={company.status}
+                          role={company.role}
+                          onClick={() => handleCompanySelect(company.id)}
+                        />
+                      ))
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-[#667085] text-sm">No companies found matching your search.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Divider */}
+                <div className="flex items-center">
+                  <div className="flex-1 border-t border-[#eaecf0]"></div>
+                  <div className="px-4">
+                    <span className="text-[#667085] text-sm font-medium">or</span>
+                  </div>
+                  <div className="flex-1 border-t border-[#eaecf0]"></div>
+                </div>
+
+                {/* Safemate General Forms Section */}
+                <div className="space-y-2">
+                  <h2 className="text-[#475467] text-base font-semibold leading-6">
+                    Safemate General Forms
+                  </h2>
+                  
+                  <div className="space-y-2">
+                    {safemateGeneralForms.map((form) => (
                       <CompanyCard
-                        key={company.id}
-                        name={company.name}
-                        logo={company.logo}
-                        status={company.status}
-                        role={company.role}
-                        onClick={() => handleCompanySelect(company.id)}
+                        key={form.id}
+                        name={form.name}
+                        logo={form.logo}
+                        status={form.status}
+                        role={form.role}
+                        onClick={() => handleCompanySelect(form.id)}
                       />
-                    ))
-                  ) : (
-                    <div className="text-center py-8">
-                      <p className="text-[#667085] text-sm">No companies found matching your search.</p>
-                    </div>
-                  )}
+                    ))}
+                  </div>
                 </div>
               </div>
             ) : (

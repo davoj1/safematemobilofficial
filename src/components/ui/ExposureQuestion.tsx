@@ -25,7 +25,7 @@ const ExposureQuestion: React.FC<ExposureQuestionProps> = ({
   showPhoto = false,
   showComment = false,
   showAlert = false,
-  alertMessage = "You must complete a JHA or see your supervisor before proceeding.",
+  alertMessage = "You must speak to your supervisor before starting the job, keep yourself and your workmates safe.",
   commentValue = '',
   onCommentChange,
   onPhotoSelect,

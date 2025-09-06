@@ -1,12 +1,11 @@
 import React, { useState } from 'react'
-import { Button, AddTeamMemberModal, CompanySwitchModal } from '../components/ui'
+import { Button, AddTeamMemberModal, CompanySwitchModal, AddNewCompanyModal, InviteTeamMembersModal } from '../components/ui'
 import { BottomNavigation } from '../components/layout'
 import warrikalLogo from '../assets/companylogo/warrikallogo.svg'
 import copyIcon from '../assets/companytab/copyicon.svg'
 import registerCompanyIcon from '../assets/companytab/registercompany.svg'
 import inviteIcon from '../assets/companytab/inviteicon.svg'
 import addPersonAvatar from '../assets/companytab/addpersonavatar.svg'
-import orangeScanIcon from '../assets/companytab/orangescan.svg'
 import arrowsClockwiseIcon from '../assets/companytab/ArrowsClockwise.svg'
 
 interface CompanyTabPageProps {
@@ -14,9 +13,10 @@ interface CompanyTabPageProps {
 }
 
 const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => {
-  const [companyCode, setCompanyCode] = useState('')
   const [showAddTeamMemberModal, setShowAddTeamMemberModal] = useState(false)
   const [showCompanySwitchModal, setShowCompanySwitchModal] = useState(false)
+  const [showAddNewCompanyModal, setShowAddNewCompanyModal] = useState(false)
+  const [showInviteTeamMembersModal, setShowInviteTeamMembersModal] = useState(false)
   const [addedTeamMates, setAddedTeamMates] = useState([])
   const [selectedCompany, setSelectedCompany] = useState('warrikal')
 
@@ -112,11 +112,14 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
     console.log('Company code copied')
   }
 
-  const handleSendJoinRequest = () => {
-    if (companyCode.trim()) {
-      // TODO: Implement join request logic
-      console.log('Sending join request for:', companyCode)
-    }
+  const handleAddByCode = (code: string) => {
+    // TODO: Implement join request logic
+    console.log('Sending join request for:', code)
+  }
+
+  const handleScanQRForCompany = () => {
+    // TODO: Implement QR scan logic for company
+    console.log('Scanning QR code for company')
   }
 
   const handleGoToDashboard = () => {
@@ -129,6 +132,15 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
       {/* Header */}
       <div className="bg-white px-4 h-[72px] relative flex items-center justify-center flex-shrink-0">
         <h1 className="text-[#000000] text-base font-semibold leading-6">Company</h1>
+        <button
+          onClick={() => setShowAddNewCompanyModal(true)}
+          className="absolute right-4 p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          aria-label="Add new company"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-6 h-6 text-[#2a6c7e]">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
       </div>
 
       {/* Main Content */}
@@ -192,7 +204,7 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
                   </span>
                 </div>
                 <button 
-                  onClick={handleInviteMembers}
+                  onClick={() => setShowInviteTeamMembersModal(true)}
                   className="flex items-center gap-0.5 text-[#266273] text-base font-semibold leading-6"
                 >
                   Invite
@@ -231,7 +243,7 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
                 src={addPersonAvatar} 
                 alt="Add team member" 
                 className="w-12 h-12 cursor-pointer" 
-                onClick={() => setShowAddTeamMemberModal(true)}
+                onClick={() => setShowInviteTeamMembersModal(true)}
               />
             </div>
 
@@ -241,34 +253,14 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
             </p>
           </div>
 
-          {/* Add Company by Code Section */}
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-1">
-              <h2 className="text-[#344054] text-sm font-medium leading-5">Add Company by Code</h2>
-              <span className="text-[#d92d20] text-sm font-medium leading-5">*</span>
+          {/* Divider */}
+          <div className="flex items-center">
+            <div className="flex-1 border-t border-[#eaecf0]"></div>
+            <div className="px-4">
+              <span className="text-[#667085] text-sm font-medium">or</span>
             </div>
-
-            <div className="bg-white border border-[#d0d5dd] rounded-xl px-3.5 py-2.5 shadow-sm flex items-center gap-2">
-              <input
-                type="text"
-                value={companyCode}
-                onChange={(e) => setCompanyCode(e.target.value)}
-                placeholder="Enter Company ID (e.g ABCD1234)"
-                className="flex-1 text-[#667085] text-base font-normal leading-6 outline-none placeholder:text-[#667085]"
-              />
-              <img src={orangeScanIcon} alt="Scan QR" className="w-6 h-6" />
-            </div>
-
-            <Button
-              onClick={handleSendJoinRequest}
-              className="w-full bg-[#266273] border border-[#266273] text-white text-base font-semibold leading-6"
-              disabled={!companyCode.trim()}
-            >
-              Send Join Request
-            </Button>
+            <div className="flex-1 border-t border-[#eaecf0]"></div>
           </div>
-
-
 
           {/* Register Your Company Section */}
           <div className="bg-[#f0fdf9] border border-[#709da9] rounded-xl p-4 flex items-center gap-1.5">
@@ -318,6 +310,21 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
         onClose={() => setShowCompanySwitchModal(false)}
         onCompanySelect={handleCompanySelect}
         selectedCompany={selectedCompany}
+      />
+
+      {/* Add New Company Modal */}
+      <AddNewCompanyModal
+        isOpen={showAddNewCompanyModal}
+        onClose={() => setShowAddNewCompanyModal(false)}
+        onAddByCode={handleAddByCode}
+        onScanQRCode={handleScanQRForCompany}
+      />
+
+      {/* Invite Team Members Modal */}
+      <InviteTeamMembersModal
+        isOpen={showInviteTeamMembersModal}
+        onClose={() => setShowInviteTeamMembersModal(false)}
+        companyCode="EX16 9QT"
       />
     </div>
   )

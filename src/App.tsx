@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import HomePage from './pages/HomePage'
 import JobsSelectCompanyPage from './pages/JobsSelectCompanyPage'
 import JobsCreateJobPage from './pages/JobsCreateJobPage'
@@ -7,7 +7,7 @@ import JobTeamChatPage from './pages/JobTeamChatPage'
 import FormsSelectMineCompanyPage from './pages/FormsSelectMineCompanyPage'
 import { SiteSelectionPage, FormSelectionPage } from './pages/mines'
 import { BHPFormSelectionPage } from './pages/bhp'
-import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage, ReportHazardStep1Page, ReportHazardStep2Page, ReportHazardStep3Page, ReportHazardStep4Page, ReportHazardReviewPage, GoodlinePaceCardsFormPage, GoodlineFatigueFormPage } from './pages/forms'
+import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage, ReportHazardStep1Page, ReportHazardStep2Page, ReportHazardStep3Page, ReportHazardStep4Page, ReportHazardReviewPage, GoodlinePaceCardsFormPage, GoodlineFatigueFormPage, SafemateTake5FormPage, SafemateGeneralFormsSelectionPage, SafemateFatigueManagementStep1Page, SafemateFatigueManagementStep2Page, SafemateFatigueManagementStep3Page, SafemateFatigueManagementStep4Page, SafemateFatigueManagementStep5Page, SafemateFatigueManagementStep6Page, SafemateFatigueManagementReviewPage, SafemateFatigueManagementSuccessPage } from './pages/forms'
 // Site images
 import BMAaustralia from './assets/minesites/bhp/BMAaustralia.png'
 import BMAblackwateraustralia from './assets/minesites/bhp/BMAblackwateraustralia.png'
@@ -38,7 +38,7 @@ import SettingsPage from './pages/SettingsPage'
 import OnboardingPageFixed from './pages/OnboardingPageFixed'
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'company' | 'settings' | 'onboarding' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'forms-linkforce-take-control' | 'forms-monadelphous-take-control' | 'forms-goodline-take-control' | 'forms-goodline-fatigue' | 'forms-pace-cards' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'company' | 'settings' | 'onboarding' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'forms-linkforce-take-control' | 'forms-monadelphous-take-control' | 'forms-goodline-take-control' | 'forms-goodline-fatigue' | 'forms-pace-cards' | 'forms-safemate-take5' | 'forms-safemate-general-selection' | 'forms-safemate-fatigue-management-step1' | 'forms-safemate-fatigue-management-step2' | 'forms-safemate-fatigue-management-step3' | 'forms-safemate-fatigue-management-step4' | 'forms-safemate-fatigue-management-step5' | 'forms-safemate-fatigue-management-step6' | 'forms-safemate-fatigue-management-review' | 'forms-safemate-fatigue-management-success' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
   const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings'>('forms')
   const [previousFormSelectionView, setPreviousFormSelectionView] = useState<'forms-bhp-form-selection' | 'forms-fmg-form-selection' | null>(null)
   const [selectedSite, setSelectedSite] = useState<{id: string, name: string, location: string, image: string} | null>(null)
@@ -171,6 +171,13 @@ function App() {
         />
       )}
 
+      {currentView === 'forms-safemate-general-selection' && (
+        <SafemateGeneralFormsSelectionPage 
+          onNavigate={navigateTo}
+          onBack={() => navigateTo('home')}
+        />
+      )}
+
             {currentView === 'forms-bhp-site-selection' && (
         <SiteSelectionPage
           company="bhp"
@@ -195,7 +202,7 @@ function App() {
 
       {currentView === 'forms-bhp-form-selection' && (
         <BHPFormSelectionPage 
-          contractor={selectedContractor}
+          contractor={selectedContractor || undefined}
           onClose={() => navigateToHome('forms')}
           onEditSite={() => navigateTo('forms-bhp-site-selection')}
           onFormSelect={(formId) => {
@@ -237,7 +244,7 @@ function App() {
       {currentView === 'forms-fmg-form-selection' && (
         <FormSelectionPage 
           company="fmg"
-          contractor={selectedContractor}
+          contractor={selectedContractor || undefined}
           onClose={() => navigateToHome('forms')}
           onEditSite={() => navigateTo('forms-fmg-site-selection')}
           onFormSelect={(formId) => {
@@ -304,9 +311,102 @@ function App() {
         />
       )}
 
+      {currentView === 'forms-safemate-take5' && (
+        <SafemateTake5FormPage
+          selectedSite={selectedSite || undefined}
+          onBack={() => navigateTo('forms-safemate-general-selection')}
+          onNext={(formData) => {
+            console.log('Safemate Take 5 form completed:', formData)
+            // Navigate back to Safemate general forms selection
+            navigateTo('forms-safemate-general-selection')
+          }}
+        />
+      )}
+
+      {/* Safemate Fatigue Management Form */}
+      {currentView === 'forms-safemate-fatigue-management-step1' && (
+        <SafemateFatigueManagementStep1Page 
+          onNext={(sleep24h, sleep48h) => {
+            updateFatigueFormData({ sleep24h, sleep48h })
+            navigateTo('forms-safemate-fatigue-management-step2')
+          }}
+          onBack={() => navigateTo('forms-safemate-general-selection')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-fatigue-management-step2' && (
+        <SafemateFatigueManagementStep2Page 
+          onNext={() => {
+            console.log('Safemate Fatigue Management Step 2 completed')
+            navigateTo('forms-safemate-fatigue-management-step3')
+          }}
+          onBack={() => navigateTo('forms-safemate-fatigue-management-step1')}
+          onClose={() => navigateTo('forms-safemate-general-selection')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-fatigue-management-step3' && (
+        <SafemateFatigueManagementStep3Page 
+          onNext={() => {
+            console.log('Safemate Fatigue Management Step 3 completed')
+            navigateTo('forms-safemate-fatigue-management-step4')
+          }}
+          onBack={() => navigateTo('forms-safemate-fatigue-management-step2')}
+          onClose={() => navigateTo('forms-safemate-general-selection')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-fatigue-management-step4' && (
+        <SafemateFatigueManagementStep4Page 
+          onNext={() => {
+            console.log('Safemate Fatigue Management Step 4 completed')
+            navigateTo('forms-safemate-fatigue-management-step5')
+          }}
+          onBack={() => navigateTo('forms-safemate-fatigue-management-step3')}
+          onClose={() => navigateTo('forms-safemate-general-selection')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-fatigue-management-step5' && (
+        <SafemateFatigueManagementStep5Page 
+          onNext={() => {
+            console.log('Safemate Fatigue Management Step 5 completed')
+            navigateTo('forms-safemate-fatigue-management-step6')
+          }}
+          onBack={() => navigateTo('forms-safemate-fatigue-management-step4')}
+          onClose={() => navigateTo('forms-safemate-general-selection')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-fatigue-management-step6' && (
+        <SafemateFatigueManagementStep6Page 
+          onNext={() => {
+            console.log('Safemate Fatigue Management Step 6 completed')
+            navigateTo('forms-safemate-fatigue-management-review')
+          }}
+          onBack={() => navigateTo('forms-safemate-fatigue-management-step5')}
+          onClose={() => navigateTo('forms-safemate-general-selection')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-fatigue-management-review' && (
+        <SafemateFatigueManagementReviewPage
+          onBack={() => navigateTo('forms-safemate-fatigue-management-step6')}
+          onSubmit={() => navigateTo('forms-safemate-fatigue-management-success')}
+          formData={fatigueFormData}
+        />
+      )}
+
+      {currentView === 'forms-safemate-fatigue-management-success' && (
+        <SafemateFatigueManagementSuccessPage 
+          onGoHome={() => navigateToHome('forms')}
+          onViewRank={() => navigateToHome('leaderboard')}
+        />
+      )}
+
       {currentView === 'forms-goodline-fatigue' && selectedContractor === 'goodline' && (
         <GoodlineFatigueFormPage
-          mineCompany={selectedMineCompany || 'fmg'}
+          mineCompany={selectedMineCompany === 'rio' ? 'fmg' : (selectedMineCompany || 'fmg')}
           selectedSite={selectedSite || undefined}
           onBack={() => navigateTo(previousFormSelectionView || 'forms-fmg-form-selection')}
           onNext={(formData) => {
@@ -463,8 +563,7 @@ function App() {
 
       {currentView === 'forms-fatigue-management-step6' && (
         <FatigueManagementStep6Page 
-          onNext={(firstName, lastName, signature) => {
-            updateFatigueFormData({ firstName, lastName, signature })
+          onNext={() => {
             navigateTo('forms-fatigue-management-review')
           }}
           onBack={() => navigateTo('forms-fatigue-management-step5')}
@@ -502,14 +601,14 @@ function App() {
 
       {currentView === 'forms-report-hazard-step1' && (
         <ReportHazardStep1Page 
-          selectedSite={selectedSite}
+          selectedSite={selectedSite || undefined}
           onBack={() => {
             // Navigate back to the appropriate form selection screen
             if (previousFormSelectionView) {
               navigateTo(previousFormSelectionView)
             } else {
-              // Fallback to forms home if no previous view tracked
-              navigateToHome('forms')
+              // Navigate back to Safemate general forms selection
+              navigateTo('forms-safemate-general-selection')
             }
           }}
           onNext={(formData) => {
@@ -558,8 +657,8 @@ function App() {
           onBack={() => navigateTo('forms-report-hazard-step4')}
           onSubmit={() => {
             console.log('Report Hazard form submitted successfully!')
-            // TODO: Navigate to success page
-            console.log('Navigate to success page')
+            // Navigate back to Safemate general forms selection
+            navigateTo('forms-safemate-general-selection')
           }}
         />
       )}

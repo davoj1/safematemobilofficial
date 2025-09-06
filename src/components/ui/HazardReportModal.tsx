@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import Button from './Button'
-import Radio from './Radio'
 import { cn } from '../../utils/cn'
 
 interface HazardReportModalProps {
@@ -15,14 +14,14 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
   onSubmit
 }) => {
   const [step, setStep] = useState(1)
-  const [selectedHazard, setSelectedHazard] = useState<string>('')
-  const [selectedSeverity, setSelectedSeverity] = useState<string>('')
-  const [selectedLocation, setSelectedLocation] = useState<string>('')
+  const [photos, setPhotos] = useState<File[]>([])
+  const [description, setDescription] = useState('')
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number, address?: string} | null>(null)
   const [isGettingLocation, setIsGettingLocation] = useState(false)
-  const [description, setDescription] = useState('')
+  const [selectedHazard, setSelectedHazard] = useState<string>('')
+  const [selectedSeverity, setSelectedSeverity] = useState<string>('')
   const [immediateAction, setImmediateAction] = useState('')
-  const [photos, setPhotos] = useState<File[]>([])
+  const [locationDescription, setLocationDescription] = useState('')
   const [showPhotoGallery, setShowPhotoGallery] = useState(false)
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0)
 
@@ -47,9 +46,6 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
     { value: 'critical', label: 'Critical Risk', color: 'text-red-800', bgColor: 'bg-red-100', borderColor: 'border-red-300' }
   ]
 
-  const locations = [
-    'Pin my location'
-  ]
 
   const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
@@ -72,11 +68,8 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
       (position) => {
         const { latitude, longitude } = position.coords
         setCurrentLocation({ lat: latitude, lng: longitude })
-        setSelectedLocation('Pin my location')
         setIsGettingLocation(false)
         
-        // Optional: Get address from coordinates (reverse geocoding)
-        // This would require a geocoding service like Google Maps API
         console.log('Location obtained:', { latitude, longitude })
       },
       (error) => {
@@ -86,8 +79,8 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 60000
+        timeout: 15000,
+        maximumAge: 300000
       }
     )
   }
@@ -166,7 +159,6 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
         id: Date.now().toString(),
         type: selectedHazard,
         severity: selectedSeverity,
-        location: selectedLocation,
         coordinates: currentLocation,
         description,
         immediateAction,
@@ -193,14 +185,14 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
 
   const resetForm = () => {
     setStep(1)
-    setSelectedHazard('')
-    setSelectedSeverity('')
-    setSelectedLocation('')
+    setPhotos([])
+    setDescription('')
     setCurrentLocation(null)
     setIsGettingLocation(false)
-    setDescription('')
+    setSelectedHazard('')
+    setSelectedSeverity('')
     setImmediateAction('')
-    setPhotos([])
+    setLocationDescription('')
     setShowPhotoGallery(false)
     setSelectedPhotoIndex(0)
   }
@@ -208,11 +200,11 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
   const canProceed = () => {
     switch (step) {
       case 1:
-        return selectedHazard && selectedSeverity
+        return photos.length > 0 && description.trim()
       case 2:
-        return selectedLocation && description.trim()
+        return currentLocation && locationDescription.trim()
       case 3:
-        return immediateAction.trim()
+        return selectedHazard && selectedSeverity && immediateAction.trim()
       default:
         return false
     }
@@ -229,7 +221,7 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
       />
       
       {/* Modal */}
-      <div className="relative w-full bg-white rounded-t-[24px] shadow-2xl max-h-[90vh] flex flex-col">
+      <div className="relative w-full bg-white rounded-t-[24px] shadow-2xl h-[85vh] flex flex-col">
         {/* Drag Handle */}
         <div className="flex justify-center pt-3 pb-2">
           <div className="w-10 h-1 bg-[#d0d5dd] rounded-full" />
@@ -240,7 +232,7 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
           <div>
             <h2 className="text-lg font-semibold text-[#101828]">Report Hazard</h2>
             <p className="text-sm text-[#667085] mt-1">
-              Step {step} of 3 - {step === 1 ? 'Hazard Details' : step === 2 ? 'Location & Description' : 'Immediate Actions'}
+              Step {step} of 3 - {step === 1 ? 'Photos & Description' : step === 2 ? 'Location' : 'Hazard Classification'}
             </p>
           </div>
           <button
@@ -254,178 +246,12 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-6 py-4 overflow-y-auto">
+        <div className="flex-1 px-6 py-4 overflow-y-auto min-h-0">
           {step === 1 && (
             <div className="space-y-6">
-              {/* Hazard Type Selection */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-[#101828]">Hazard Type *</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {hazardTypes.map((hazard) => (
-                    <button
-                      key={hazard}
-                      onClick={() => setSelectedHazard(hazard)}
-                      className={cn(
-                        'w-full p-3 rounded-[20px] border text-left transition-colors',
-                        selectedHazard === hazard
-                          ? 'bg-[#ebfe5c] border-[#2a6c7e]'
-                          : 'bg-white border-[#eaecf0] hover:border-[#266273]'
-                      )}
-                    >
-                      <span className="text-sm font-medium text-[#101828]">{hazard}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Severity Selection */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-[#101828]">Risk Severity *</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  {severityLevels.map((severity) => (
-                    <button
-                      key={severity.value}
-                      onClick={() => setSelectedSeverity(severity.value)}
-                      className={cn(
-                        'w-full p-3 rounded-[20px] border text-left transition-colors',
-                        selectedSeverity === severity.value
-                          ? 'bg-[#ebfe5c] border-[#2a6c7e]'
-                          : 'bg-white border-[#eaecf0] hover:border-[#266273]'
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          'w-3 h-3 rounded-full border-2',
-                          selectedSeverity === severity.value
-                            ? 'bg-[#2a6c7e] border-[#2a6c7e]'
-                            : 'border-[#d0d5dd]'
-                        )} />
-                        <div className={cn(
-                          'px-2 py-1 rounded-full text-xs font-medium',
-                          severity.bgColor,
-                          severity.borderColor,
-                          severity.color
-                        )}>
-                          {severity.label}
-                        </div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {step === 2 && (
-            <div className="space-y-6">
-              {/* Location Selection */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-[#101828]">Location *</h3>
-                <div className="grid grid-cols-1 gap-2">
-                  <button
-                    onClick={getCurrentLocation}
-                    disabled={isGettingLocation}
-                    className={cn(
-                      'w-full p-3 rounded-[20px] border text-left transition-colors flex items-center gap-3',
-                      selectedLocation === 'Pin my location'
-                        ? 'bg-[#ebfe5c] border-[#2a6c7e]'
-                        : 'bg-white border-[#eaecf0] hover:border-[#266273]',
-                      isGettingLocation && 'opacity-50 cursor-not-allowed'
-                    )}
-                  >
-                    <div className="w-5 h-5 flex items-center justify-center">
-                      {isGettingLocation ? (
-                        <div className="w-4 h-4 border-2 border-[#266273] border-t-transparent rounded-full animate-spin" />
-                      ) : (
-                        <svg className="w-4 h-4 text-[#266273]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <span className="text-sm font-medium text-[#101828]">
-                        {isGettingLocation ? 'Getting your location...' : 'Pin my location'}
-                      </span>
-                      {currentLocation && (
-                        <div className="mt-2">
-                          <div className="mb-2">
-                            <p className="text-xs text-[#667085] mb-1">Coordinates:</p>
-                            <p className="text-xs text-[#101828] font-medium break-all">
-                              {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
-                            </p>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={copyLocation}
-                              className="flex items-center gap-1 px-2 py-1 bg-[#f8f9fa] border border-[#eaecf0] rounded-[8px] text-xs text-[#667085] hover:bg-[#f1f3f4] transition-colors"
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                              </svg>
-                              Copy
-                            </button>
-                            <button
-                              onClick={shareLocation}
-                              className="flex items-center gap-1 px-2 py-1 bg-[#f8f9fa] border border-[#eaecf0] rounded-[8px] text-xs text-[#667085] hover:bg-[#f1f3f4] transition-colors"
-                            >
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                              </svg>
-                              Share
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Map Display - Separate Section */}
-              {currentLocation && (
-                <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-[#101828]">Map</h3>
-                  <div className="w-full h-40 bg-[#f8f9fa] border border-[#eaecf0] rounded-[12px] overflow-hidden relative">
-                    <iframe
-                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${currentLocation.lng-0.001},${currentLocation.lat-0.001},${currentLocation.lng+0.001},${currentLocation.lat+0.001}&layer=mapnik&marker=${currentLocation.lat},${currentLocation.lng}`}
-                      width="100%"
-                      height="100%"
-                      style={{ border: 0 }}
-                      title="Hazard Location Map"
-                    />
-                    <div className="absolute top-2 right-2 bg-white bg-opacity-90 px-2 py-1 rounded-[6px] text-xs text-[#667085]">
-                      📍 Hazard Location
-                    </div>
-                    <div className="absolute bottom-2 left-2">
-                      <a
-                        href={`https://www.google.com/maps?q=${currentLocation.lat},${currentLocation.lng}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-[#266273] text-white px-2 py-1 rounded-[6px] text-xs hover:bg-[#1e4f5a] transition-colors"
-                      >
-                        Open in Maps
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Description */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-medium text-[#101828]">Hazard Description *</h3>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Describe the hazard in detail..."
-                  className="w-full p-3 border border-[#eaecf0] rounded-[20px] resize-none focus:outline-none focus:ring-2 focus:ring-[#266273] focus:border-transparent"
-                  rows={4}
-                />
-              </div>
-
               {/* Photo Upload */}
               <div className="space-y-3">
-                <h3 className="text-sm font-medium text-[#101828]">Photos (Optional)</h3>
+                <h3 className="text-sm font-medium text-[#101828]">Photos *</h3>
                 
                 {/* Upload Button */}
                 <div className="relative">
@@ -478,11 +304,197 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
                   </div>
                 )}
               </div>
+
+              {/* Description */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-[#101828]">Hazard Description *</h3>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Describe the hazard in detail..."
+                  className="w-full p-3 border border-[#eaecf0] rounded-[20px] resize-none focus:outline-none focus:ring-2 focus:ring-[#266273] focus:border-transparent"
+                  rows={4}
+                />
+              </div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-6">
+              {/* Location Selection */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-[#101828]">Location *</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  <button
+                    onClick={getCurrentLocation}
+                    disabled={isGettingLocation}
+                    className={cn(
+                      'w-full p-3 rounded-[20px] border text-left transition-colors flex items-center gap-3',
+                      'bg-white border-[#eaecf0] hover:border-[#266273]',
+                      isGettingLocation && 'opacity-50 cursor-not-allowed'
+                    )}
+                  >
+                    <div className="w-5 h-5 flex items-center justify-center">
+                      {isGettingLocation ? (
+                        <div className="w-4 h-4 border-2 border-[#266273] border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <svg className="w-4 h-4 text-[#266273]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-sm font-medium text-[#101828]">
+                        {isGettingLocation ? 'Getting your location...' : 'Pin my location'}
+                      </span>
+                      {currentLocation && (
+                        <div className="mt-1">
+                          <p className="text-xs text-[#667085]">
+                            {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Copy and Share buttons on the right side inside the button */}
+                    {currentLocation && (
+                      <div className="flex gap-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            copyLocation()
+                          }}
+                          className="p-1.5 text-[#667085] hover:text-[#266273] hover:bg-[#f1f3f4] rounded-[12px] transition-colors"
+                          title="Copy coordinates"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            shareLocation()
+                          }}
+                          className="p-1.5 text-[#667085] hover:text-[#266273] hover:bg-[#f1f3f4] rounded-[12px] transition-colors"
+                          title="Share location"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Map Display - Separate Section */}
+              {currentLocation && (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-medium text-[#101828]">Map</h3>
+                  <div className="w-full h-80 bg-[#f8f9fa] border border-[#eaecf0] rounded-[12px] overflow-hidden relative">
+                    <iframe
+                      src={`https://www.openstreetmap.org/export/embed.html?bbox=${currentLocation.lng-0.001},${currentLocation.lat-0.001},${currentLocation.lng+0.001},${currentLocation.lat+0.001}&layer=mapnik&marker=${currentLocation.lat},${currentLocation.lng}`}
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      title="Hazard Location Map"
+                    />
+                    <div className="absolute top-2 right-2 bg-white bg-opacity-90 px-2 py-1 rounded-[6px] text-xs text-[#667085]">
+                      📍 Hazard Location
+                    </div>
+                    <div className="absolute bottom-2 left-2">
+                      <a
+                        href={`https://www.google.com/maps?q=${currentLocation.lat},${currentLocation.lng}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#266273] text-white px-2 py-1 rounded-[6px] text-xs hover:bg-[#1e4f5a] transition-colors"
+                      >
+                        Open in Maps
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Location Information */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-[#101828]">Location Information *</h3>
+                <textarea
+                  value={locationDescription}
+                  onChange={(e) => setLocationDescription(e.target.value)}
+                  placeholder="Describe the specific location of the hazard (e.g., 'Near the main entrance', 'On the second floor', 'In the equipment room')"
+                  className="w-full p-3 border border-[#eaecf0] rounded-[20px] resize-none focus:outline-none focus:ring-2 focus:ring-[#266273] focus:border-transparent"
+                  rows={3}
+                />
+                <p className="text-[#667085] text-sm leading-5">
+                  Provide additional details to help locate the hazard quickly
+                </p>
+              </div>
             </div>
           )}
 
           {step === 3 && (
             <div className="space-y-6">
+              {/* Hazard Type Selection */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-[#101828]">Hazard Type *</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {hazardTypes.map((hazard) => (
+                    <button
+                      key={hazard}
+                      onClick={() => setSelectedHazard(hazard)}
+                      className={cn(
+                        'w-full p-3 rounded-[20px] border text-left transition-colors',
+                        selectedHazard === hazard
+                          ? 'bg-[#ebfe5c] border-[#2a6c7e]'
+                          : 'bg-white border-[#eaecf0] hover:border-[#266273]'
+                      )}
+                    >
+                      <span className="text-sm font-medium text-[#101828]">{hazard}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Risk Severity Selection */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-[#101828]">Risk Severity *</h3>
+                <div className="grid grid-cols-1 gap-2">
+                  {severityLevels.map((severity) => (
+                    <button
+                      key={severity.value}
+                      onClick={() => setSelectedSeverity(severity.value)}
+                      className={cn(
+                        'w-full p-3 rounded-[20px] border text-left transition-colors',
+                        selectedSeverity === severity.value
+                          ? 'bg-[#ebfe5c] border-[#2a6c7e]'
+                          : 'bg-white border-[#eaecf0] hover:border-[#266273]'
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          'w-3 h-3 rounded-full border-2',
+                          selectedSeverity === severity.value
+                            ? 'bg-[#2a6c7e] border-[#2a6c7e]'
+                            : 'border-[#d0d5dd]'
+                        )} />
+                        <div className={cn(
+                          'px-2 py-1 rounded-full text-xs font-medium',
+                          severity.bgColor,
+                          severity.borderColor,
+                          severity.color
+                        )}>
+                          {severity.label}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Immediate Actions */}
               <div className="space-y-3">
                 <h3 className="text-sm font-medium text-[#101828]">Immediate Actions Taken *</h3>
@@ -493,44 +505,9 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
                   className="w-full p-3 border border-[#eaecf0] rounded-[20px] resize-none focus:outline-none focus:ring-2 focus:ring-[#266273] focus:border-transparent"
                   rows={4}
                 />
-              </div>
-
-              {/* Summary */}
-              <div className="p-4 bg-[#f8f9fa] rounded-[20px] border border-[#eaecf0]">
-                <h4 className="text-sm font-medium text-[#101828] mb-3">Hazard Report Summary</h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-[#667085]">Type:</span>
-                    <span className="text-[#101828] font-medium">{selectedHazard}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#667085]">Severity:</span>
-                    <span className={cn(
-                      'font-medium px-2 py-1 rounded-full text-xs',
-                      severityLevels.find(s => s.value === selectedSeverity)?.bgColor,
-                      severityLevels.find(s => s.value === selectedSeverity)?.borderColor,
-                      severityLevels.find(s => s.value === selectedSeverity)?.color
-                    )}>
-                      {severityLevels.find(s => s.value === selectedSeverity)?.label}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-[#667085]">Location:</span>
-                    <span className="text-[#101828] font-medium">{selectedLocation}</span>
-                  </div>
-                  {currentLocation && (
-                    <div className="flex justify-between">
-                      <span className="text-[#667085]">Coordinates:</span>
-                      <span className="text-[#101828] font-medium text-xs">
-                        {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="text-[#667085]">Photos:</span>
-                    <span className="text-[#101828] font-medium">{photos.length} uploaded</span>
-                  </div>
-                </div>
+                <p className="text-[#667085] text-sm leading-5">
+                  Describe what actions have been taken to address or mitigate the hazard
+                </p>
               </div>
             </div>
           )}

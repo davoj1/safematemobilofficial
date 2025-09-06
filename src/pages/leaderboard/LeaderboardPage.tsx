@@ -3,7 +3,7 @@ import { ArrowLeft, ChevronDown, Trophy } from 'lucide-react'
 import CompanySelectionModal from './CompanySelectionModal'
 import avataricon from '../../assets/leaderboard/avataricon.png'
 import warikalicon from '../../assets/companylogo/warrikallogo.svg'
-import linkforcelogo from '../../assets/companylogo/linkforcelogo.svg'
+import goodlinelogo from '../../assets/companylogo/goodlinelogo.svg'
 import monologo from '../../assets/companylogo/monalogo.svg'
 import firstbadge from '../../assets/leaderboard/firstbadge.png'
 import secondbadge from '../../assets/leaderboard/secondbadge.png'
@@ -57,7 +57,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       points: 144,
       formsSubmitted: 72,
       rank: 5,
-      company: 'linkforce'
+      company: 'goodline'
     },
     {
       id: '6',
@@ -81,7 +81,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       points: 122,
       formsSubmitted: 61,
       rank: 8,
-      company: 'linkforce'
+      company: 'goodline'
     },
     {
       id: '9',
@@ -105,7 +105,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       points: 106,
       formsSubmitted: 53,
       rank: 11,
-      company: 'linkforce'
+      company: 'goodline'
     },
     {
       id: '12',
@@ -129,7 +129,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       points: 94,
       formsSubmitted: 47,
       rank: 14,
-      company: 'linkforce'
+      company: 'goodline'
     },
     {
       id: '15',
@@ -153,7 +153,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       points: 82,
       formsSubmitted: 41,
       rank: 17,
-      company: 'linkforce'
+      company: 'goodline'
     },
     {
       id: '18',
@@ -177,7 +177,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       points: 70,
       formsSubmitted: 35,
       rank: 20,
-      company: 'linkforce'
+      company: 'goodline'
     },
     {
       id: '21',
@@ -201,7 +201,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       points: 58,
       formsSubmitted: 29,
       rank: 23,
-      company: 'linkforce'
+      company: 'goodline'
     },
     {
       id: '24',
@@ -218,8 +218,8 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
     switch (company) {
       case 'warrikal':
         return warikalicon
-      case 'linkforce':
-        return linkforcelogo
+      case 'goodline':
+        return goodlinelogo
       case 'monadelphous':
         return monologo
       default:
@@ -240,7 +240,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
 
   const companies = [
     { id: 'warrikal', name: 'Warrikal', logo: warikalicon },
-    { id: 'linkforce', name: 'Linkforce', logo: linkforcelogo },
+    { id: 'goodline', name: 'Goodline', logo: goodlinelogo },
     { id: 'monadelphous', name: 'Monadelphous', logo: monologo }
   ]
 
@@ -338,7 +338,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                 className="w-18 h-18 rounded-full border-2 border-[#EBFE5C] shadow-lg"
               />
               <img 
-                src={getCompanyIcon('linkforce')} 
+                src={getCompanyIcon('goodline')} 
                 alt="Company" 
                 className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white bg-white"
               />

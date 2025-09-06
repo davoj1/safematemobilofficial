@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import HeaderWithBack from '../../../components/layout/HeaderWithBack';
 import Button from '../../../components/ui/Button';
-import Input from '../../../components/ui/Input';
 import TextareaInput from '../../../components/ui/TextareaInput';
+import { cn } from '../../../utils/cn';
 
 interface ReportHazardStep3Data {
   hazardType: string;
-  hazardCategory: string;
-  severity: string;
-  urgency: string;
+  riskSeverity: string;
   additionalDetails: string;
 }
 
@@ -25,46 +23,29 @@ export default function ReportHazardStep3Page({
 }: ReportHazardStep3PageProps) {
   const [formData, setFormData] = useState<ReportHazardStep3Data>({
     hazardType: '',
-    hazardCategory: '',
-    severity: '',
-    urgency: '',
+    riskSeverity: '',
     additionalDetails: ''
   });
 
+  // Hardcoded hazard data matching the HazardReportModal
   const hazardTypes = [
-    'Physical Hazard',
-    'Chemical Hazard',
-    'Biological Hazard',
-    'Ergonomic Hazard',
-    'Environmental Hazard',
+    'Slip/Trip Hazard',
     'Electrical Hazard',
-    'Mechanical Hazard',
-    'Other'
-  ];
-
-  const hazardCategories = [
-    'Slip, Trip, and Fall',
-    'Fire and Explosion',
-    'Chemical Exposure',
-    'Equipment Failure',
-    'Structural Issue',
-    'Weather Related',
-    'Vehicle/Transport',
-    'Other'
+    'Chemical Spill',
+    'Equipment Malfunction',
+    'Structural Damage',
+    'Fire Risk',
+    'Confined Space Issue',
+    'Vehicle Safety',
+    'PPE Violation',
+    'Environmental Hazard'
   ];
 
   const severityLevels = [
-    { value: 'low', label: 'Low', description: 'Minor injury or damage' },
-    { value: 'medium', label: 'Medium', description: 'Moderate injury or damage' },
-    { value: 'high', label: 'High', description: 'Serious injury or significant damage' },
-    { value: 'critical', label: 'Critical', description: 'Life-threatening or major damage' }
-  ];
-
-  const urgencyLevels = [
-    { value: 'low', label: 'Low', description: 'Can be addressed during normal operations' },
-    { value: 'medium', label: 'Medium', description: 'Should be addressed within 24 hours' },
-    { value: 'high', label: 'High', description: 'Requires immediate attention' },
-    { value: 'urgent', label: 'Urgent', description: 'Emergency response required' }
+    { value: 'low', label: 'Low Risk', color: 'text-green-600', bgColor: 'bg-green-50', borderColor: 'border-green-200' },
+    { value: 'medium', label: 'Medium Risk', color: 'text-yellow-600', bgColor: 'bg-yellow-50', borderColor: 'border-yellow-200' },
+    { value: 'high', label: 'High Risk', color: 'text-red-600', bgColor: 'bg-red-50', borderColor: 'border-red-200' },
+    { value: 'critical', label: 'Critical Risk', color: 'text-red-800', bgColor: 'bg-red-100', borderColor: 'border-red-300' }
   ];
 
   const handleInputChange = (field: keyof ReportHazardStep3Data, value: string) => {
@@ -77,7 +58,7 @@ export default function ReportHazardStep3Page({
     }
   };
 
-  const isFormValid = formData.hazardType && formData.hazardCategory && formData.severity && formData.urgency;
+  const isFormValid = formData.hazardType && formData.riskSeverity;
 
   return (
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
@@ -101,112 +82,57 @@ export default function ReportHazardStep3Page({
           </p>
         </div>
 
-        {/* Hazard Type */}
+        {/* Hazard Type Selection */}
         <div className="space-y-3">
-          <h3 className="font-semibold text-[#344054] text-base leading-6">
-            Hazard Type
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {hazardTypes.map((type) => (
+          <h3 className="text-sm font-medium text-[#101828]">Hazard Type *</h3>
+          <div className="grid grid-cols-1 gap-2">
+            {hazardTypes.map((hazard) => (
               <button
-                key={type}
-                onClick={() => handleInputChange('hazardType', type)}
-                className={`p-3 rounded-xl border text-center font-medium text-sm leading-5 transition-all ${
-                  formData.hazardType === type
-                    ? 'bg-[#ebfe5c] border-[#2a6c7e] text-[#101828]'
-                    : 'bg-white border-[#d0d5dd] text-[#101828] hover:border-[#266273]'
-                }`}
+                key={hazard}
+                onClick={() => handleInputChange('hazardType', hazard)}
+                className={cn(
+                  'w-full p-3 rounded-[20px] border text-left transition-colors',
+                  formData.hazardType === hazard
+                    ? 'bg-[#ebfe5c] border-[#2a6c7e]'
+                    : 'bg-white border-[#eaecf0] hover:border-[#266273]'
+                )}
               >
-                {type}
+                <span className="text-sm font-medium text-[#101828]">{hazard}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Hazard Category */}
+        {/* Risk Severity Selection */}
         <div className="space-y-3">
-          <h3 className="font-semibold text-[#344054] text-base leading-6">
-            Hazard Category
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {hazardCategories.map((category) => (
+          <h3 className="text-sm font-medium text-[#101828]">Risk Severity *</h3>
+          <div className="grid grid-cols-1 gap-2">
+            {severityLevels.map((severity) => (
               <button
-                key={category}
-                onClick={() => handleInputChange('hazardCategory', category)}
-                className={`p-3 rounded-xl border text-center font-medium text-sm leading-5 transition-all ${
-                  formData.hazardCategory === category
-                    ? 'bg-[#ebfe5c] border-[#2a6c7e] text-[#101828]'
-                    : 'bg-white border-[#d0d5dd] text-[#101828] hover:border-[#266273]'
-                }`}
+                key={severity.value}
+                onClick={() => handleInputChange('riskSeverity', severity.value)}
+                className={cn(
+                  'w-full p-3 rounded-[20px] border text-left transition-colors',
+                  formData.riskSeverity === severity.value
+                    ? 'bg-[#ebfe5c] border-[#2a6c7e]'
+                    : 'bg-white border-[#eaecf0] hover:border-[#266273]'
+                )}
               >
-                {category}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Severity Level */}
-        <div className="space-y-3">
-          <h3 className="font-semibold text-[#344054] text-base leading-6">
-            Severity Level
-          </h3>
-          <div className="space-y-2">
-            {severityLevels.map((level) => (
-              <button
-                key={level.value}
-                onClick={() => handleInputChange('severity', level.value)}
-                className={`w-full p-4 rounded-xl border text-left transition-all ${
-                  formData.severity === level.value
-                    ? 'bg-[#ebfe5c] border-[#2a6c7e] text-[#101828]'
-                    : 'bg-white border-[#d0d5dd] text-[#101828] hover:border-[#266273]'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-base leading-6">{level.label}</p>
-                    <p className="text-[#667085] text-sm leading-5">{level.description}</p>
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    'w-3 h-3 rounded-full border-2',
+                    formData.riskSeverity === severity.value
+                      ? 'bg-[#2a6c7e] border-[#2a6c7e]'
+                      : 'border-[#d0d5dd]'
+                  )} />
+                  <div className={cn(
+                    'px-2 py-1 rounded-full text-xs font-medium',
+                    severity.bgColor,
+                    severity.borderColor,
+                    severity.color
+                  )}>
+                    {severity.label}
                   </div>
-                  {formData.severity === level.value && (
-                    <div className="w-6 h-6 bg-[#2a6c7e] rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Urgency Level */}
-        <div className="space-y-3">
-          <h3 className="font-semibold text-[#344054] text-base leading-6">
-            Urgency Level
-          </h3>
-          <div className="space-y-2">
-            {urgencyLevels.map((level) => (
-              <button
-                key={level.value}
-                onClick={() => handleInputChange('urgency', level.value)}
-                className={`w-full p-4 rounded-xl border text-left transition-all ${
-                  formData.urgency === level.value
-                    ? 'bg-[#ebfe5c] border-[#2a6c7e] text-[#101828]'
-                    : 'bg-white border-[#d0d5dd] text-[#101828] hover:border-[#266273]'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-base leading-6">{level.label}</p>
-                    <p className="text-[#667085] text-sm leading-5">{level.description}</p>
-                  </div>
-                  {formData.urgency === level.value && (
-                    <div className="w-6 h-6 bg-[#2a6c7e] rounded-full flex items-center justify-center">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  )}
                 </div>
               </button>
             ))}
@@ -215,13 +141,11 @@ export default function ReportHazardStep3Page({
 
         {/* Additional Details */}
         <div className="space-y-3">
-          <h3 className="font-semibold text-[#344054] text-base leading-6">
-            Additional Details
-          </h3>
+          <h3 className="text-sm font-medium text-[#101828]">Additional Information</h3>
           <TextareaInput
             value={formData.additionalDetails}
             onChange={(value) => handleInputChange('additionalDetails', value)}
-            placeholder="Provide any additional information about the hazard classification, potential impacts, or specific concerns..."
+            placeholder="Provide any additional information about the hazard..."
             rows={4}
             className="w-full"
           />

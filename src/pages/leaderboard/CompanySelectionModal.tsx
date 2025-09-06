@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { cn } from '../../utils/cn';
 import warikalicon from '../../assets/companylogo/warrikallogo.svg';
-import linkforcelogo from '../../assets/companylogo/linkforcelogo.svg';
+import goodlinelogo from '../../assets/companylogo/goodlinelogo.svg';
 import monologo from '../../assets/companylogo/monalogo.svg';
 
 interface Company {
@@ -47,11 +47,11 @@ export default function CompanySelectionModal({
       status: 'active'
     },
     {
-      id: 'linkforce',
-      name: 'Linkforce',
-      logo: linkforcelogo,
+      id: 'goodline',
+      name: 'Goodline',
+      logo: goodlinelogo,
       role: 'Worker',
-      isSelected: selectedCompany === 'linkforce',
+      isSelected: selectedCompany === 'goodline',
       status: 'active'
     },
     {

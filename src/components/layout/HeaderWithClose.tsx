@@ -22,8 +22,8 @@ const HeaderWithClose: React.FC<HeaderWithCloseProps> = ({
             onClick={onClose}
             className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-gray-100 transition-colors"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M18 6L6 18M6 6L18 18" stroke="#101828" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg className="w-5 h-5 text-[#667085]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -46,4 +46,4 @@ const HeaderWithClose: React.FC<HeaderWithCloseProps> = ({
   )
 }
 
-export default HeaderWithClose 
+export default HeaderWithClose
