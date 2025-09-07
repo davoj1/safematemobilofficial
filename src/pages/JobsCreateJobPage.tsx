@@ -194,16 +194,16 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
             />
           </div>
 
-          {/* Work Order Number */}
+          {/* Job Number */}
           <div className="space-y-1.5">
             <label className="font-medium text-[#344054] text-sm leading-5">
-              Work Order Number
+              Job Number
             </label>
             <Input
-              placeholder="Enter work order number"
+              placeholder="Enter job number"
               value={formData.workOrderNumber}
               onChange={(e) => handleInputChange('workOrderNumber', e.target.value)}
-              icon={<img src={workOrderNumberIcon} alt="Work Order Number" className="w-5 h-5" />}
+              icon={<img src={workOrderNumberIcon} alt="Job Number" className="w-5 h-5" />}
             />
           </div>
 
@@ -380,7 +380,7 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
 
             {/* Note about permissions */}
             <p className="font-normal italic text-[#667085] text-xs leading-5">
-              🔒 Only users with Supervisor, HSE, or Admin roles can add team mates via QR code.
+              🔒 Only users with Leading Hand, Supervisor, HSE, or Admin roles can add team mates via QR code.
             </p>
           </div>
         </div>

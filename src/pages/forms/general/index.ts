@@ -22,3 +22,12 @@ export { default as SafemateFatigueManagementStep5Page } from './SafemateFatigue
 export { default as SafemateFatigueManagementStep6Page } from './SafemateFatigueManagementStep6Page'
 export { default as SafemateFatigueManagementReviewPage } from './SafemateFatigueManagementReviewPage'
 export { default as SafemateFatigueManagementSuccessPage } from './SafemateFatigueManagementSuccessPage'
+
+// Safemate Vehicle Prestart Forms
+export { default as VehiclePrestartStep1Page } from './VehiclePrestartStep1Page'
+export { default as VehiclePrestartStep2Page } from './VehiclePrestartStep2Page'
+export { default as VehiclePrestartStep3Page } from './VehiclePrestartStep3Page'
+export { default as VehiclePrestartStep4Page } from './VehiclePrestartStep4Page'
+export { default as VehiclePrestartStep5Page } from './VehiclePrestartStep5Page'
+export { default as VehiclePrestartReviewPage } from './VehiclePrestartReviewPage'
+export { default as VehiclePrestartSuccessPage } from './VehiclePrestartSuccessPage'

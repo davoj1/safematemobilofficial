@@ -7,7 +7,7 @@ import JobTeamChatPage from './pages/JobTeamChatPage'
 import FormsSelectMineCompanyPage from './pages/FormsSelectMineCompanyPage'
 import { SiteSelectionPage, FormSelectionPage } from './pages/mines'
 import { BHPFormSelectionPage } from './pages/bhp'
-import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage, ReportHazardStep1Page, ReportHazardStep2Page, ReportHazardStep3Page, ReportHazardStep4Page, ReportHazardReviewPage, GoodlinePaceCardsFormPage, GoodlineFatigueFormPage, SafemateTake5FormPage, SafemateGeneralFormsSelectionPage, SafemateFatigueManagementStep1Page, SafemateFatigueManagementStep2Page, SafemateFatigueManagementStep3Page, SafemateFatigueManagementStep4Page, SafemateFatigueManagementStep5Page, SafemateFatigueManagementStep6Page, SafemateFatigueManagementReviewPage, SafemateFatigueManagementSuccessPage } from './pages/forms'
+import { TakeControlFormPage, MyExposuresFormPage, HazardIdentificationPage, CompanyWorkerDetailsPage, TakeControlReviewPage, TakeControlSuccessPage, FatigueManagementStep1Page, FatigueManagementStep2Page, FatigueManagementStep3Page, FatigueManagementStep4Page, FatigueManagementStep5Page, FatigueManagementStep6Page, FatigueManagementReviewPage, FatigueManagementSuccessPage, ReportHazardStep1Page, ReportHazardStep2Page, ReportHazardStep3Page, ReportHazardStep4Page, ReportHazardReviewPage, GoodlinePaceCardsFormPage, GoodlineFatigueFormPage, SafemateTake5FormPage, SafemateGeneralFormsSelectionPage, SafemateFatigueManagementStep1Page, SafemateFatigueManagementStep2Page, SafemateFatigueManagementStep3Page, SafemateFatigueManagementStep4Page, SafemateFatigueManagementStep5Page, SafemateFatigueManagementStep6Page, SafemateFatigueManagementReviewPage, SafemateFatigueManagementSuccessPage, VehiclePrestartStep1Page, VehiclePrestartStep2Page, VehiclePrestartStep3Page, VehiclePrestartStep4Page, VehiclePrestartStep5Page, VehiclePrestartReviewPage, VehiclePrestartSuccessPage } from './pages/forms'
 // Site images
 import BMAaustralia from './assets/minesites/bhp/BMAaustralia.png'
 import BMAblackwateraustralia from './assets/minesites/bhp/BMAblackwateraustralia.png'
@@ -38,7 +38,7 @@ import SettingsPage from './pages/SettingsPage'
 import OnboardingPageFixed from './pages/OnboardingPageFixed'
 
 function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'company' | 'settings' | 'onboarding' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'forms-linkforce-take-control' | 'forms-monadelphous-take-control' | 'forms-goodline-take-control' | 'forms-goodline-fatigue' | 'forms-pace-cards' | 'forms-safemate-take5' | 'forms-safemate-general-selection' | 'forms-safemate-fatigue-management-step1' | 'forms-safemate-fatigue-management-step2' | 'forms-safemate-fatigue-management-step3' | 'forms-safemate-fatigue-management-step4' | 'forms-safemate-fatigue-management-step5' | 'forms-safemate-fatigue-management-step6' | 'forms-safemate-fatigue-management-review' | 'forms-safemate-fatigue-management-success' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
+  const [currentView, setCurrentView] = useState<'home' | 'company' | 'settings' | 'onboarding' | 'jobs-select-company' | 'jobs-create-job' | 'jobs-completed-review' | 'job-team-chat' | 'forms-select-mine-company' | 'forms-bhp-site-selection' | 'forms-fmg-site-selection' | 'forms-bhp-form-selection' | 'forms-fmg-form-selection' | 'forms-take-control' | 'forms-my-exposures' | 'forms-hazard-identification' | 'forms-company-worker-details' | 'forms-take-control-review' | 'forms-take-control-success' | 'forms-fatigue-management-step1' | 'forms-fatigue-management-step2' | 'forms-fatigue-management-step3' | 'forms-fatigue-management-step4' | 'forms-fatigue-management-step5' | 'forms-fatigue-management-step6' | 'forms-fatigue-management-review' | 'forms-fatigue-management-success' | 'forms-report-hazard-step1' | 'forms-report-hazard-step2' | 'forms-report-hazard-step3' | 'forms-report-hazard-step4' | 'forms-report-hazard-review' | 'forms-linkforce-take-control' | 'forms-monadelphous-take-control' | 'forms-goodline-take-control' | 'forms-goodline-fatigue' | 'forms-pace-cards' | 'forms-safemate-take5' | 'forms-safemate-general-selection' | 'forms-safemate-fatigue-management-step1' | 'forms-safemate-fatigue-management-step2' | 'forms-safemate-fatigue-management-step3' | 'forms-safemate-fatigue-management-step4' | 'forms-safemate-fatigue-management-step5' | 'forms-safemate-fatigue-management-step6' | 'forms-safemate-fatigue-management-review' | 'forms-safemate-fatigue-management-success' | 'forms-safemate-vehicle-prestart-step1' | 'forms-safemate-vehicle-prestart-step2' | 'forms-safemate-vehicle-prestart-step3' | 'forms-safemate-vehicle-prestart-step4' | 'forms-safemate-vehicle-prestart-step5' | 'forms-safemate-vehicle-prestart-review' | 'forms-safemate-vehicle-prestart-success' | 'create-account' | 'verify-email' | 'success' | 'sign-in' | 'forgot-password' | 'reset-password' | 'password-changed-success' | 'upload-profile-picture' | 'enter-full-name' | 'profile-created-success'>('home')
   const [homeActiveTab, setHomeActiveTab] = useState<'forms' | 'jobs' | 'leaderboard' | 'profile' | 'home' | 'company' | 'settings'>('forms')
   const [previousFormSelectionView, setPreviousFormSelectionView] = useState<'forms-bhp-form-selection' | 'forms-fmg-form-selection' | null>(null)
   const [selectedSite, setSelectedSite] = useState<{id: string, name: string, location: string, image: string} | null>(null)
@@ -58,6 +58,17 @@ function App() {
     firstName?: string
     lastName?: string
     signature?: string
+  }>({})
+
+  // Vehicle Prestart Form Data
+  const [vehiclePrestartData, setVehiclePrestartData] = useState<{
+    licensePlate?: string
+    assetNumber?: string
+    vehicleType?: string
+    step2Data?: any
+    step3Data?: any
+    step4Data?: any
+    step5Data?: any
   }>({})
 
   // Site data for lookup
@@ -174,7 +185,7 @@ function App() {
       {currentView === 'forms-safemate-general-selection' && (
         <SafemateGeneralFormsSelectionPage 
           onNavigate={navigateTo}
-          onBack={() => navigateTo('home')}
+          onClose={() => navigateTo('home')}
         />
       )}
 
@@ -401,6 +412,77 @@ function App() {
         <SafemateFatigueManagementSuccessPage 
           onGoHome={() => navigateToHome('forms')}
           onViewRank={() => navigateToHome('leaderboard')}
+        />
+      )}
+
+      {/* Safemate Vehicle Prestart Form */}
+      {currentView === 'forms-safemate-vehicle-prestart-step1' && (
+        <VehiclePrestartStep1Page 
+          licensePlate={vehiclePrestartData.licensePlate}
+          assetNumber={vehiclePrestartData.assetNumber}
+          vehicleType={vehiclePrestartData.vehicleType}
+          onNext={(licensePlate, assetNumber, vehicleType) => {
+            setVehiclePrestartData(prev => ({ ...prev, licensePlate, assetNumber, vehicleType }))
+            navigateTo('forms-safemate-vehicle-prestart-step2')
+          }}
+          onBack={() => navigateTo('forms-safemate-general-selection')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-vehicle-prestart-step2' && (
+        <VehiclePrestartStep2Page 
+          {...vehiclePrestartData.step2Data}
+          onNext={(data) => {
+            setVehiclePrestartData(prev => ({ ...prev, step2Data: data }))
+            navigateTo('forms-safemate-vehicle-prestart-step3')
+          }}
+          onBack={() => navigateTo('forms-safemate-vehicle-prestart-step1')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-vehicle-prestart-step3' && (
+        <VehiclePrestartStep3Page 
+          {...vehiclePrestartData.step3Data}
+          onNext={(data) => {
+            setVehiclePrestartData(prev => ({ ...prev, step3Data: data }))
+            navigateTo('forms-safemate-vehicle-prestart-step4')
+          }}
+          onBack={() => navigateTo('forms-safemate-vehicle-prestart-step2')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-vehicle-prestart-step4' && (
+        <VehiclePrestartStep4Page 
+          {...vehiclePrestartData.step4Data}
+          onNext={(data) => {
+            setVehiclePrestartData(prev => ({ ...prev, step4Data: data }))
+            navigateTo('forms-safemate-vehicle-prestart-step5')
+          }}
+          onBack={() => navigateTo('forms-safemate-vehicle-prestart-step3')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-vehicle-prestart-step5' && (
+        <VehiclePrestartStep5Page 
+          {...vehiclePrestartData.step5Data}
+          onNext={(data) => {
+            setVehiclePrestartData(prev => ({ ...prev, step5Data: data }))
+            navigateTo('forms-safemate-vehicle-prestart-review')
+          }}
+          onBack={() => navigateTo('forms-safemate-vehicle-prestart-step4')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-vehicle-prestart-review' && (
+        <VehiclePrestartReviewPage 
+          onSubmit={() => navigateTo('forms-safemate-vehicle-prestart-success')}
+          onBack={() => navigateTo('forms-safemate-vehicle-prestart-step5')}
+        />
+      )}
+
+      {currentView === 'forms-safemate-vehicle-prestart-success' && (
+        <VehiclePrestartSuccessPage 
+          onContinue={() => navigateToHome('forms')}
         />
       )}
 

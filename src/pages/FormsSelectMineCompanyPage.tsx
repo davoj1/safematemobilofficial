@@ -62,7 +62,7 @@ const FormsSelectMineCompanyPage: React.FC<FormsSelectMineCompanyPageProps> = ({
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
       {/* Header */}
       <HeaderWithBack 
-        title="Choose a mine company"
+        title="Select Mine Site"
         onBack={handleBack}
       />
 
@@ -71,10 +71,10 @@ const FormsSelectMineCompanyPage: React.FC<FormsSelectMineCompanyPageProps> = ({
         {/* Title and Description */}
         <div className="flex flex-col gap-1.5 items-center text-center">
           <h1 className="font-bold text-[#24262d] text-2xl leading-[32px]">
-            Choose a mine company
+            Where are you working?
           </h1>
           <p className="font-normal text-[#667085] text-sm leading-5 max-w-[350px]">
-            Select the mining company you'll be working with.
+            Select the mine site you're working on
           </p>
         </div>
 

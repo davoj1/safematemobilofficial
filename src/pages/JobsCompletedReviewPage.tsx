@@ -1,5 +1,3 @@
-import React from 'react';
-import { MobileLayout } from '../components/layout';
 
 // Import images and icons
 import backArrowIcon from '../assets/backarrowicon.svg';
@@ -48,7 +46,7 @@ export default function JobsCompletedReviewPage({ onBackToHome }: JobsCompletedR
               <p className="text-sm text-[#667085]">Miner</p>
             </div>
             <div>
-              <span className="text-sm font-medium text-[#344054]">Work Order Number</span>
+              <span className="text-sm font-medium text-[#344054]">Job Number</span>
               <p className="text-sm text-[#667085]">95554</p>
             </div>
             <div>

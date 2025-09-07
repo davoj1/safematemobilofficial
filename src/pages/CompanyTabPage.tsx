@@ -249,7 +249,7 @@ const CompanyTabPage: React.FC<CompanyTabPageProps> = ({ onNavigateToHome }) => 
 
             {/* Security Notice */}
             <p className="text-[#667085] text-xs font-normal italic leading-5">
-              🔒 Only users with Supervisor, HSE, or Admin roles can add team members via QR code.
+              🔒 Only users with Leading Hand, Supervisor, HSE, or Admin roles can add team members via QR code.
             </p>
           </div>
 

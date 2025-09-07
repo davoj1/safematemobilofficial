@@ -801,7 +801,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
                     <div className="mt-3 space-y-1.5">
                       <div className="flex items-center gap-1">
                         <img src={workOrderNumberIcon} alt="WO" className="w-5 h-5" />
-                        <span className="text-[#344054] text-sm font-medium">Work Order Number:</span>
+                        <span className="text-[#344054] text-sm font-medium">Job Number:</span>
                         <span className="text-[#667085] text-sm ml-1">{job.workOrderNumber}</span>
                       </div>
                       <div className="flex items-center gap-1">
