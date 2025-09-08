@@ -115,6 +115,9 @@ function App() {
       setHomeActiveTab('jobs')
     } else if (view === 'settings') {
       setHomeActiveTab('settings')
+    } else if (view === 'home') {
+      // Set forms tab as default when navigating directly to home (e.g., from dev skip button)
+      setHomeActiveTab('forms')
     }
     setCurrentView(view)
   }

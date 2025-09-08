@@ -202,7 +202,8 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
       case 1:
         return photos.length > 0 && description.trim()
       case 2:
-        return currentLocation && locationDescription.trim()
+        // Location is now optional - allow proceeding without location
+        return true
       case 3:
         return selectedHazard && selectedSeverity && immediateAction.trim()
       default:
@@ -323,7 +324,7 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
             <div className="space-y-6">
               {/* Location Selection */}
               <div className="space-y-3">
-                <h3 className="text-sm font-medium text-[#101828]">Location *</h3>
+                <h3 className="text-sm font-medium text-[#101828]">Location</h3>
                 <div className="grid grid-cols-1 gap-2">
                   <button
                     onClick={getCurrentLocation}
@@ -421,7 +422,7 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
 
               {/* Location Information */}
               <div className="space-y-3">
-                <h3 className="text-sm font-medium text-[#101828]">Location Information *</h3>
+                <h3 className="text-sm font-medium text-[#101828]">Location Information</h3>
                 <textarea
                   value={locationDescription}
                   onChange={(e) => setLocationDescription(e.target.value)}
@@ -430,7 +431,7 @@ const HazardReportModal: React.FC<HazardReportModalProps> = ({
                   rows={3}
                 />
                 <p className="text-[#667085] text-sm leading-5">
-                  Provide additional details to help locate the hazard quickly
+                  Optionally provide additional details to help locate the hazard quickly
                 </p>
               </div>
             </div>

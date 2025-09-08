@@ -96,12 +96,11 @@ export default function ReportHazardStep2Page({
   }
 
   const handleNext = () => {
-    if (currentLocation && description.trim()) {
-      onNext({ location: currentLocation, description: description.trim() });
-    }
+    // Location is now optional - can proceed without location
+    onNext({ location: currentLocation, description: description.trim() });
   };
 
-  const isFormValid = currentLocation && description.trim();
+  const isFormValid = true; // Always valid since location is optional
 
   return (
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
@@ -121,14 +120,14 @@ export default function ReportHazardStep2Page({
               Hazard Location
             </h1>
             <p className="text-[#667085] text-base font-normal leading-6">
-              Help us locate the hazard by providing location details
+              Optionally provide location details to help us locate the hazard
             </p>
           </div>
 
           {/* Location Selection */}
           <div className="space-y-3">
             <h3 className="font-semibold text-[#344054] text-base leading-6">
-              Location *
+              Location
             </h3>
             <div className="grid grid-cols-1 gap-2">
               <button
@@ -235,7 +234,7 @@ export default function ReportHazardStep2Page({
               className="w-full"
             />
             <p className="text-[#667085] text-sm leading-5">
-              Provide additional details to help locate the hazard quickly
+              Optionally provide additional details to help locate the hazard quickly
             </p>
           </div>
 

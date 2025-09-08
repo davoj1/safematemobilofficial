@@ -70,7 +70,7 @@ const EditTeamRoleModal: React.FC<EditTeamRoleModalProps> = ({
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
 
       {/* Panel */}
-      <div className="relative bg-white rounded-t-[20px] w-full h-[640px] flex flex-col pt-12 pb-6 px-4 shadow-xl">        
+      <div className="relative bg-white rounded-t-[20px] w-full h-[85vh] flex flex-col pt-12 pb-6 px-4 shadow-xl">        
         {/* Drag handle + Title */}
         <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-[54px] h-[5px] bg-[#d9d9d9] rounded-full" />
         <div className="absolute right-2 top-2 w-9 h-9 flex items-center justify-center">

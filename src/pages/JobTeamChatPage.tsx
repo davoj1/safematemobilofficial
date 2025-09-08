@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormRequestSlideUp, EditTeamRoleModal, ActivePermitsModal, HazardReportModal } from '../components/ui';
+import { FormRequestSlideUp, EditTeamRoleModal, ActivePermitsModal, HazardReportModal, JobUpdateSlideUp, HowsItGoingSlideUp, HowsItGoingResponseSlideUp, EnergyLevelsSlideUp, EnergyLevelsResponseSlideUp, BatteryIcon } from '../components/ui';
 import AddTeamMemberModal from '../components/ui/AddTeamMemberModal';
 
 // Import team chat assets
@@ -88,6 +88,29 @@ interface ChatMessage {
     totalSignedOn: number;
     reminderTime: string;
   };
+  howsItGoing?: {
+    memberStatuses: Array<{ 
+      id: string; 
+      name: string; 
+      avatar?: string; 
+      status: 'pending' | 'responded';
+      feeling?: string;
+      comment?: string;
+      respondedAt?: string;
+    }>;
+  };
+  energyLevels?: {
+    memberStatuses: Array<{ 
+      id: string; 
+      name: string; 
+      avatar?: string; 
+      status: 'pending' | 'responded';
+      shift?: string;
+      energyLevel?: number;
+      comment?: string;
+      respondedAt?: string;
+    }>;
+  };
 }
 
 export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
@@ -97,6 +120,12 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
   const [showEditTeamRole, setShowEditTeamRole] = useState(false);
   const [showActivePermits, setShowActivePermits] = useState(false);
   const [showHazardReport, setShowHazardReport] = useState(false);
+  const [showJobUpdate, setShowJobUpdate] = useState(false);
+  const [showHowsItGoing, setShowHowsItGoing] = useState(false);
+  const [showHowsItGoingResponse, setShowHowsItGoingResponse] = useState(false);
+  const [showEnergyLevels, setShowEnergyLevels] = useState(false);
+  const [showEnergyLevelsResponse, setShowEnergyLevelsResponse] = useState(false);
+  const [responseContext, setResponseContext] = useState<{askerName: string, messageId: string, type?: 'howsitgoing' | 'energylevels'} | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showSlashHelp, setShowSlashHelp] = useState(false);
 
@@ -164,6 +193,9 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     { id: 'editroles', label: 'Edit Roles', description: 'Update team member roles and responsibilities' },
     { id: 'activepermits', label: 'Active Permits', description: 'Manage active work permits and team sign-ons' },
     { id: 'hazardreport', label: 'Hazard Report', description: 'Report a safety hazard to the team' },
+    { id: 'jobupdate', label: 'Job Update', description: 'Update job progress, add notes, and attach photos' },
+    { id: 'howsitgoing', label: 'How\'s It Going?', description: 'Check in with team members to see how they\'re doing' },
+    { id: 'energylevels', label: 'Energy Levels', description: 'Check team energy levels and shift status' },
     { id: 'reminder', label: 'Permit Reminder', description: 'Send reminder to team members signed onto active permits' },
   ]
 
@@ -245,6 +277,24 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
       setShowSlashHelp(false);
       return;
     }
+    if (message.trim().startsWith('/jobupdate')) {
+      setShowJobUpdate(true);
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('/howsitgoing')) {
+      setShowHowsItGoing(true);
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('/energylevels')) {
+      setShowEnergyLevels(true);
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
     if (message.trim().startsWith('/reminder')) {
       handlePermitReminder();
       setMessage('');
@@ -266,6 +316,10 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+    // Hide slash help when user presses Escape
+    if (e.key === 'Escape' && showSlashHelp) {
+      setShowSlashHelp(false);
     }
   };
 
@@ -340,6 +394,161 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
       hazardReport: hazardData,
     }
     setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleJobUpdateSubmit = (updateData: { progress: number, notes: string, photos: File[] }) => {
+    const progressLabels: Record<number, string> = {
+      0: 'Not Started',
+      25: 'In Progress', 
+      50: 'Half Complete',
+      75: 'Nearly Done',
+      100: 'Complete'
+    }
+    
+    const progressLabel = progressLabels[updateData.progress] || 'In Progress'
+    let message = `📊 Job progress updated to ${updateData.progress}% (${progressLabel})`
+    
+    if (updateData.notes.trim()) {
+      message += `\n\n📝 Notes: ${updateData.notes}`
+    }
+    
+    if (updateData.photos.length > 0) {
+      message += `\n\n📷 ${updateData.photos.length} photo${updateData.photos.length !== 1 ? 's' : ''} attached`
+    }
+
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: message,
+      isOwnMessage: true,
+      // Add attachments if photos were included
+      ...(updateData.photos.length > 0 && {
+        attachments: updateData.photos.map(photo => ({
+          type: 'image' as const,
+          url: URL.createObjectURL(photo),
+          caption: `Job progress photo`
+        }))
+      })
+    }
+    setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleHowsItGoingSubmit = (payload: { memberIds: string[], message: string }) => {
+    const requestedMembers = teamMembers.filter(m => payload.memberIds.includes(m.id))
+    const memberStatuses = requestedMembers.map(m => ({ 
+      id: m.id, 
+      name: m.name, 
+      avatar: m.avatar, 
+      status: 'pending' as const 
+    }))
+
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: `👋 @all How's it going? Quick check-in with the team`,
+      isOwnMessage: true,
+      mentions: requestedMembers.map(m => m.name),
+      howsItGoing: {
+        memberStatuses
+      },
+    }
+    setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleHowsItGoingResponse = (payload: { feeling: string, comment: string }) => {
+    if (!responseContext) return
+    
+    // Update the original message with the response
+    setMessages(prev => prev.map(msg => {
+      if (msg.id === responseContext.messageId && msg.howsItGoing) {
+        const updatedStatuses = msg.howsItGoing.memberStatuses.map(member => {
+          // For demo purposes, we'll update the first pending member
+          // In a real app, this would be based on the current user's ID
+          if (member.status === 'pending') {
+            return {
+              ...member,
+              status: 'responded' as const,
+              feeling: payload.feeling,
+              comment: payload.comment,
+              respondedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          }
+          return member
+        })
+        
+        return {
+          ...msg,
+          howsItGoing: {
+            ...msg.howsItGoing,
+            memberStatuses: updatedStatuses
+          }
+        }
+      }
+      return msg
+    }))
+    
+    setResponseContext(null)
+  }
+
+  const handleEnergyLevelsSubmit = (payload: { memberIds: string[], message: string }) => {
+    const requestedMembers = teamMembers.filter(m => payload.memberIds.includes(m.id))
+    const memberStatuses = requestedMembers.map(m => ({ 
+      id: m.id, 
+      name: m.name, 
+      avatar: m.avatar, 
+      status: 'pending' as const 
+    }))
+
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: `🔋 @all Energy check - checking team energy levels and shift status`,
+      isOwnMessage: true,
+      mentions: requestedMembers.map(m => m.name),
+      energyLevels: {
+        memberStatuses
+      },
+    }
+    setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleEnergyLevelsResponse = (payload: { shift: string, energyLevel: number, comment: string }) => {
+    if (!responseContext) return
+    
+    // Update the original message with the response
+    setMessages(prev => prev.map(msg => {
+      if (msg.id === responseContext.messageId && msg.energyLevels) {
+        const updatedStatuses = msg.energyLevels.memberStatuses.map(member => {
+          // For demo purposes, we'll update the first pending member
+          // In a real app, this would be based on the current user's ID
+          if (member.status === 'pending') {
+            return {
+              ...member,
+              status: 'responded' as const,
+              shift: payload.shift,
+              energyLevel: payload.energyLevel,
+              comment: payload.comment,
+              respondedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }
+          }
+          return member
+        })
+        
+        return {
+          ...msg,
+          energyLevels: {
+            ...msg.energyLevels,
+            memberStatuses: updatedStatuses
+          }
+        }
+      }
+      return msg
+    }))
+    
+    setResponseContext(null)
   }
 
   const handlePermitReminder = () => {
@@ -852,6 +1061,221 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                     </div>
                   </div>
                 )}
+
+                {/* How's It Going Card */}
+                {msg.howsItGoing && (
+                  <div className="mt-3 bg-white rounded-xl border border-[#e9eaeb] p-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.01M15 10h1.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </div>
+                        <span className="text-[#344054] text-sm font-medium">How's It Going?</span>
+                      </div>
+                      <span className="text-xs text-[#667085]">
+                        {msg.howsItGoing.memberStatuses.filter(m => m.status === 'responded').length}/{msg.howsItGoing.memberStatuses.length} responded
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <p className="text-sm text-[#101828]">
+                        Team check-in - tap respond to share how you're doing
+                      </p>
+                      
+                      <div className="space-y-2">
+                        {msg.howsItGoing.memberStatuses.map((member) => (
+                          <div key={member.id} className="flex items-center justify-between p-2 bg-[#f8f9fa] rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 bg-[#266273] rounded-full flex items-center justify-center text-white overflow-hidden">
+                                {member.avatar ? (
+                                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-xs font-medium">{member.name.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
+                                )}
+                              </div>
+                              <span className="text-sm text-[#101828]">{member.name}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {member.status === 'responded' ? (
+                                <div className="flex items-center gap-1">
+                                  {member.feeling && (
+                                    <span className="text-xs text-[#16a34a] font-medium">
+                                      {member.feeling === 'excellent' ? '😊' : 
+                                       member.feeling === 'good' ? '🙂' :
+                                       member.feeling === 'okay' ? '😐' :
+                                       member.feeling === 'struggling' ? '😕' : '😟'}
+                                    </span>
+                                  )}
+                                  <span className="text-xs font-medium text-[#16a34a]">Responded</span>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setResponseContext({
+                                      askerName: msg.sender.name,
+                                      messageId: msg.id,
+                                      type: 'howsitgoing'
+                                    })
+                                    setShowHowsItGoingResponse(true)
+                                  }}
+                                  className="text-xs text-[#266273] hover:text-[#1e4f5a] font-medium bg-[#f0f9ff] hover:bg-[#e0f2fe] px-2 py-1 rounded transition-colors"
+                                >
+                                  Respond
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Show responses for message sender */}
+                      {msg.isOwnMessage && msg.howsItGoing.memberStatuses.some(m => m.status === 'responded') && (
+                        <div className="mt-4 pt-3 border-t border-[#eaecf0]">
+                          <p className="text-xs text-[#667085] mb-2">Private responses (only you can see these):</p>
+                          <div className="space-y-2">
+                            {msg.howsItGoing.memberStatuses
+                              .filter(m => m.status === 'responded')
+                              .map((member) => (
+                                <div key={member.id} className="p-2 bg-[#f0f9ff] rounded-lg border border-[#bfdbfe]">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-xs font-medium text-[#101828]">{member.name}</span>
+                                    <span className="text-xs text-[#667085]">responded {member.respondedAt}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-sm">
+                                      {member.feeling === 'excellent' ? '😊 Excellent' : 
+                                       member.feeling === 'good' ? '🙂 Good' :
+                                       member.feeling === 'okay' ? '😐 Okay' :
+                                       member.feeling === 'struggling' ? '😕 Struggling' : '😟 Rough'}
+                                    </span>
+                                  </div>
+                                  {member.comment && (
+                                    <p className="text-xs text-[#374151] italic">"{member.comment}"</p>
+                                  )}
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Energy Levels Card */}
+                {msg.energyLevels && (
+                  <div className="mt-3 bg-white rounded-xl border border-[#e9eaeb] p-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                        </div>
+                        <span className="text-[#344054] text-sm font-medium">Energy Levels Check</span>
+                      </div>
+                      <span className="text-xs text-[#667085]">
+                        {msg.energyLevels.memberStatuses.filter(m => m.status === 'responded').length}/{msg.energyLevels.memberStatuses.length} responded
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <p className="text-sm text-[#101828]">
+                        Team energy check - tap respond to share your shift and energy level
+                      </p>
+                      
+                      <div className="space-y-2">
+                        {msg.energyLevels.memberStatuses.map((member) => (
+                          <div key={member.id} className="flex items-center justify-between p-2 bg-[#f8f9fa] rounded-lg">
+                            <div className="flex items-center gap-2">
+                              <div className="w-7 h-7 bg-[#266273] rounded-full flex items-center justify-center text-white overflow-hidden">
+                                {member.avatar ? (
+                                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-xs font-medium">{member.name.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
+                                )}
+                              </div>
+                              <span className="text-sm text-[#101828]">{member.name}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {member.status === 'responded' ? (
+                                <div className="flex items-center gap-1">
+                                  {member.energyLevel !== undefined && (
+                                    <BatteryIcon 
+                                      level={member.energyLevel as 0 | 1 | 2 | 3 | 4 | 5} 
+                                      className="w-5 h-5" 
+                                    />
+                                  )}
+                                  <span className="text-xs text-[#16a34a] font-medium">
+                                    {member.shift === 'day' ? '☀️' : '🌙'}
+                                  </span>
+                                  <span className="text-xs font-medium text-[#16a34a]">Responded</span>
+                                </div>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    setResponseContext({
+                                      askerName: msg.sender.name,
+                                      messageId: msg.id,
+                                      type: 'energylevels'
+                                    })
+                                    setShowEnergyLevelsResponse(true)
+                                  }}
+                                  className="text-xs text-[#266273] hover:text-[#1e4f5a] font-medium bg-[#f0f9ff] hover:bg-[#e0f2fe] px-2 py-1 rounded transition-colors"
+                                >
+                                  Respond
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Show responses for message sender */}
+                      {msg.isOwnMessage && msg.energyLevels.memberStatuses.some(m => m.status === 'responded') && (
+                        <div className="mt-4 pt-3 border-t border-[#eaecf0]">
+                          <p className="text-xs text-[#667085] mb-2">Private responses (only you can see these):</p>
+                          <div className="space-y-2">
+                            {msg.energyLevels.memberStatuses
+                              .filter(m => m.status === 'responded')
+                              .map((member) => (
+                                <div key={member.id} className="p-2 bg-[#f0f9ff] rounded-lg border border-[#bfdbfe]">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-xs font-medium text-[#101828]">{member.name}</span>
+                                    <span className="text-xs text-[#667085]">responded {member.respondedAt}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="text-xs text-[#374151]">
+                                      {member.shift === 'day' ? '☀️ Day Shift' : '🌙 Night Shift'}
+                                    </span>
+                                    {member.energyLevel !== undefined && (
+                                      <div className="flex items-center gap-1">
+                                        <BatteryIcon 
+                                          level={member.energyLevel as 0 | 1 | 2 | 3 | 4 | 5} 
+                                          className="w-4 h-4" 
+                                        />
+                                        <span className="text-xs text-[#374151]">
+                                          {member.energyLevel === 0 ? 'Empty' :
+                                           member.energyLevel === 1 ? 'Very Low' :
+                                           member.energyLevel === 2 ? 'Low' :
+                                           member.energyLevel === 3 ? 'Medium' :
+                                           member.energyLevel === 4 ? 'High' : 'Full'}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  {member.comment && (
+                                    <p className="text-xs text-[#374151] italic">"{member.comment}"</p>
+                                  )}
+                                </div>
+                              ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Attachments */}
@@ -881,10 +1305,24 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
       {/* Message Input */}
       <div className="relative flex-shrink-0 bg-white px-3 py-2.5 border-t border-gray-200">
         {/* Slash command helper */}
-        {showSlashHelp && (
-          <div className="absolute bottom-[64px] left-3 right-3 bg-white border border-[#eaecf0] rounded-xl shadow-lg p-2 z-10">
-            <div className="px-2 py-1 text-xs text-[#667085]">Available commands</div>
-            {slashCommands.map(cmd => (
+        {showSlashHelp && (() => {
+          const filteredCommands = slashCommands.filter(cmd => {
+            // If user just typed '/', show all commands
+            if (message === '/') return true
+            // If user typed '/something', filter commands that start with that text
+            if (message.startsWith('/')) {
+              const searchTerm = message.slice(1).toLowerCase() // Remove '/' and convert to lowercase
+              return cmd.id.toLowerCase().startsWith(searchTerm) || cmd.label.toLowerCase().includes(searchTerm)
+            }
+            return false
+          })
+
+          return (
+            <div className="absolute bottom-[64px] left-3 right-3 bg-white border border-[#eaecf0] rounded-xl shadow-lg p-2 z-10">
+              <div className="px-2 py-1 text-xs text-[#667085]">
+                {filteredCommands.length > 0 ? 'Available commands' : 'No matching commands'}
+              </div>
+              {filteredCommands.length > 0 ? filteredCommands.map(cmd => (
               <button
                 key={cmd.id}
                 onClick={() => {
@@ -910,6 +1348,18 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                   } else if (cmd.id === 'activepermits') {
                     setShowActivePermits(true);
                     setMessage('');
+                  } else if (cmd.id === 'jobupdate') {
+                    setShowJobUpdate(true);
+                    setMessage('');
+                  } else if (cmd.id === 'howsitgoing') {
+                    setShowHowsItGoing(true);
+                    setMessage('');
+                  } else if (cmd.id === 'energylevels') {
+                    setShowEnergyLevels(true);
+                    setMessage('');
+                  } else if (cmd.id === 'hazardreport') {
+                    setShowHazardReport(true);
+                    setMessage('');
                   } else {
                     setMessage(`/${cmd.id} `)
                   }
@@ -920,9 +1370,12 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                 <div className="text-sm font-medium text-[#101828]">/{cmd.id} — {cmd.label}</div>
                 <div className="text-xs text-[#667085]">{cmd.description}</div>
               </button>
-            ))}
-          </div>
-        )}
+              )) : (
+                <div className="px-2 py-2 text-xs text-[#667085] italic">Type a command name to filter</div>
+              )}
+            </div>
+          )
+        })()}
 
         <div className="flex items-center gap-3">
           {/* Action buttons */}
@@ -945,7 +1398,8 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                 onChange={(e) => {
                   const val = e.target.value
                   setMessage(val)
-                  if (val === '/' || val.startsWith('/')) {
+                  // Show slash help when user types '/' or continues typing a command
+                  if (val.startsWith('/') && val.length > 0) {
                     setShowSlashHelp(true)
                   } else {
                     setShowSlashHelp(false)
@@ -1005,6 +1459,51 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
         isOpen={showHazardReport}
         onClose={() => setShowHazardReport(false)}
         onSubmit={handleHazardReportSubmit}
+      />
+
+      {/* Job Update Slide Up */}
+      <JobUpdateSlideUp
+        isOpen={showJobUpdate}
+        onClose={() => setShowJobUpdate(false)}
+        onSubmit={handleJobUpdateSubmit}
+      />
+
+      {/* How's It Going Slide Up */}
+      <HowsItGoingSlideUp
+        isOpen={showHowsItGoing}
+        onClose={() => setShowHowsItGoing(false)}
+        teamMembers={teamMembers}
+        onSubmit={handleHowsItGoingSubmit}
+      />
+
+      {/* How's It Going Response Slide Up */}
+      <HowsItGoingResponseSlideUp
+        isOpen={showHowsItGoingResponse}
+        onClose={() => {
+          setShowHowsItGoingResponse(false)
+          setResponseContext(null)
+        }}
+        askerName={responseContext?.askerName || ''}
+        onSubmit={handleHowsItGoingResponse}
+      />
+
+      {/* Energy Levels Slide Up */}
+      <EnergyLevelsSlideUp
+        isOpen={showEnergyLevels}
+        onClose={() => setShowEnergyLevels(false)}
+        teamMembers={teamMembers}
+        onSubmit={handleEnergyLevelsSubmit}
+      />
+
+      {/* Energy Levels Response Slide Up */}
+      <EnergyLevelsResponseSlideUp
+        isOpen={showEnergyLevelsResponse}
+        onClose={() => {
+          setShowEnergyLevelsResponse(false)
+          setResponseContext(null)
+        }}
+        askerName={responseContext?.askerName || ''}
+        onSubmit={handleEnergyLevelsResponse}
       />
     </div>
   );

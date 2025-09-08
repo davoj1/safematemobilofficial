@@ -164,7 +164,7 @@ const FilterSlideUp: React.FC<FilterSlideUpProps> = ({
       />
 
       {/* Bottom sheet */}
-      <div className={`relative bg-white rounded-t-[20px] w-full h-[600px] flex flex-col pt-12 pb-6 px-4 transform transition-transform duration-300 ease-out ${
+      <div className={`relative bg-white rounded-t-[20px] w-full h-[85vh] flex flex-col pt-12 pb-6 px-4 transform transition-transform duration-300 ease-out ${
         isVisible ? 'translate-y-0' : 'translate-y-full'
       }`}>
         {/* Drag handle */}

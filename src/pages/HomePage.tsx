@@ -228,10 +228,10 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
   const safemateGeneralForms = [
     {
       id: 'safemate-general-forms',
-      name: 'Safemate General Forms',
+      name: 'Safemate Forms',
       logo: safemateShieldLogo, // Using the Safemate shield logo
       status: 'active',
-      role: 'General Forms',
+      role: '',
     },
   ]
 
@@ -652,7 +652,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
 
             {/* Forms content based on active tab */}
             {activeTab === 'templates' ? (
-              /* Company Selection and Safemate General Forms */
+              /* Company Selection and General Forms */
               <div className="space-y-6">
                 {/* Company Forms Section */}
                 <div className="space-y-2">
@@ -689,10 +689,10 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
                   <div className="flex-1 border-t border-[#eaecf0]"></div>
                 </div>
 
-                {/* Safemate General Forms Section */}
+                {/* General Forms Section */}
                 <div className="space-y-2">
                   <h2 className="text-[#475467] text-base font-semibold leading-6">
-                    Safemate General Forms
+                    General Forms
                   </h2>
                   
                   <div className="space-y-2">

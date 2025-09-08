@@ -39,7 +39,7 @@ const CompanyCard: React.FC<CompanyCardProps> = ({
           src={logo}
           alt={name}
           className={`object-contain ${
-            name === 'Safemate General Forms' 
+            name === 'Safemate Forms' 
               ? 'w-8 h-8' // Smaller size for Safemate shield logo
               : 'w-full h-full'
           }`}

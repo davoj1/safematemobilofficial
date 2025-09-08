@@ -57,7 +57,7 @@ export default function StreakDetailPage({ onClose }: StreakDetailPageProps) {
       {/* Background image - removed to prevent layering with leaderboard background */}
 
       {/* Bottom sheet */}
-      <div className={`relative bg-white rounded-t-[20px] w-full h-[629px] flex flex-col justify-end pt-12 pb-10 px-4 transform transition-transform duration-300 ease-out ${
+      <div className={`relative bg-white rounded-t-[20px] w-full h-[85vh] flex flex-col justify-end pt-12 pb-10 px-4 transform transition-transform duration-300 ease-out ${
         isVisible ? 'translate-y-0' : 'translate-y-full'
       }`}>
         {/* Drag handle */}
