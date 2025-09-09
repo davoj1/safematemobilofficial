@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { HeaderWithClose } from '../../components/layout'
-import { FormCard, SelectedSiteDisplay } from '../../components/ui'
+import { FormCard, SelectedSiteDisplay, RequestNewFormSlideUp } from '../../components/ui'
 import takeFiveIcon from '../../assets/takefiveicon.svg'
 import vehiclePreStartIcon from '../../assets/vehicleprestarticon.svg'
 import reportHazardsIcon from '../../assets/reporthazardsicon.svg'
@@ -41,6 +41,7 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
   onFormSelect,
 }) => {
   const [selectedForm, setSelectedForm] = useState<string | null>(null)
+  const [showRequestNewForm, setShowRequestNewForm] = useState(false)
 
   // Define contractor-specific forms based on mine company
   const contractorForms: { [key: string]: BHPForm[] } = {
@@ -155,6 +156,12 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
     onEditSite?.()
   }
 
+  const handleRequestNewForm = (payload: { formName: string, description: string, photos: File[] }) => {
+    console.log('New form requested:', payload)
+    // In a real app, this would submit the request to the backend
+    alert(`Form request submitted: "${payload.formName}"\nOur team will review and create this form for you.`)
+  }
+
   return (
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
       {/* Header - Fixed */}
@@ -206,7 +213,43 @@ const BHPFormSelectionPage: React.FC<BHPFormSelectionPageProps> = ({
             })()}
           </div>
         </div>
+
+        {/* Missing a form section */}
+        <div className="space-y-3">
+          <div className="border-t border-[#eaecf0] pt-4">
+            <div className="bg-white rounded-xl border border-[#eaecf0] p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-[#266273] rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-[#101828] text-base leading-6">
+                    Missing a form?
+                  </h3>
+                  <p className="text-sm text-[#667085] leading-5 mt-1">
+                    Request a new form and our team will create it for you
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowRequestNewForm(true)}
+                  className="px-4 py-2 bg-[#266273] text-white rounded-xl font-medium text-sm hover:bg-[#1e4f5a] transition-colors"
+                >
+                  Request
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Request New Form Slide Up */}
+      <RequestNewFormSlideUp
+        isOpen={showRequestNewForm}
+        onClose={() => setShowRequestNewForm(false)}
+        onSubmit={handleRequestNewForm}
+      />
     </div>
   )
 }

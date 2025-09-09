@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormRequestSlideUp, EditTeamRoleModal, ActivePermitsModal, HazardReportModal, JobUpdateSlideUp, HowsItGoingSlideUp, HowsItGoingResponseSlideUp, EnergyLevelsSlideUp, EnergyLevelsResponseSlideUp, BatteryIcon } from '../components/ui';
+import { FormRequestSlideUp, EditTeamRoleModal, ActivePermitsModal, HazardReportModal, JobUpdateSlideUp, HowsItGoingSlideUp, HowsItGoingResponseSlideUp, EnergyLevelsSlideUp, EnergyLevelsResponseSlideUp, RequestPPESlideUp, ShoutoutSlideUp, BatteryIcon } from '../components/ui';
 import AddTeamMemberModal from '../components/ui/AddTeamMemberModal';
 
 // Import team chat assets
@@ -111,6 +111,28 @@ interface ChatMessage {
       respondedAt?: string;
     }>;
   };
+  ppeRequest?: {
+    selectedPPE: string[];
+    comment: string;
+    pickupLocation?: {lat: number, lng: number, address?: string};
+    pickupComment: string;
+    status: 'pending' | 'approved' | 'ready' | 'collected';
+    requestedAt: string;
+  };
+  shoutout?: {
+    recognizedMembers: Array<{
+      id: string;
+      name: string;
+      avatar?: string;
+    }>;
+    message: string;
+    photos?: Array<{
+      name: string;
+      url: string;
+      size: number;
+    }>;
+    timestamp: string;
+  };
 }
 
 export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
@@ -125,6 +147,8 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
   const [showHowsItGoingResponse, setShowHowsItGoingResponse] = useState(false);
   const [showEnergyLevels, setShowEnergyLevels] = useState(false);
   const [showEnergyLevelsResponse, setShowEnergyLevelsResponse] = useState(false);
+  const [showRequestPPE, setShowRequestPPE] = useState(false);
+  const [showShoutout, setShowShoutout] = useState(false);
   const [responseContext, setResponseContext] = useState<{askerName: string, messageId: string, type?: 'howsitgoing' | 'energylevels'} | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showSlashHelp, setShowSlashHelp] = useState(false);
@@ -196,6 +220,8 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     { id: 'jobupdate', label: 'Job Update', description: 'Update job progress, add notes, and attach photos' },
     { id: 'howsitgoing', label: 'How\'s It Going?', description: 'Check in with team members to see how they\'re doing' },
     { id: 'energylevels', label: 'Energy Levels', description: 'Check team energy levels and shift status' },
+    { id: 'requestppe', label: 'Request PPE', description: 'Request Personal Protective Equipment with pickup location' },
+    { id: 'shoutout', label: 'Team Shoutout', description: 'Recognize teammates for their great work with photos and comments' },
     { id: 'reminder', label: 'Permit Reminder', description: 'Send reminder to team members signed onto active permits' },
   ]
 
@@ -291,6 +317,18 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     }
     if (message.trim().startsWith('/energylevels')) {
       setShowEnergyLevels(true);
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('/requestppe')) {
+      setShowRequestPPE(true);
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('!shoutout')) {
+      setShowShoutout(true);
       setMessage('');
       setShowSlashHelp(false);
       return;
@@ -549,6 +587,94 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     }))
     
     setResponseContext(null)
+  }
+
+  const handleRequestPPESubmit = (payload: { 
+    selectedPPE: string[], 
+    comment: string, 
+    pickupLocation?: {lat: number, lng: number, address?: string},
+    pickupComment: string 
+  }) => {
+    const ppeNames: Record<string, string> = {
+      'hard-hat': 'Hard Hat',
+      'earplugs': 'Earplugs',
+      'safety-glasses': 'Safety Glasses',
+      'boots': 'Safety Boots',
+      'gloves': 'Safety Gloves'
+    }
+
+    const selectedNames = payload.selectedPPE.map(id => ppeNames[id]).join(', ')
+    
+    let message = `🦺 PPE Request: ${selectedNames}`
+    if (payload.comment.trim()) {
+      message += `\n📝 ${payload.comment}`
+    }
+    if (payload.pickupLocation) {
+      message += `\n📍 Pickup location specified`
+    }
+
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: message,
+      isOwnMessage: true,
+      ppeRequest: {
+        selectedPPE: payload.selectedPPE,
+        comment: payload.comment,
+        pickupLocation: payload.pickupLocation,
+        pickupComment: payload.pickupComment,
+        status: 'pending',
+        requestedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    }
+    setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleShoutoutSubmit = (payload: { 
+    selectedMembers: string[], 
+    message: string, 
+    photos: File[] 
+  }) => {
+    const recognizedMembers = teamMembers.filter(m => payload.selectedMembers.includes(m.id))
+    const memberNames = recognizedMembers.map(m => m.name).join(', ')
+    
+    let chatMessage = `🎉 Team Shoutout for ${memberNames}!\n\n${payload.message}`
+    if (payload.photos.length > 0) {
+      chatMessage += `\n\n📷 ${payload.photos.length} photo${payload.photos.length !== 1 ? 's' : ''} attached`
+    }
+
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: chatMessage,
+      isOwnMessage: true,
+      mentions: recognizedMembers.map(m => m.name),
+      shoutout: {
+        recognizedMembers: recognizedMembers.map(m => ({
+          id: m.id,
+          name: m.name,
+          avatar: m.avatar
+        })),
+        message: payload.message,
+        photos: payload.photos.map(photo => ({
+          name: photo.name,
+          url: URL.createObjectURL(photo),
+          size: photo.size
+        })),
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      },
+      // Add attachments if photos were included
+      ...(payload.photos.length > 0 && {
+        attachments: payload.photos.map(photo => ({
+          type: 'image' as const,
+          url: URL.createObjectURL(photo),
+          caption: `Shoutout photo`
+        }))
+      })
+    }
+    setMessages(prev => [...prev, newMsg]);
   }
 
   const handlePermitReminder = () => {
@@ -1276,6 +1402,207 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                     </div>
                   </div>
                 )}
+
+                {/* PPE Request Card */}
+                {msg.ppeRequest && (
+                  <div className="mt-3 bg-white rounded-xl border border-[#e9eaeb] p-3">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center">
+                          <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                          </svg>
+                        </div>
+                        <span className="text-[#344054] text-sm font-medium">PPE Request</span>
+                      </div>
+                      <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                        msg.ppeRequest.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                        msg.ppeRequest.status === 'approved' ? 'bg-blue-100 text-blue-800' :
+                        msg.ppeRequest.status === 'ready' ? 'bg-green-100 text-green-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {msg.ppeRequest.status.charAt(0).toUpperCase() + msg.ppeRequest.status.slice(1)}
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <p className="text-sm text-[#101828]">
+                        Personal Protective Equipment request submitted
+                      </p>
+                      
+                      {/* Requested PPE Items */}
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">Requested Items</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {msg.ppeRequest.selectedPPE.map(id => {
+                            const ppeNames: Record<string, string> = {
+                              'hard-hat': 'Hard Hat',
+                              'earplugs': 'Earplugs',
+                              'safety-glasses': 'Safety Glasses',
+                              'boots': 'Safety Boots',
+                              'gloves': 'Safety Gloves'
+                            }
+                            const ppeIcons: Record<string, string> = {
+                              'hard-hat': '🪖',
+                              'earplugs': '🔇',
+                              'safety-glasses': '🥽',
+                              'boots': '🥾',
+                              'gloves': '🧤'
+                            }
+                            return (
+                              <div key={id} className="flex items-center gap-2 bg-[#f8f9fa] border border-[#eaecf0] rounded-lg px-3 py-2">
+                                <span className="text-sm">{ppeIcons[id]}</span>
+                                <span className="text-sm font-medium text-[#374151]">{ppeNames[id]}</span>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Comments */}
+                      {msg.ppeRequest.comment && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">Requirements</h4>
+                          <p className="text-sm text-[#374151] bg-[#f8f9fa] p-2 rounded-lg border border-[#eaecf0]">
+                            {msg.ppeRequest.comment}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Pickup Location */}
+                      {msg.ppeRequest.pickupLocation && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">Pickup Location</h4>
+                          <div className="bg-[#f8f9fa] border border-[#eaecf0] rounded-lg p-2">
+                            <div className="flex items-center gap-2 mb-2">
+                              <svg className="w-4 h-4 text-[#667085]" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                              </svg>
+                              <span className="text-sm text-[#374151]">{msg.ppeRequest.pickupLocation.address}</span>
+                            </div>
+                            {msg.ppeRequest.pickupComment && (
+                              <p className="text-xs text-[#667085] italic">
+                                "{msg.ppeRequest.pickupComment}"
+                              </p>
+                            )}
+                            <div className="mt-2">
+                              <a
+                                href={`https://www.google.com/maps?q=${msg.ppeRequest.pickupLocation.lat},${msg.ppeRequest.pickupLocation.lng}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-[#266273] hover:text-[#1e4f5a] font-medium underline"
+                              >
+                                View on Maps
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Status Updates */}
+                      <div className="pt-2 border-t border-[#eaecf0]">
+                        <div className="flex items-center justify-between text-xs text-[#667085]">
+                          <span>Requested {msg.ppeRequest.requestedAt}</span>
+                          {msg.ppeRequest.status === 'pending' && (
+                            <span>⏳ Awaiting approval</span>
+                          )}
+                          {msg.ppeRequest.status === 'approved' && (
+                            <span>✅ Approved - Being prepared</span>
+                          )}
+                          {msg.ppeRequest.status === 'ready' && (
+                            <span>📦 Ready for pickup</span>
+                          )}
+                          {msg.ppeRequest.status === 'collected' && (
+                            <span>🎉 Collected</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Shoutout Card */}
+                {msg.shoutout && (
+                  <div className="mt-3 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200 p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      </div>
+                      <span className="text-[#344054] text-sm font-medium">Team Shoutout</span>
+                      <span className="text-xs text-[#667085] ml-auto">{msg.shoutout.timestamp}</span>
+                    </div>
+                    
+                    <div className="space-y-3">
+                      {/* Recognized Team Members */}
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">Recognizing</h4>
+                        <div className="flex flex-wrap gap-2">
+                          {msg.shoutout.recognizedMembers.map(member => (
+                            <div key={member.id} className="flex items-center gap-2 bg-white border border-yellow-200 rounded-lg px-3 py-2 shadow-sm">
+                              <div className="w-6 h-6 bg-[#266273] rounded-full flex items-center justify-center text-white overflow-hidden">
+                                {member.avatar ? (
+                                  <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="text-xs font-medium">{member.name.split(' ').map(n => n[0]).join('').slice(0,2)}</span>
+                                )}
+                              </div>
+                              <span className="text-sm font-medium text-[#374151]">{member.name}</span>
+                              <span className="text-sm">⭐</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Recognition Message */}
+                      <div className="space-y-2">
+                        <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">Recognition</h4>
+                        <div className="bg-white p-3 rounded-lg border border-yellow-200 shadow-sm">
+                          <p className="text-sm text-[#374151] leading-relaxed">
+                            {msg.shoutout.message}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Photos */}
+                      {msg.shoutout.photos && msg.shoutout.photos.length > 0 && (
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">
+                            Photos ({msg.shoutout.photos.length})
+                          </h4>
+                          <div className="grid grid-cols-2 gap-2">
+                            {msg.shoutout.photos.map((photo, index) => (
+                              <div key={index} className="relative group">
+                                <img
+                                  src={photo.url}
+                                  alt={`Shoutout photo ${index + 1}`}
+                                  className="w-full h-24 object-cover rounded-lg border border-yellow-200 shadow-sm"
+                                />
+                                <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 rounded-lg transition-opacity" />
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Appreciation Footer */}
+                      <div className="pt-2 border-t border-yellow-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1 text-xs text-[#667085]">
+                            <span>🎉</span>
+                            <span>Great work recognized!</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <button className="text-xs text-yellow-600 hover:text-yellow-700 font-medium transition-colors">
+                              👏 {Math.floor(Math.random() * 10) + 3}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Attachments */}
@@ -1307,13 +1634,26 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
         {/* Slash command helper */}
         {showSlashHelp && (() => {
           const filteredCommands = slashCommands.filter(cmd => {
-            // If user just typed '/', show all commands
-            if (message === '/') return true
-            // If user typed '/something', filter commands that start with that text
+            // Handle both '/' and '!' prefixes
+            if (message === '/' || message === '!') {
+              // Show all commands for '/', only shoutout for '!'
+              return message === '/' || cmd.id === 'shoutout'
+            }
+            
             if (message.startsWith('/')) {
-              const searchTerm = message.slice(1).toLowerCase() // Remove '/' and convert to lowercase
+              const searchTerm = message.slice(1).toLowerCase()
               return cmd.id.toLowerCase().startsWith(searchTerm) || cmd.label.toLowerCase().includes(searchTerm)
             }
+            
+            if (message.startsWith('!')) {
+              const searchTerm = message.slice(1).toLowerCase()
+              // Only show shoutout command for ! prefix
+              return cmd.id === 'shoutout' && (
+                cmd.id.toLowerCase().startsWith(searchTerm) || 
+                cmd.label.toLowerCase().includes(searchTerm)
+              )
+            }
+            
             return false
           })
 
@@ -1357,6 +1697,12 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                   } else if (cmd.id === 'energylevels') {
                     setShowEnergyLevels(true);
                     setMessage('');
+                  } else if (cmd.id === 'requestppe') {
+                    setShowRequestPPE(true);
+                    setMessage('');
+                  } else if (cmd.id === 'shoutout') {
+                    setShowShoutout(true);
+                    setMessage('');
                   } else if (cmd.id === 'hazardreport') {
                     setShowHazardReport(true);
                     setMessage('');
@@ -1367,7 +1713,10 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                 }}
                 className="w-full text-left px-2 py-2 rounded-lg hover:bg-[#f8f9fa]"
               >
-                <div className="text-sm font-medium text-[#101828]">/{cmd.id} — {cmd.label}</div>
+                <div className="text-sm font-medium text-[#101828]">
+                  {cmd.id === 'shoutout' ? '!' : '/'}
+                  {cmd.id} — {cmd.label}
+                </div>
                 <div className="text-xs text-[#667085]">{cmd.description}</div>
               </button>
               )) : (
@@ -1398,8 +1747,8 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                 onChange={(e) => {
                   const val = e.target.value
                   setMessage(val)
-                  // Show slash help when user types '/' or continues typing a command
-                  if (val.startsWith('/') && val.length > 0) {
+                  // Show slash help when user types '/' or '!' and continues typing a command
+                  if ((val.startsWith('/') || val.startsWith('!')) && val.length > 0) {
                     setShowSlashHelp(true)
                   } else {
                     setShowSlashHelp(false)
@@ -1504,6 +1853,21 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
         }}
         askerName={responseContext?.askerName || ''}
         onSubmit={handleEnergyLevelsResponse}
+      />
+
+      {/* Request PPE Slide Up */}
+      <RequestPPESlideUp
+        isOpen={showRequestPPE}
+        onClose={() => setShowRequestPPE(false)}
+        onSubmit={handleRequestPPESubmit}
+      />
+
+      {/* Shoutout Slide Up */}
+      <ShoutoutSlideUp
+        isOpen={showShoutout}
+        onClose={() => setShowShoutout(false)}
+        teamMembers={teamMembers}
+        onSubmit={handleShoutoutSubmit}
       />
     </div>
   );
