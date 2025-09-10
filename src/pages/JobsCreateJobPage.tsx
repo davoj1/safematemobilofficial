@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { HeaderWithBack } from '../components/layout'
-import { Button, Input, TextareaInput, FileUpload, MineCompanyModal, MineSiteModal, AddTeamMemberModal } from '../components/ui'
+import { Button, Input, TextareaInput, FileUpload, AddTeamMemberModal } from '../components/ui'
 import addTeamMemberIcon from '../assets/jobs/addteammembericon.svg'
 import qrCodeIcon from '../assets/jobs/QrCode.svg'
 import workOrderNumberIcon from '../assets/jobs/workordernumbericon.svg'
@@ -27,8 +27,8 @@ interface JobData {
   jobName: string
   workOrderNumber: string
   jobDescription: string
-  mineCompany: string
-  mineSite: string
+  jobLocation: {lat: number, lng: number, address?: string} | null
+  locationDescription: string
   teamName: string
   photos: File[]
   teamMates: TeamMember[]
@@ -42,19 +42,16 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
     jobName: '',
     workOrderNumber: '',
     jobDescription: '',
-    mineCompany: '',
-    mineSite: '',
+    jobLocation: null,
+    locationDescription: '',
     teamName: '',
     photos: [],
     teamMates: []
   })
 
-  const [showMineCompanyModal, setShowMineCompanyModal] = useState(false)
-  const [showMineSiteModal, setShowMineSiteModal] = useState(false)
   const [showAddTeamMemberModal, setShowAddTeamMemberModal] = useState(false)
-  const [selectedCompanyLogo, setSelectedCompanyLogo] = useState<string | null>(null)
-  const [selectedSiteImage, setSelectedSiteImage] = useState<string | null>(null)
   const [addedTeamMates, setAddedTeamMates] = useState<TeamMember[]>([])
+  const [isGettingLocation, setIsGettingLocation] = useState(false)
 
   const handleBack = () => {
     onNavigate?.('jobs-select-company')
@@ -67,32 +64,83 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
     }))
   }
 
-  const handleMineCompanySelect = (company: any, otherCompany?: { name: string; reason: string }) => {
-    if (otherCompany) {
-      setFormData(prev => ({
-        ...prev,
-        mineCompany: otherCompany.name,
-        mineSite: '' // Reset mine site when company changes
-      }))
-      setSelectedCompanyLogo(null)
-      setSelectedSiteImage(null)
-    } else if (company) {
-      setFormData(prev => ({
-        ...prev,
-        mineCompany: company.name,
-        mineSite: '' // Reset mine site when company changes
-      }))
-      setSelectedCompanyLogo(company.logo)
-      setSelectedSiteImage(null)
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert('Geolocation is not supported by this browser.')
+      return
+    }
+
+    setIsGettingLocation(true)
+    
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        setFormData(prev => ({
+          ...prev,
+          jobLocation: { lat: latitude, lng: longitude }
+        }))
+        setIsGettingLocation(false)
+        
+        console.log('Location obtained:', { latitude, longitude })
+      },
+      (error) => {
+        console.error('Error getting location:', error)
+        setIsGettingLocation(false)
+        alert('Unable to get your location. Please check your location permissions.')
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 300000
+      }
+    )
+  }
+
+  const copyLocation = async () => {
+    if (!formData.jobLocation) return
+    
+    const locationText = `${formData.jobLocation.lat.toFixed(6)}, ${formData.jobLocation.lng.toFixed(6)}`
+    
+    try {
+      await navigator.clipboard.writeText(locationText)
+      console.log('Location copied to clipboard')
+    } catch (err) {
+      console.error('Failed to copy location:', err)
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea')
+      textArea.value = locationText
+      document.body.appendChild(textArea)
+      textArea.select()
+      document.execCommand('copy')
+      document.body.removeChild(textArea)
     }
   }
 
-  const handleMineSiteSelect = (site: any) => {
-    setFormData(prev => ({
-      ...prev,
-      mineSite: site.name
-    }))
-    setSelectedSiteImage(site.image)
+  const shareLocation = async () => {
+    if (!formData.jobLocation) return
+    
+    const locationText = `Job Location: ${formData.jobLocation.lat.toFixed(6)}, ${formData.jobLocation.lng.toFixed(6)}`
+    const mapsUrl = `https://www.google.com/maps?q=${formData.jobLocation.lat},${formData.jobLocation.lng}`
+    
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Job Location',
+          text: locationText,
+          url: mapsUrl
+        })
+      } catch (err) {
+        console.error('Error sharing location:', err)
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(`${locationText}\n${mapsUrl}`)
+        console.log('Location shared via clipboard')
+      } catch (err) {
+        console.error('Failed to share location:', err)
+      }
+    }
   }
 
   const handlePhotoUpload = (files: File[]) => {
@@ -169,7 +217,7 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
     setAddedTeamMates(selectedMates)
   }
 
-  const isFormValid = formData.jobName && formData.workOrderNumber && formData.jobDescription && formData.mineCompany && formData.teamName
+  const isFormValid = formData.jobName && formData.workOrderNumber && formData.jobDescription && formData.jobLocation && formData.teamName
 
   return (
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
@@ -220,73 +268,113 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
             />
           </div>
 
-          {/* Mine Company */}
+          {/* Job Location */}
           <div className="space-y-1.5">
             <label className="font-medium text-[#344054] text-sm leading-5">
-              Select Mine Company
+              Choose Job Location *
             </label>
             <div className="relative">
-              <div className="flex items-center gap-3 bg-white border border-[#d0d5dd] rounded-xl px-3.5 py-2.5 cursor-pointer hover:border-[#266273] transition-colors" onClick={() => setShowMineCompanyModal(true)}>
-                {selectedCompanyLogo && (
-                  <div className="w-[54px] h-[54px] bg-white rounded-[10px] border border-[#eaecf0] flex items-center justify-center p-[5.5px] flex-shrink-0">
-                    <img
-                      src={selectedCompanyLogo}
-                      alt="Company logo"
-                      className="w-full h-full object-contain"
-                    />
+              <div className="flex items-center gap-3 bg-white border border-[#d0d5dd] rounded-xl px-3.5 py-2.5 cursor-pointer hover:border-[#266273] transition-colors" onClick={getCurrentLocation}>
+                <div className="w-5 h-5 flex items-center justify-center">
+                  {isGettingLocation ? (
+                    <div className="w-4 h-4 border-2 border-[#266273] border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <svg className="w-4 h-4 text-[#266273]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                  )}
+                </div>
+                <div className="flex-1">
+                  <span className="text-sm font-medium text-[#101828]">
+                    {isGettingLocation ? 'Getting your location...' : 'Pin my location'}
+                  </span>
+                  {formData.jobLocation && (
+                    <div className="mt-1">
+                      <p className="text-xs text-[#667085]">
+                        {formData.jobLocation.lat.toFixed(6)}, {formData.jobLocation.lng.toFixed(6)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Copy and Share buttons on the right side inside the button */}
+                {formData.jobLocation && (
+                  <div className="flex gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        copyLocation()
+                      }}
+                      className="p-1.5 text-[#667085] hover:text-[#266273] hover:bg-[#f1f3f4] rounded-[12px] transition-colors"
+                      title="Copy coordinates"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        shareLocation()
+                      }}
+                      className="p-1.5 text-[#667085] hover:text-[#266273] hover:bg-[#f1f3f4] rounded-[12px] transition-colors"
+                      title="Share location"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367 2.684z" />
+                      </svg>
+                    </button>
                   </div>
                 )}
-                <div className="flex-1">
-                  <div className="font-normal text-[#667085] text-base leading-6">
-                    {formData.mineCompany || 'Select mine company'}
-                  </div>
-                </div>
-                <div className="w-4 h-4">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-[#98a2b3]">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
               </div>
             </div>
           </div>
 
-          {/* Mine Site */}
-          <div className="space-y-1.5">
-            <label className="font-medium text-[#344054] text-sm leading-5">
-              Mine Site
-            </label>
-            <div className="relative">
-              <div 
-                className={`flex items-center gap-3 border border-[#d0d5dd] rounded-xl px-3.5 py-2.5 cursor-pointer transition-colors ${
-                  formData.mineCompany 
-                    ? 'bg-white hover:border-[#266273]' 
-                    : 'bg-gray-50 cursor-not-allowed'
-                }`}
-                onClick={() => formData.mineCompany && setShowMineSiteModal(true)}
-              >
-                {selectedSiteImage && (
-                  <div className="w-[54px] h-[54px] rounded-[6.894px] overflow-hidden flex-shrink-0">
-                    <img
-                      src={selectedSiteImage}
-                      alt="Site image"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="flex-1">
-                  <div className={`font-normal text-base leading-6 ${
-                    formData.mineCompany ? 'text-[#667085]' : 'text-[#667085]'
-                  }`}>
-                    {formData.mineSite || 'Select mine site'}
-                  </div>
+          {/* Map Display */}
+          {formData.jobLocation && (
+            <div className="space-y-3">
+              <h3 className="text-sm font-medium text-[#101828]">Map</h3>
+              <div className="w-full h-80 bg-[#f8f9fa] border border-[#eaecf0] rounded-[12px] overflow-hidden relative">
+                <iframe
+                  src={`https://www.openstreetmap.org/export/embed.html?bbox=${formData.jobLocation.lng-0.001},${formData.jobLocation.lat-0.001},${formData.jobLocation.lng+0.001},${formData.jobLocation.lat+0.001}&layer=mapnik&marker=${formData.jobLocation.lat},${formData.jobLocation.lng}`}
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  title="Job Location Map"
+                />
+                <div className="absolute top-2 right-2 bg-white bg-opacity-90 px-2 py-1 rounded-[6px] text-xs text-[#667085]">
+                  📍 Job Location
                 </div>
-                <div className="w-4 h-4">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-[#98a2b3]">
-                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                <div className="absolute bottom-2 left-2">
+                  <a
+                    href={`https://www.google.com/maps?q=${formData.jobLocation.lat},${formData.jobLocation.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#266273] text-white px-2 py-1 rounded-[6px] text-xs hover:bg-[#1e4f5a] transition-colors"
+                  >
+                    Open in Maps
+                  </a>
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Location Description */}
+          <div className="space-y-1.5">
+            <label className="font-medium text-[#344054] text-sm leading-5">
+              Location Description (Optional)
+            </label>
+            <textarea
+              value={formData.locationDescription}
+              onChange={(e) => handleInputChange('locationDescription', e.target.value)}
+              placeholder="Describe the specific location of the job (e.g., 'Near the main entrance', 'On the second floor', 'In the equipment room')"
+              className="w-full p-3 border border-[#eaecf0] rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-[#266273] focus:border-transparent"
+              rows={3}
+            />
+            <p className="text-[#667085] text-sm leading-5">
+              Optionally provide additional details to help locate the job quickly
+            </p>
           </div>
 
           {/* Add Photos */}
@@ -399,19 +487,6 @@ const JobsCreateJobPage: React.FC<JobsCreateJobPageProps> = ({
         </Button>
       </div>
 
-      {/* Mine Company Modal */}
-      <MineCompanyModal
-        isOpen={showMineCompanyModal}
-        onClose={() => setShowMineCompanyModal(false)}
-        onSelect={handleMineCompanySelect}
-      />
-
-      {/* Mine Site Modal */}
-      <MineSiteModal
-        isOpen={showMineSiteModal}
-        onClose={() => setShowMineSiteModal(false)}
-        onSelect={handleMineSiteSelect}
-      />
 
       {/* Add Team Member Modal */}
       <AddTeamMemberModal

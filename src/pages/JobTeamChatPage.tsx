@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FormRequestSlideUp, EditTeamRoleModal, ActivePermitsModal, HazardReportModal, JobUpdateSlideUp, HowsItGoingSlideUp, HowsItGoingResponseSlideUp, EnergyLevelsSlideUp, EnergyLevelsResponseSlideUp, RequestPPESlideUp, ShoutoutSlideUp, BatteryIcon } from '../components/ui';
+import { FormRequestSlideUp, EditTeamRoleModal, ActivePermitsModal, HazardReportModal, JobUpdateSlideUp, HowsItGoingSlideUp, HowsItGoingResponseSlideUp, EnergyLevelsSlideUp, EnergyLevelsResponseSlideUp, RequestPPESlideUp, ShoutoutSlideUp, BatteryIcon, RallyTheTroopsSlideUp, RallyFormSelectionSlideUp } from '../components/ui';
 import AddTeamMemberModal from '../components/ui/AddTeamMemberModal';
 
 // Import team chat assets
@@ -11,6 +11,13 @@ import takePictureIcon from '../assets/teamchat/takepictureicon.png';
 import photoLibraryIcon from '../assets/teamchat/photolibraryicon.svg';
 import voiceChatIcon from '../assets/teamchat/voicechaticon.svg';
 import photoCrackedPlatform from '../assets/teamchat/photocrackedplatform.png';
+import goodlinePpeRequest from '../assets/goodline/goodlinepperequest.png';
+// Import PPE icons from Rio Tinto form
+import ppeHeadIcon from '../assets/controls/ppehead.png';
+import ppeHearingIcon from '../assets/controls/ppehearing.png';
+import ppeEyesIcon from '../assets/controls/ppeeyes.png';
+import ppeFeetIcon from '../assets/controls/ppefeet.png';
+import ppeHandsIcon from '../assets/controls/ppehands.png';
 
 interface JobTeamChatPageProps {
   onBackToJob?: () => void;
@@ -133,6 +140,41 @@ interface ChatMessage {
     }>;
     timestamp: string;
   };
+  shiftStatus?: {
+    action: 'start' | 'end';
+    status: 'Active' | 'Inactive';
+    timestamp: string;
+  };
+  rallyCompetition?: {
+    id: string;
+    formName: string;
+    formId: string;
+    startTime: string;
+    endTime?: string;
+    status: 'scheduled' | 'active' | 'completed';
+    teams: Array<{
+      teamId: string;
+      teamName: string;
+      members: Array<{
+        id: string;
+        name: string;
+        avatar?: string;
+        status: 'pending' | 'submitted';
+        submittedAt?: string;
+      }>;
+      completedCount: number;
+      totalCount: number;
+      isWinner?: boolean;
+    }>;
+    winner?: {
+      teamId: string;
+      teamName: string;
+      completedAt: string;
+    };
+    points: number;
+    createdBy: string;
+    createdAt: string;
+  };
 }
 
 export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
@@ -149,6 +191,9 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
   const [showEnergyLevelsResponse, setShowEnergyLevelsResponse] = useState(false);
   const [showRequestPPE, setShowRequestPPE] = useState(false);
   const [showShoutout, setShowShoutout] = useState(false);
+  const [showRallyTheTroops, setShowRallyTheTroops] = useState(false)
+  const [showRallyFormSelection, setShowRallyFormSelection] = useState(false)
+  const [selectedCompetitionId, setSelectedCompetitionId] = useState<string>('');
   const [responseContext, setResponseContext] = useState<{askerName: string, messageId: string, type?: 'howsitgoing' | 'energylevels'} | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showSlashHelp, setShowSlashHelp] = useState(false);
@@ -220,9 +265,12 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
     { id: 'jobupdate', label: 'Job Update', description: 'Update job progress, add notes, and attach photos' },
     { id: 'howsitgoing', label: 'How\'s It Going?', description: 'Check in with team members to see how they\'re doing' },
     { id: 'energylevels', label: 'Energy Levels', description: 'Check team energy levels and shift status' },
-    { id: 'requestppe', label: 'Request PPE', description: 'Request Personal Protective Equipment with pickup location' },
+    { id: 'pperequest', label: 'PPE Request', description: 'Request Personal Protective Equipment with pickup location' },
     { id: 'shoutout', label: 'Team Shoutout', description: 'Recognize teammates for their great work with photos and comments' },
     { id: 'reminder', label: 'Permit Reminder', description: 'Send reminder to team members signed onto active permits' },
+    { id: 'startshift', label: 'Start Shift', description: 'Mark yourself as active and available for notifications' },
+    { id: 'endshift', label: 'End Shift', description: 'Mark yourself as inactive and unavailable for notifications' },
+    { id: 'rallythetroops', label: 'Rally the Troops', description: 'Start a mini-competition between teams (HSE only)' },
   ]
 
   // Mock form history data for the last 24 hours
@@ -321,7 +369,7 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
       setShowSlashHelp(false);
       return;
     }
-    if (message.trim().startsWith('/requestppe')) {
+    if (message.trim().startsWith('/pperequest')) {
       setShowRequestPPE(true);
       setMessage('');
       setShowSlashHelp(false);
@@ -337,6 +385,40 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
       handlePermitReminder();
       setMessage('');
       setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('/startshift')) {
+      handleStartShift();
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('/endshift')) {
+      handleEndShift();
+      setMessage('');
+      setShowSlashHelp(false);
+      return;
+    }
+    if (message.trim().startsWith('/rallythetroops')) {
+      // Check if user has HSE role (mock check for now)
+      const currentUserRole = 'HSE'; // In real app, this would come from user context
+      if (currentUserRole === 'HSE') {
+        setShowRallyTheTroops(true);
+        setMessage('');
+        setShowSlashHelp(false);
+      } else {
+        // Show error message for non-HSE users
+        const errorMsg: ChatMessage = {
+          id: Date.now().toString(),
+          sender: { name: 'System', role: '', avatar: '' },
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          message: '❌ Only HSE roles can use /rallythetroops command',
+          isOwnMessage: false,
+        }
+        setMessages(prev => [...prev, errorMsg]);
+        setMessage('');
+        setShowSlashHelp(false);
+      }
       return;
     }
     const newMsg: ChatMessage = {
@@ -713,6 +795,156 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
       }
     }
     setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleStartShift = () => {
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: 'Shift started - Status: Active',
+      isOwnMessage: true,
+      shiftStatus: {
+        action: 'start',
+        status: 'Active',
+        timestamp: new Date().toLocaleString()
+      }
+    }
+    setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleEndShift = () => {
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: 'Shift ended - Status: Inactive',
+      isOwnMessage: true,
+      shiftStatus: {
+        action: 'end',
+        status: 'Inactive',
+        timestamp: new Date().toLocaleString()
+      }
+    }
+    setMessages(prev => [...prev, newMsg]);
+  }
+
+  const handleRallyTheTroopsSubmit = (payload: { formId: string, formName: string, startDelay: number }) => {
+    // Mock teams data
+    const mockTeams = [
+      {
+        teamId: 'team1',
+        teamName: 'Alpha Team',
+        members: [
+          { id: '1', name: 'Josh', avatar: joshAvatar, status: 'pending' as const },
+          { id: '2', name: 'Linda', avatar: lindaAvatar, status: 'pending' as const },
+          { id: '3', name: 'Marvin', avatar: '', status: 'pending' as const },
+          { id: '4', name: 'Theresa', avatar: '', status: 'pending' as const }
+        ],
+        completedCount: 0,
+        totalCount: 4,
+        isWinner: false
+      },
+      {
+        teamId: 'team2',
+        teamName: 'Beta Team',
+        members: [
+          { id: '5', name: 'Arlene', avatar: '', status: 'pending' as const },
+          { id: '6', name: 'Bessie', avatar: '', status: 'pending' as const },
+          { id: '7', name: 'Cody', avatar: '', status: 'pending' as const },
+          { id: '8', name: 'Darlene', avatar: '', status: 'pending' as const }
+        ],
+        completedCount: 0,
+        totalCount: 4,
+        isWinner: false
+      }
+    ];
+
+    const startTime = new Date(Date.now() + (payload.startDelay * 1000));
+    
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: 'HSE', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: payload.startDelay > 0 
+        ? `🏆 Rally the Troops Competition Scheduled!` 
+        : `🏆 Rally the Troops Competition Started!`,
+      isOwnMessage: true,
+      rallyCompetition: {
+        id: `rally_${Date.now()}`,
+        formName: payload.formName,
+        formId: payload.formId,
+        startTime: startTime.toISOString(),
+        status: payload.startDelay > 0 ? 'scheduled' : 'active',
+        teams: mockTeams,
+        points: 100,
+        createdBy: 'You (HSE)',
+        createdAt: new Date().toISOString()
+      }
+    }
+    setMessages(prev => [...prev, newMsg]);
+    setShowRallyTheTroops(false);
+  }
+
+  const handleRallyFormSelection = (formId: string, formName: string) => {
+    // Create a success message for the form submission
+    const submissionMsg: ChatMessage = {
+      id: Date.now().toString(),
+      sender: { name: 'You', role: '', avatar: '' },
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      message: `✅ ${formName} submitted for Rally Competition!`,
+      isOwnMessage: true
+    };
+
+    setMessages(prev => [...prev, submissionMsg]);
+
+    // Update the rally competition message to show user's submission
+    setMessages(prev => prev.map(msg => {
+      if (msg.rallyCompetition?.id === selectedCompetitionId) {
+        const updatedCompetition = { ...msg.rallyCompetition };
+        
+        // Find the user's team and update their status (mock user ID as '1' - Josh)
+        updatedCompetition.teams = updatedCompetition.teams.map(team => ({
+          ...team,
+          members: team.members.map(member => 
+            member.id === '1' // Mock current user ID (Josh)
+              ? { ...member, status: 'submitted' as const, submittedAt: new Date().toISOString() }
+              : member
+          ),
+          completedCount: team.members.filter(m => 
+            m.id === '1' ? true : m.status === 'submitted'
+          ).length
+        }));
+
+        // Check if any team has completed all forms (winner)
+        const winningTeam = updatedCompetition.teams.find(team => 
+          team.completedCount === team.totalCount
+        );
+
+        if (winningTeam && !updatedCompetition.winner) {
+          // Mark the winning team
+          updatedCompetition.teams = updatedCompetition.teams.map(team => ({
+            ...team,
+            isWinner: team.teamId === winningTeam.teamId
+          }));
+
+          // Set the winner
+          updatedCompetition.winner = {
+            teamId: winningTeam.teamId,
+            teamName: winningTeam.teamName,
+            completedAt: new Date().toISOString()
+          };
+        }
+
+        return {
+          ...msg,
+          rallyCompetition: updatedCompetition
+        };
+      }
+      return msg;
+    }));
+
+    setShowRallyFormSelection(false);
   }
 
   const header = (
@@ -1425,6 +1657,11 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                       </span>
                     </div>
                     
+                    {/* PPE Request Image */}
+                    <div className="mb-3 w-full rounded-lg overflow-hidden border border-[#eaecf0] bg-[#f8fafc]">
+                      <img src={goodlinePpeRequest} alt="PPE Request" className="w-full object-contain" />
+                    </div>
+                    
                     <div className="space-y-3">
                       <p className="text-sm text-[#101828]">
                         Personal Protective Equipment request submitted
@@ -1443,15 +1680,19 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                               'gloves': 'Safety Gloves'
                             }
                             const ppeIcons: Record<string, string> = {
-                              'hard-hat': '🪖',
-                              'earplugs': '🔇',
-                              'safety-glasses': '🥽',
-                              'boots': '🥾',
-                              'gloves': '🧤'
+                              'hard-hat': ppeHeadIcon,
+                              'earplugs': ppeHearingIcon,
+                              'safety-glasses': ppeEyesIcon,
+                              'boots': ppeFeetIcon,
+                              'gloves': ppeHandsIcon
                             }
                             return (
                               <div key={id} className="flex items-center gap-2 bg-[#f8f9fa] border border-[#eaecf0] rounded-lg px-3 py-2">
-                                <span className="text-sm">{ppeIcons[id]}</span>
+                                <img 
+                                  src={ppeIcons[id]} 
+                                  alt={ppeNames[id]}
+                                  className="w-6 h-6 flex-shrink-0"
+                                />
                                 <span className="text-sm font-medium text-[#374151]">{ppeNames[id]}</span>
                               </div>
                             )
@@ -1481,11 +1722,25 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                               <span className="text-sm text-[#374151]">{msg.ppeRequest.pickupLocation.address}</span>
                             </div>
                             {msg.ppeRequest.pickupComment && (
-                              <p className="text-xs text-[#667085] italic">
+                              <p className="text-xs text-[#667085] italic mb-2">
                                 "{msg.ppeRequest.pickupComment}"
                               </p>
                             )}
-                            <div className="mt-2">
+                            
+                            {/* Map Display */}
+                            <div className="w-full h-40 bg-[#f8f9fa] border border-[#eaecf0] rounded-lg overflow-hidden relative mb-2">
+                              <iframe
+                                src={`https://www.openstreetmap.org/export/embed.html?bbox=${msg.ppeRequest.pickupLocation.lng-0.001},${msg.ppeRequest.pickupLocation.lat-0.001},${msg.ppeRequest.pickupLocation.lng+0.001},${msg.ppeRequest.pickupLocation.lat+0.001}&layer=mapnik&marker=${msg.ppeRequest.pickupLocation.lat},${msg.ppeRequest.pickupLocation.lng}`}
+                                width="100%"
+                                height="100%"
+                                style={{ border: 0 }}
+                                allowFullScreen
+                                loading="lazy"
+                                referrerPolicy="no-referrer-when-downgrade"
+                              />
+                            </div>
+                            
+                            <div className="flex justify-end">
                               <a
                                 href={`https://www.google.com/maps?q=${msg.ppeRequest.pickupLocation.lat},${msg.ppeRequest.pickupLocation.lng}`}
                                 target="_blank"
@@ -1603,6 +1858,401 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
                     </div>
                   </div>
                 )}
+
+                {/* Shift status block */}
+                {msg.shiftStatus && (
+                  <div className="mt-3 bg-white rounded-xl border border-[#e9eaeb] p-3">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                        msg.shiftStatus.action === 'start' 
+                          ? 'bg-green-100' 
+                          : 'bg-gray-100'
+                      }`}>
+                        {msg.shiftStatus.action === 'start' ? (
+                          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-[#101828]">
+                            {msg.shiftStatus.action === 'start' ? 'Shift Started' : 'Shift Ended'}
+                          </span>
+                          <span className={`text-xs font-medium px-2 py-1 rounded-full ${
+                            msg.shiftStatus.status === 'Active'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {msg.shiftStatus.status}
+                          </span>
+                        </div>
+                        <div className="text-xs text-[#667085] mt-1">
+                          {msg.shiftStatus.action === 'start' 
+                            ? 'Now available for notifications and team communication'
+                            : 'No longer receiving notifications - shift has ended'
+                          }
+                        </div>
+                        <div className="text-xs text-[#667085] mt-1">
+                          {msg.shiftStatus.timestamp}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Rally competition block */}
+                {msg.rallyCompetition && (
+                  <div className="mt-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border border-blue-200 p-3">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </div>
+                      <span className="text-[#344054] text-sm font-medium">Rally the Troops Competition</span>
+                      <span className={`text-xs font-medium px-2 py-1 rounded-full ml-auto ${
+                        msg.rallyCompetition.status === 'active' 
+                          ? 'bg-green-100 text-green-700' 
+                          : msg.rallyCompetition.status === 'scheduled'
+                          ? 'bg-yellow-100 text-yellow-700'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        {msg.rallyCompetition.status === 'active' ? 'Active' : 
+                         msg.rallyCompetition.status === 'scheduled' ? 'Scheduled' : 'Completed'}
+                      </span>
+                    </div>
+                    
+                    {msg.rallyCompetition.status === 'scheduled' ? (
+                      /* SCHEDULED STATE - Limited Information */
+                      <div className="space-y-3">
+                        {/* Competition Announcement */}
+                        <div className="bg-white rounded-lg p-3 border border-blue-100">
+                          <div className="text-center mb-3">
+                            <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <h3 className="text-sm font-semibold text-[#101828] mb-1">Competition Coming Soon!</h3>
+                            <p className="text-xs text-[#667085]">Get ready to rally your team...</p>
+                          </div>
+                          
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-[#667085]">Form:</span>
+                              <span className="text-sm font-medium text-[#101828]">{msg.rallyCompetition.formName}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-[#667085]">Prize:</span>
+                              <span className="text-sm font-medium text-[#101828]">{msg.rallyCompetition.points} points</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-[#667085]">Teams:</span>
+                              <span className="text-sm font-medium text-[#101828]">{msg.rallyCompetition.teams.length} teams</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Competing Teams */}
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">Competing Teams</h4>
+                          <div className="grid grid-cols-1 gap-2">
+                            {msg.rallyCompetition.teams.map(team => (
+                              <div key={team.teamId} className="bg-white rounded-lg border border-blue-100 p-3">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-medium text-[#101828]">{team.teamName}</span>
+                                  <span className="text-xs text-[#667085]">{team.totalCount} members</span>
+                                </div>
+                                <div className="flex items-center gap-1 mt-2">
+                                  {team.members.slice(0, 4).map(member => (
+                                    <div key={member.id} className="w-6 h-6 bg-[#266273] rounded-full flex items-center justify-center">
+                                      {member.avatar ? (
+                                        <img src={member.avatar} alt={member.name} className="w-full h-full rounded-full object-cover" />
+                                      ) : (
+                                        <span className="text-white text-xs font-medium">
+                                          {member.name.split(' ').map(n => n[0]).join('').slice(0,2)}
+                                        </span>
+                                      )}
+                                    </div>
+                                  ))}
+                                  {team.members.length > 4 && (
+                                    <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center">
+                                      <span className="text-gray-600 text-xs font-medium">+{team.members.length - 4}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Mystery Timer */}
+                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span className="text-sm font-medium text-yellow-800">Start time is a surprise!</span>
+                          </div>
+                          <p className="text-xs text-yellow-700 mt-1">Be ready to rally when the competition begins</p>
+                        </div>
+
+                        {/* Competition Footer */}
+                        <div className="pt-2 border-t border-blue-200">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1 text-xs text-[#667085]">
+                              <span>🏆</span>
+                              <span>First team to complete all forms wins!</span>
+                            </div>
+                            <div className="text-xs text-[#667085]">
+                              Created by {msg.rallyCompetition.createdBy}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      /* ACTIVE STATE - Full Competition Details */
+                      <div className="space-y-3">
+                        {/* Competition Details */}
+                        <div className="bg-white rounded-lg p-3 border border-blue-100">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-[#101828]">Form: {msg.rallyCompetition.formName}</span>
+                            <span className="text-xs text-[#667085]">{msg.rallyCompetition.points} points</span>
+                          </div>
+                          <div className="text-xs text-[#667085]">
+                            Started: {new Date(msg.rallyCompetition.startTime).toLocaleString()}
+                          </div>
+                          {msg.rallyCompetition.winner && (
+                            <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded-lg">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-yellow-800">🏆 Winner:</span>
+                                <span className="text-sm font-semibold text-yellow-900">{msg.rallyCompetition.winner.teamName}</span>
+                              </div>
+                              <div className="text-xs text-yellow-700 mt-1">
+                                Completed at: {new Date(msg.rallyCompetition.winner.completedAt).toLocaleString()}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Teams Progress */}
+                        <div className="space-y-2">
+                          <h4 className="text-xs font-medium text-[#667085] uppercase tracking-wide">Team Progress</h4>
+                          {(() => {
+                            // Check if there's a winner
+                            const hasWinner = msg.rallyCompetition.teams.some(team => team.isWinner);
+                            
+                            if (hasWinner) {
+                              // Show full progress when there's a winner
+                              return msg.rallyCompetition.teams.map(team => (
+                                <div key={team.teamId} className={`p-3 rounded-lg border ${
+                                  team.isWinner 
+                                    ? 'bg-yellow-50 border-yellow-200' 
+                                    : 'bg-white border-blue-100'
+                                }`}>
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-medium text-[#101828]">{team.teamName}</span>
+                                      {team.isWinner && <span className="text-xs">🏆</span>}
+                                    </div>
+                                    <span className="text-xs text-[#667085]">
+                                      {team.completedCount}/{team.totalCount} completed
+                                    </span>
+                                  </div>
+                                  
+                                  {/* Progress Bar */}
+                                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                    <div 
+                                      className={`h-full transition-all duration-300 ${
+                                        team.isWinner ? 'bg-yellow-500' : 'bg-[#266273]'
+                                      }`}
+                                      style={{ width: `${(team.completedCount / team.totalCount) * 100}%` }}
+                                    />
+                                  </div>
+                                  
+                                  {/* Team Members */}
+                                  <div className="flex flex-wrap gap-1">
+                                    {team.members.map(member => (
+                                      <div key={member.id} className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+                                        member.status === 'submitted' 
+                                          ? 'bg-green-100 text-green-700' 
+                                          : 'bg-gray-100 text-gray-600'
+                                      }`}>
+                                        {member.avatar ? (
+                                          <img src={member.avatar} alt={member.name} className="w-4 h-4 rounded-full" />
+                                        ) : (
+                                          <div className="w-4 h-4 bg-[#266273] rounded-full flex items-center justify-center">
+                                            <span className="text-white text-xs font-medium">
+                                              {member.name.split(' ').map(n => n[0]).join('').slice(0,2)}
+                                            </span>
+                                          </div>
+                                        )}
+                                        <span>{member.name}</span>
+                                        {member.status === 'submitted' && <span>✓</span>}
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ));
+                            } else {
+                              // Show hidden progress during competition
+                              return msg.rallyCompetition.teams.map(team => (
+                                <div key={team.teamId} className="p-3 rounded-lg border bg-white border-blue-100">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                      <span className="text-sm font-medium text-[#101828]">{team.teamName}</span>
+                                    </div>
+                                    <span className="text-xs text-[#667085]">
+                                      {team.totalCount} members
+                                    </span>
+                                  </div>
+                                  
+                                  {/* Hidden Progress Bar */}
+                                  <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+                                    <div className="h-full bg-gray-300 rounded-full" style={{ width: '100%' }}>
+                                      <div className="h-full bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 animate-pulse"></div>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Team Members (without status) */}
+                                  <div className="flex flex-wrap gap-1">
+                                    {team.members.map(member => (
+                                      <div key={member.id} className="flex items-center gap-1 px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-600">
+                                        {member.avatar ? (
+                                          <img src={member.avatar} alt={member.name} className="w-4 h-4 rounded-full" />
+                                        ) : (
+                                          <div className="w-4 h-4 bg-[#266273] rounded-full flex items-center justify-center">
+                                            <span className="text-white text-xs font-medium">
+                                              {member.name.split(' ').map(n => n[0]).join('').slice(0,2)}
+                                            </span>
+                                          </div>
+                                        )}
+                                        <span>{member.name}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              ));
+                            }
+                          })()}
+                        </div>
+
+                        {/* User Action Section */}
+                        {(() => {
+                          // Check if current user has submitted their form
+                          const currentUserId = '1'; // Mock current user ID (Josh)
+                          const userTeam = msg.rallyCompetition.teams.find(team => 
+                            team.members.some(member => member.id === currentUserId)
+                          );
+                          const userMember = userTeam?.members.find(member => member.id === currentUserId);
+                          const hasSubmitted = userMember?.status === 'submitted';
+
+                          return (
+                            <div className="bg-white rounded-lg border border-blue-100 p-3">
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-8 h-8 bg-[#266273] rounded-full flex items-center justify-center">
+                                    <span className="text-white text-sm font-medium">You</span>
+                                  </div>
+                                  <div>
+                                    <div className="text-sm font-medium text-[#101828]">Your Submission</div>
+                                    <div className="text-xs text-[#667085]">
+                                      {hasSubmitted ? 'Form submitted successfully' : 'Upload your completed form'}
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
+                                  hasSubmitted 
+                                    ? 'text-green-600 bg-green-50' 
+                                    : 'text-blue-600 bg-blue-50'
+                                }`}>
+                                  {hasSubmitted ? (
+                                    <>
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <span>Submitted</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <span>Form Ready</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {!hasSubmitted ? (
+                                <div className="space-y-3">
+                                  {/* Add Your Form Button */}
+                                  <button
+                                    onClick={() => {
+                                      setSelectedCompetitionId(msg.rallyCompetition.id)
+                                      setShowRallyFormSelection(true)
+                                    }}
+                                    className="flex items-center justify-center gap-2 w-full p-3 bg-[#266273] text-white rounded-lg cursor-pointer hover:bg-[#1e4d5a] transition-colors"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    <span className="text-sm font-medium">Add Your Form</span>
+                                  </button>
+                                  
+                                  {/* Instructions */}
+                                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                                    <div className="flex items-start gap-2">
+                                      <svg className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <div className="text-xs text-blue-800">
+                                        <div className="font-medium mb-1">Select from your completed forms</div>
+                                        <div>Choose a completed {msg.rallyCompetition.formName} to submit</div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                  <div className="flex items-center gap-2">
+                                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <div>
+                                      <div className="text-sm font-medium text-green-800">Form Submitted Successfully!</div>
+                                      <div className="text-xs text-green-700">
+                                        Submitted at: {userMember?.submittedAt ? new Date(userMember.submittedAt).toLocaleString() : 'Just now'}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
+
+                        {/* Competition Footer */}
+                        <div className="pt-2 border-t border-blue-200">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-1 text-xs text-[#667085]">
+                              <span>🏆</span>
+                              <span>First team to complete all forms wins!</span>
+                            </div>
+                            <div className="text-xs text-[#667085]">
+                              Created by {msg.rallyCompetition.createdBy}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Attachments */}
@@ -1657,71 +2307,94 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
             return false
           })
 
+          // Calculate dynamic height based on number of commands
+          const maxHeight = '60vh'
+          const headerHeight = 32 // Approximate header height in pixels
+          const commandItemHeight = 60 // Approximate height per command item
+          const padding = 16 // Container padding
+          const minHeight = 80 // Minimum height for popup
+          
+          const calculatedHeight = Math.min(
+            headerHeight + (filteredCommands.length * commandItemHeight) + padding,
+            window.innerHeight * 0.6 // 60% of viewport height
+          )
+          
+          const dynamicHeight = Math.max(calculatedHeight, minHeight)
+          const shouldScroll = calculatedHeight >= window.innerHeight * 0.6
+
           return (
-            <div className="absolute bottom-[64px] left-3 right-3 bg-white border border-[#eaecf0] rounded-xl shadow-lg p-2 z-10">
-              <div className="px-2 py-1 text-xs text-[#667085]">
+            <div 
+              className="absolute bottom-[64px] left-3 right-3 bg-white border border-[#eaecf0] rounded-xl shadow-lg z-10 flex flex-col"
+              style={{ height: `${dynamicHeight}px`, maxHeight: maxHeight }}
+            >
+              {/* Fixed header section */}
+              <div className="flex-shrink-0 px-2 py-1 text-xs text-[#667085] border-b border-[#eaecf0]">
                 {filteredCommands.length > 0 ? 'Available commands' : 'No matching commands'}
               </div>
-              {filteredCommands.length > 0 ? filteredCommands.map(cmd => (
-              <button
-                key={cmd.id}
-                onClick={() => {
-                  if (cmd.id === 'formrequest') {
-                    setShowFormRequest(true)
-                    setMessage('')
-                  } else if (cmd.id === 'formhistory') {
-                    const newMsg: ChatMessage = {
-                      id: Date.now().toString(),
-                      sender: { name: 'You', role: '', avatar: '' },
-                      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                      message: 'Form History',
-                      isOwnMessage: true,
-                      formHistory: {
-                        activities: recentFormHistory
-                      }
-                    };
-                    setMessages(prev => [...prev, newMsg]);
-                    setMessage('');
-                  } else if (cmd.id === 'editroles') {
-                    setShowEditTeamRole(true);
-                    setMessage('');
-                  } else if (cmd.id === 'activepermits') {
-                    setShowActivePermits(true);
-                    setMessage('');
-                  } else if (cmd.id === 'jobupdate') {
-                    setShowJobUpdate(true);
-                    setMessage('');
-                  } else if (cmd.id === 'howsitgoing') {
-                    setShowHowsItGoing(true);
-                    setMessage('');
-                  } else if (cmd.id === 'energylevels') {
-                    setShowEnergyLevels(true);
-                    setMessage('');
-                  } else if (cmd.id === 'requestppe') {
-                    setShowRequestPPE(true);
-                    setMessage('');
-                  } else if (cmd.id === 'shoutout') {
-                    setShowShoutout(true);
-                    setMessage('');
-                  } else if (cmd.id === 'hazardreport') {
-                    setShowHazardReport(true);
-                    setMessage('');
-                  } else {
-                    setMessage(`/${cmd.id} `)
-                  }
-                  setShowSlashHelp(false)
-                }}
-                className="w-full text-left px-2 py-2 rounded-lg hover:bg-[#f8f9fa]"
-              >
-                <div className="text-sm font-medium text-[#101828]">
-                  {cmd.id === 'shoutout' ? '!' : '/'}
-                  {cmd.id} — {cmd.label}
-                </div>
-                <div className="text-xs text-[#667085]">{cmd.description}</div>
-              </button>
-              )) : (
-                <div className="px-2 py-2 text-xs text-[#667085] italic">Type a command name to filter</div>
-              )}
+              
+              {/* Commands list - scrollable only when needed */}
+              <div className={`p-2 ${shouldScroll ? 'flex-1 overflow-y-auto' : ''}`}>
+                {filteredCommands.length > 0 ? filteredCommands.map(cmd => (
+                <button
+                  key={cmd.id}
+                  onClick={() => {
+                    if (cmd.id === 'formrequest') {
+                      setShowFormRequest(true)
+                      setMessage('')
+                    } else if (cmd.id === 'formhistory') {
+                      const newMsg: ChatMessage = {
+                        id: Date.now().toString(),
+                        sender: { name: 'You', role: '', avatar: '' },
+                        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                        message: 'Form History',
+                        isOwnMessage: true,
+                        formHistory: {
+                          activities: recentFormHistory
+                        }
+                      };
+                      setMessages(prev => [...prev, newMsg]);
+                      setMessage('');
+                    } else if (cmd.id === 'editroles') {
+                      setShowEditTeamRole(true);
+                      setMessage('');
+                    } else if (cmd.id === 'activepermits') {
+                      setShowActivePermits(true);
+                      setMessage('');
+                    } else if (cmd.id === 'jobupdate') {
+                      setShowJobUpdate(true);
+                      setMessage('');
+                    } else if (cmd.id === 'howsitgoing') {
+                      setShowHowsItGoing(true);
+                      setMessage('');
+                    } else if (cmd.id === 'energylevels') {
+                      setShowEnergyLevels(true);
+                      setMessage('');
+                    } else if (cmd.id === 'pperequest') {
+                      setShowRequestPPE(true);
+                      setMessage('');
+                    } else if (cmd.id === 'shoutout') {
+                      setShowShoutout(true);
+                      setMessage('');
+                    } else if (cmd.id === 'hazardreport') {
+                      setShowHazardReport(true);
+                      setMessage('');
+                    } else {
+                      setMessage(`/${cmd.id} `)
+                    }
+                    setShowSlashHelp(false)
+                  }}
+                  className="w-full text-left px-2 py-2 rounded-lg hover:bg-[#f8f9fa] transition-colors"
+                >
+                  <div className="text-sm font-medium text-[#101828]">
+                    {cmd.id === 'shoutout' ? '!' : '/'}
+                    {cmd.id} — {cmd.label}
+                  </div>
+                  <div className="text-xs text-[#667085]">{cmd.description}</div>
+                </button>
+                )) : (
+                  <div className="px-2 py-2 text-xs text-[#667085] italic">Type a command name to filter</div>
+                )}
+              </div>
             </div>
           )
         })()}
@@ -1868,6 +2541,25 @@ export default function JobTeamChatPage({ onBackToJob }: JobTeamChatPageProps) {
         onClose={() => setShowShoutout(false)}
         teamMembers={teamMembers}
         onSubmit={handleShoutoutSubmit}
+      />
+
+      {/* Rally the Troops Slide Up */}
+      <RallyTheTroopsSlideUp
+        isOpen={showRallyTheTroops}
+        onClose={() => setShowRallyTheTroops(false)}
+        onSubmit={handleRallyTheTroopsSubmit}
+      />
+      
+      <RallyFormSelectionSlideUp
+        isOpen={showRallyFormSelection}
+        onClose={() => setShowRallyFormSelection(false)}
+        onSubmit={handleRallyFormSelection}
+        competitionData={messages.find(msg => msg.rallyCompetition?.id === selectedCompetitionId)?.rallyCompetition || {
+          id: selectedCompetitionId,
+          formName: 'SafeMate Take 5',
+          formId: 'form_1',
+          teams: []
+        }}
       />
     </div>
   );

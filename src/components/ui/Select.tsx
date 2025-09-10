@@ -5,6 +5,8 @@ import arrowIcon from '../../assets/arrowicon.svg'
 interface SelectOption {
   value: string
   label: string
+  disabled?: boolean
+  comingSoon?: boolean
 }
 
 interface SelectProps {
@@ -45,7 +47,8 @@ const Select: React.FC<SelectProps> = ({
     }
   }, [])
 
-  const handleOptionClick = (optionValue: string) => {
+  const handleOptionClick = (optionValue: string, isDisabled?: boolean) => {
+    if (isDisabled) return
     setSelectedValue(optionValue)
     onChange?.(optionValue)
     setIsOpen(false)
@@ -84,13 +87,22 @@ const Select: React.FC<SelectProps> = ({
             <button
               key={option.value}
               type="button"
-              onClick={() => handleOptionClick(option.value)}
+              onClick={() => handleOptionClick(option.value, option.disabled)}
+              disabled={option.disabled}
               className={cn(
-                'w-full px-3.5 py-3 text-left text-[#101828] text-base hover:bg-[#f8f7f2] transition-colors first:rounded-t-xl last:rounded-b-xl',
-                selectedValue === option.value && 'bg-[#eaf0f2] text-[#266273]'
+                'w-full px-3.5 py-3 text-left text-base transition-colors first:rounded-t-xl last:rounded-b-xl flex items-center justify-between',
+                option.disabled 
+                  ? 'text-[#9ca3af] cursor-not-allowed bg-[#f9fafb]' 
+                  : 'text-[#101828] hover:bg-[#f8f7f2]',
+                selectedValue === option.value && !option.disabled && 'bg-[#eaf0f2] text-[#266273]'
               )}
             >
-              {option.label}
+              <span className="text-left truncate">{option.label}</span>
+              {option.comingSoon && (
+                <span className="ml-2 px-2 py-0.5 text-xs font-medium text-[#667085] bg-[#f2f4f7] rounded-full whitespace-nowrap">
+                  Coming Soon
+                </span>
+              )}
             </button>
           ))}
         </div>

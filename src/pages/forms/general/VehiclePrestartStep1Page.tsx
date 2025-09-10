@@ -23,15 +23,15 @@ const VehiclePrestartStep1Page: React.FC<VehiclePrestartStep1PageProps> = ({
 
   const vehicleTypeOptions = [
     { value: 'light-vehicle', label: 'Light Vehicle' },
-    { value: 'heavy-vehicle', label: 'Heavy Vehicle' },
-    { value: 'bus', label: 'Bus' },
-    { value: 'truck', label: 'Truck' },
-    { value: 'van', label: 'Van' },
-    { value: 'utility', label: 'Utility' },
-    { value: 'forklift', label: 'Forklift' },
-    { value: 'crane', label: 'Crane' },
-    { value: 'excavator', label: 'Excavator' },
-    { value: 'other', label: 'Other' }
+    { value: 'heavy-vehicle', label: 'Heavy Vehicle', disabled: true, comingSoon: true },
+    { value: 'bus', label: 'Bus', disabled: true, comingSoon: true },
+    { value: 'truck', label: 'Truck', disabled: true, comingSoon: true },
+    { value: 'van', label: 'Van', disabled: true, comingSoon: true },
+    { value: 'utility', label: 'Utility', disabled: true, comingSoon: true },
+    { value: 'forklift', label: 'Forklift', disabled: true, comingSoon: true },
+    { value: 'crane', label: 'Crane', disabled: true, comingSoon: true },
+    { value: 'excavator', label: 'Excavator', disabled: true, comingSoon: true },
+    { value: 'other', label: 'Other', disabled: true, comingSoon: true }
   ]
 
   const handleNext = () => {

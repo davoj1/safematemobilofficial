@@ -1,132 +1,55 @@
 import React from 'react'
 import { Button } from '../../../components/ui'
+import successIcon from '../../../assets/successmessage/confetimiddleicon.svg'
 
 interface VehiclePrestartSuccessPageProps {
-  formData?: {
-    licensePlate?: string
-    assetNumber?: string
-    vehicleType?: string
-    fuelLevel?: string
-    odometerReading?: string
-    lastServiced?: string
-    companyName?: string
-    workerName?: string
-  }
   onContinue: () => void
 }
 
 const VehiclePrestartSuccessPage: React.FC<VehiclePrestartSuccessPageProps> = ({
-  formData,
   onContinue
 }) => {
   return (
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
-
-      {/* Content */}
-      <div className="flex-1 flex flex-col px-5 py-8 overflow-y-auto">
-        {/* Success Section */}
-        <div className="text-center space-y-6 max-w-sm mx-auto mb-8">
-          {/* Success Icon */}
-          <div className="w-20 h-20 bg-[#22c55e] rounded-full flex items-center justify-center mx-auto">
-            <span className="text-white text-3xl font-bold">✓</span>
-          </div>
-
-          {/* Success Message */}
-          <div className="space-y-3">
-            <h1 className="font-bold text-[#266273] text-2xl leading-8">
-              Vehicle Pre-Start Complete!
-            </h1>
-            <p className="text-[#667085] text-base font-normal leading-6">
-              Your vehicle pre-start inspection has been successfully submitted and recorded.
-            </p>
-          </div>
+      {/* Content - Centered */}
+      <div className="flex-1 flex flex-col items-center justify-center px-5 py-8">
+        {/* Success Icon */}
+        <div className="w-20 h-20 bg-[#17b26a] rounded-full flex items-center justify-center mb-6">
+          <img src={successIcon} alt="Success" className="w-10 h-10" />
         </div>
 
-        {/* Form Review Section */}
-        <div className="space-y-4 max-w-md mx-auto w-full">
-          {/* Vehicle Information */}
-          <div className="bg-white rounded-xl border border-[#d0d5dd] p-4">
-            <h3 className="font-semibold text-[#101828] text-sm mb-3">
-              Vehicle Information
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">License Plate:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.licensePlate || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">Asset Number:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.assetNumber || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">Vehicle Type:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.vehicleType || 'N/A'}</span>
-              </div>
-            </div>
-          </div>
+        {/* Success Message */}
+        <div className="text-center space-y-4 mb-8">
+          <h1 className="text-[#101828] text-2xl font-bold leading-8">
+            Vehicle Prestart Complete!
+          </h1>
+          <p className="text-[#667085] text-base font-normal leading-6 max-w-sm">
+            Your vehicle prestart inspection has been successfully submitted and recorded.
+          </p>
+        </div>
 
-          {/* Service Information */}
-          <div className="bg-white rounded-xl border border-[#d0d5dd] p-4">
-            <h3 className="font-semibold text-[#101828] text-sm mb-3">
-              Service Information
+        {/* Additional Info */}
+        <div className="bg-white rounded-2xl border border-[#eaecf0] p-4 w-full max-w-sm mb-8">
+          <div className="text-center space-y-2">
+            <h3 className="text-[#344054] text-sm font-semibold leading-5">
+              What's Next?
             </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">Fuel Level:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.fuelLevel || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">Odometer:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.odometerReading || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">Last Serviced:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.lastServiced || 'N/A'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Worker Information */}
-          <div className="bg-white rounded-xl border border-[#d0d5dd] p-4">
-            <h3 className="font-semibold text-[#101828] text-sm mb-3">
-              Worker Information
-            </h3>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">Company:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.companyName || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-[#667085]">Worker:</span>
-                <span className="text-sm text-[#101828] font-medium">{formData?.workerName || 'N/A'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Status Information */}
-          <div className="bg-[#edfcf2] border border-[#84e1bc] rounded-xl p-4">
-            <h3 className="font-semibold text-[#084c61] text-sm mb-2">
-              Inspection Status
-            </h3>
-            <ul className="text-sm text-[#065f46] space-y-1">
-              <li>• Vehicle inspection completed successfully</li>
-              <li>• All safety checks verified</li>
-              <li>• Vehicle approved for operation</li>
-              <li>• Report logged in system</li>
-            </ul>
+            <p className="text-[#667085] text-sm font-normal leading-5">
+              Your vehicle is ready for use. Remember to complete regular prestart checks before each shift.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Bottom Actions */}
-      <div className="px-5 pb-8 pt-4">
+      {/* Bottom Navigation - Fixed */}
+      <div className="flex-shrink-0 px-5 py-4 bg-[#f8f7f2] border-t border-gray-200">
         <Button
+          onClick={onContinue}
+          className="w-full"
           variant="primary"
           size="lg"
-          fullWidth
-          onClick={onContinue}
         >
-          Return to Forms
+          Go to Home
         </Button>
       </div>
     </div>

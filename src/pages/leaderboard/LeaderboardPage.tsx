@@ -221,7 +221,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
       case 'goodline':
         return goodlinelogo
       case 'monadelphous':
-        return monologo
+        return goodlinelogo // Replace monadelphous with goodline
       default:
         return 'https://via.placeholder.com/20x20/666666/FFFFFF?text=C'
     }
@@ -240,8 +240,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
 
   const companies = [
     { id: 'warrikal', name: 'Warrikal', logo: warikalicon },
-    { id: 'goodline', name: 'Goodline', logo: goodlinelogo },
-    { id: 'monadelphous', name: 'Monadelphous', logo: monologo }
+    { id: 'goodline', name: 'Goodline', logo: goodlinelogo }
   ]
 
   const handleCompanySelect = (company: { id: string; name: string; logo: string; role: string }) => {
@@ -338,7 +337,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                 className="w-18 h-18 rounded-full border-2 border-[#EBFE5C] shadow-lg"
               />
               <img 
-                src={getCompanyIcon('goodline')} 
+                src={getCompanyIcon('warrikal')} 
                 alt="Company" 
                 className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white bg-white"
               />
@@ -349,9 +348,9 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
               />
             </div>
             <div className="text-center mt-7">
-              <p className="text-white font-semibold text-sm">Poseido</p>
-              <p className="text-[#EBFE5C] font-bold text-xl">234</p>
-              <p className="text-white/80 text-xs">117 Forms</p>
+              <p className="text-white font-semibold text-sm">Zeus</p>
+              <p className="text-[#EBFE5C] font-bold text-xl">242</p>
+              <p className="text-white/80 text-xs">121 Forms</p>
             </div>
           </div>
 
@@ -368,7 +367,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                 className="relative w-20 h-20 rounded-full border-2 border-[#EBFE5C] shadow-lg"
               />
               <img 
-                src={getCompanyIcon('warrikal')} 
+                src={getCompanyIcon('goodline')} 
                 alt="Company" 
                 className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white bg-white"
               />
@@ -379,9 +378,9 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
               />
             </div>
             <div className="text-center mt-8">
-              <p className="text-white font-semibold text-sm">Zeus</p>
-              <p className="text-[#EBFE5C] font-bold text-2xl">242</p>
-              <p className="text-white/80 text-xs">121 Forms</p>
+              <p className="text-white font-semibold text-sm">Poseido</p>
+              <p className="text-[#EBFE5C] font-bold text-2xl">234</p>
+              <p className="text-white/80 text-xs">117 Forms</p>
             </div>
           </div>
 
@@ -394,7 +393,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                 className="w-16 h-16 rounded-full border-2 border-[#EBFE5C] shadow-lg"
               />
               <img 
-                src={getCompanyIcon('monadelphous')} 
+                src={getCompanyIcon('goodline')} 
                 alt="Company" 
                 className="absolute -top-1 -right-1 w-6 h-6 rounded-lg border border-white bg-white"
               />
@@ -421,7 +420,7 @@ const LeaderboardPage: React.FC<LeaderboardPageProps> = ({
                       <div className="bg-[#EBFE5C] rounded-t-2xl px-4 py-2 flex items-center justify-center gap-2 w-4/5">
             <span className="text-[#266273] text-xl">🏆</span>
             <span className="text-[#266273] font-semibold text-sm text-center">
-              Warrikal is leading in form submissions!
+              Goodline is leading in form submissions!
             </span>
           </div>
         </div>

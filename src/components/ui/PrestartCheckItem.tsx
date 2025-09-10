@@ -8,6 +8,7 @@ interface PrestartCheckItemProps {
   title: string
   status: CheckItemStatus
   comment?: string
+  photo?: File | null
   onStatusChange: (status: CheckItemStatus) => void
   onCommentChange?: (comment: string) => void
   onPhotoAdd?: (photo: File) => void
@@ -19,6 +20,7 @@ const PrestartCheckItem: React.FC<PrestartCheckItemProps> = ({
   title,
   status,
   comment = '',
+  photo = null,
   onStatusChange,
   onCommentChange,
   onPhotoAdd,
@@ -109,12 +111,31 @@ const PrestartCheckItem: React.FC<PrestartCheckItemProps> = ({
 
           {/* Photos */}
           {onPhotoAdd && (
-            <FileUpload
-              title="Add Photo"
-              description="Upload a photo to document the issue"
-              buttonText="Click to upload photo"
-              onFileSelect={onPhotoAdd}
-            />
+            <div className="space-y-2">
+              <FileUpload
+                title="Add Photo"
+                description="Upload a photo to document the issue"
+                buttonText="Click to upload photo"
+                onFileSelect={onPhotoAdd}
+              />
+              
+              {/* Display uploaded photo */}
+              {photo && (
+                <div className="relative">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt="Uploaded photo"
+                    className="w-full h-32 object-cover rounded-lg border border-[#d0d5dd]"
+                  />
+                  <button
+                    onClick={() => onPhotoAdd(null as any)} // This will need to be handled by parent
+                    className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                  >
+                    ×
+                  </button>
+                </div>
+              )}
+            </div>
           )}
         </div>
       )}

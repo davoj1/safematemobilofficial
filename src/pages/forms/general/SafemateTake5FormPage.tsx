@@ -6,6 +6,8 @@ import SafemateTake5Step1 from './SafemateTake5Step1'
 import SafemateTake5Step2 from './SafemateTake5Step2'
 import SafemateTake5Step3 from './SafemateTake5Step3'
 import SafemateTake5Step5 from './SafemateTake5Step5'
+import SafemateTake5ReviewPage from './SafemateTake5ReviewPage'
+import SafemateTake5SuccessPage from './SafemateTake5SuccessPage'
 
 interface SafemateTake5FormPageProps {
   selectedSite?: {
@@ -16,6 +18,7 @@ interface SafemateTake5FormPageProps {
   }
   onBack?: () => void
   onNext?: (formData: SafemateTake5FormData) => void
+  onNavigateToHome?: () => void
 }
 
 interface SafemateTake5FormData {
@@ -37,14 +40,23 @@ interface SafemateTake5FormData {
   firstName: string
   lastName: string
   signature: string
+  selectedSite?: {
+    id: string
+    name: string
+    location: string
+    image: string
+  }
 }
 
 const SafemateTake5FormPage: React.FC<SafemateTake5FormPageProps> = ({
   selectedSite,
   onBack,
   onNext,
+  onNavigateToHome,
 }) => {
   const [currentStep, setCurrentStep] = useState(1)
+  const [showReview, setShowReview] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
   const [formData, setFormData] = useState<SafemateTake5FormData>({
     taskToday: '',
     whyWorkSafe: '',
@@ -58,6 +70,7 @@ const SafemateTake5FormPage: React.FC<SafemateTake5FormPageProps> = ({
     firstName: '',
     lastName: '',
     signature: '',
+    selectedSite: selectedSite,
   })
 
   const handleStep1Complete = (task: string, photos: File[], whyWorkSafe: string) => {
@@ -78,7 +91,17 @@ const SafemateTake5FormPage: React.FC<SafemateTake5FormPageProps> = ({
   const handleStep4Complete = (selectedCompany: string, otherCompany: string, firstName: string, lastName: string, signature: string) => {
     setFormData(prev => ({ ...prev, selectedCompany, otherCompany, firstName, lastName, signature }))
     console.log('Safemate Take 5 form completed:', formData)
-    onNext?.(formData)
+    setShowReview(true)
+  }
+
+  const handleReviewSubmit = () => {
+    setShowReview(false)
+    setShowSuccess(true)
+  }
+
+  const handleSuccessGoHome = () => {
+    setShowSuccess(false)
+    onNavigateToHome?.()
   }
 
   const handleClose = () => {
@@ -107,6 +130,25 @@ const SafemateTake5FormPage: React.FC<SafemateTake5FormPageProps> = ({
   }
 
   const renderCurrentStep = () => {
+    if (showReview) {
+      return (
+        <SafemateTake5ReviewPage
+          formData={formData}
+          onBack={() => setShowReview(false)}
+          onSubmit={handleReviewSubmit}
+        />
+      )
+    }
+
+    if (showSuccess) {
+      return (
+        <SafemateTake5SuccessPage
+          onGoHome={handleSuccessGoHome}
+          onViewRank={() => console.log('View rank clicked')}
+        />
+      )
+    }
+
     switch (currentStep) {
       case 1:
         return (
@@ -151,6 +193,11 @@ const SafemateTake5FormPage: React.FC<SafemateTake5FormPageProps> = ({
       default:
         return null
     }
+  }
+
+  // Don't show header for review and success screens
+  if (showReview || showSuccess) {
+    return renderCurrentStep()
   }
 
   return (

@@ -53,14 +53,6 @@ export default function CompanySelectionModal({
       role: 'Worker',
       isSelected: selectedCompany === 'goodline',
       status: 'active'
-    },
-    {
-      id: 'monadelphous',
-      name: 'Monadelphous',
-      logo: monologo,
-      role: 'Admin',
-      isSelected: selectedCompany === 'monadelphous',
-      status: 'pending'
     }
   ];
 

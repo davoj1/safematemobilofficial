@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from './index'
+import goodlinePpeRequest from '../../assets/goodline/goodlinepperequest.png'
 
 // Import PPE icons from Rio Tinto form
 import ppeHeadIcon from '../../assets/controls/ppehead.png'
@@ -30,7 +32,7 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
   onClose,
   onSubmit
 }) => {
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(0)
   const [selectedPPE, setSelectedPPE] = useState<string[]>([])
   const [comment, setComment] = useState('')
   const [pickupLocation, setPickupLocation] = useState<{lat: number, lng: number, address?: string} | null>(null)
@@ -87,7 +89,9 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
   }
 
   const handleNext = () => {
-    if (step === 1 && selectedPPE.length > 0) {
+    if (step === 0) {
+      setStep(1)
+    } else if (step === 1 && selectedPPE.length > 0) {
       setStep(2)
     }
   }
@@ -95,6 +99,8 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
   const handleBack = () => {
     if (step === 2) {
       setStep(1)
+    } else if (step === 1) {
+      setStep(0)
     }
   }
 
@@ -110,18 +116,37 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
     resetAndClose()
   }
 
+  const canProceedIntro = true
   const canProceedStep1 = selectedPPE.length > 0
   const canSubmit = selectedPPE.length > 0
 
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50" onClick={resetAndClose} />
+    <AnimatePresence>
+      <div className="fixed inset-0 z-50 flex items-end">
+        {/* Backdrop */}
+        <motion.div 
+          className="absolute inset-0 bg-black/50" 
+          onClick={resetAndClose}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        />
 
-      {/* Panel */}
-      <div className="relative bg-white rounded-t-[20px] w-full h-[85vh] flex flex-col pt-12 pb-6 px-4 shadow-xl">        
+        {/* Panel */}
+        <motion.div 
+          className="relative bg-white rounded-t-[20px] w-full h-[85vh] flex flex-col pt-12 pb-6 px-4 shadow-xl"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ 
+            type: 'spring', 
+            damping: 30, 
+            stiffness: 300 
+          }}
+        >        
         {/* Drag handle + Title */}
         <div className="absolute top-3 left-1/2 transform -translate-x-1/2 w-[54px] h-[5px] bg-[#d9d9d9] rounded-full" />
         <div className="absolute right-2 top-2 w-9 h-9 flex items-center justify-center">
@@ -134,6 +159,8 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
         
         {/* Progress indicator */}
         <div className="flex items-center justify-center mb-4 space-x-2">
+          <div className={`w-2 h-2 rounded-full ${step >= 0 ? 'bg-[#266273]' : 'bg-[#eaecf0]'}`} />
+          <div className={`w-8 h-0.5 ${step >= 1 ? 'bg-[#266273]' : 'bg-[#eaecf0]'}`} />
           <div className={`w-2 h-2 rounded-full ${step >= 1 ? 'bg-[#266273]' : 'bg-[#eaecf0]'}`} />
           <div className={`w-8 h-0.5 ${step >= 2 ? 'bg-[#266273]' : 'bg-[#eaecf0]'}`} />
           <div className={`w-2 h-2 rounded-full ${step >= 2 ? 'bg-[#266273]' : 'bg-[#eaecf0]'}`} />
@@ -141,14 +168,22 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
 
         <div className="text-center mb-6">
           <h2 className="font-bold text-[#000000] text-xl leading-[30px]">
-            Request PPE
+            PPE Request
           </h2>
           <p className="text-sm text-[#667085] mt-0.5">
-            {step === 1 ? 'Select required Personal Protective Equipment' : 'Set pickup location'}
+            {step === 0 ? 'Request safety gear and set a pickup location' : step === 1 ? 'Select required Personal Protective Equipment' : 'Set pickup location'}
           </p>
         </div>
 
         <div className="flex-1 overflow-y-auto px-1 py-2">
+          {step === 0 && (
+            <div className="space-y-4">
+              <div className="w-full rounded-xl overflow-hidden border border-[#eaecf0] bg-[#f8fafc]">
+                <img src={goodlinePpeRequest} alt="PPE Request" className="w-full object-contain" />
+              </div>
+            </div>
+          )}
+
           {step === 1 && (
             <div className="space-y-6">
               {/* PPE Selection */}
@@ -309,10 +344,20 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
         </div>
 
         <div className="px-5 py-4 border-t border-[#eaecf0] flex gap-3">
-          {step === 1 ? (
+          {step === 0 ? (
             <>
-              <Button className="flex-1" variant="light-teal" onClick={resetAndClose}>
-                Cancel
+              <Button 
+                className="flex-1" 
+                onClick={handleNext}
+                disabled={!canProceedIntro}
+              >
+                Next
+              </Button>
+            </>
+          ) : step === 1 ? (
+            <>
+              <Button className="flex-1" variant="light-teal" onClick={handleBack}>
+                Previous
               </Button>
               <Button 
                 className="flex-1" 
@@ -325,7 +370,7 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
           ) : (
             <>
               <Button className="flex-1" variant="light-teal" onClick={handleBack}>
-                Back
+                Previous
               </Button>
               <Button 
                 className="flex-1" 
@@ -337,8 +382,9 @@ const RequestPPESlideUp: React.FC<RequestPPESlideUpProps> = ({
             </>
           )}
         </div>
+        </motion.div>
       </div>
-    </div>
+    </AnimatePresence>
   )
 }
 

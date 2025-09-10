@@ -209,20 +209,21 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       status: 'active',
       role: 'Worker',
     },
-    {
-      id: 'mona',
-      name: 'Monadelphous Forms',
-      logo: monaIcon,
-      status: 'pending',
-      role: 'Admin',
-    },
-    {
-      id: 'warrikal',
-      name: 'Warrikal Forms',
-      logo: warrikalIcon,
-      status: 'active',
-      role: 'Supervisor',
-    },
+    // Temporarily hidden: Monadelphous and Warrikal
+    // {
+    //   id: 'mona',
+    //   name: 'Monadelphous Forms',
+    //   logo: monaIcon,
+    //   status: 'pending',
+    //   role: 'Admin',
+    // },
+    // {
+    //   id: 'warrikal',
+    //   name: 'Warrikal Forms',
+    //   logo: warrikalIcon,
+    //   status: 'active',
+    //   role: 'Supervisor',
+    // },
   ]
 
   const safemateGeneralForms = [

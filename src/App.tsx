@@ -69,6 +69,7 @@ function App() {
     step3Data?: any
     step4Data?: any
     step5Data?: any
+    photos?: { [key: string]: File | null }
   }>({})
 
   // Site data for lookup
@@ -107,7 +108,7 @@ function App() {
     setFatigueFormData({})
   }
 
-  const navigateTo = (view: typeof currentView) => {
+  const navigateTo = (view: typeof currentView, siteData?: {id: string, name: string, location: string, image: string}) => {
     // Set the appropriate home tab when navigating to flows
     if (view === 'forms-select-mine-company' || view === 'forms-bhp-site-selection' || view === 'forms-fmg-site-selection' || view === 'forms-bhp-form-selection' || view === 'forms-fmg-form-selection' || view === 'forms-take-control' || view === 'forms-my-exposures' || view === 'forms-hazard-identification' || view === 'forms-company-worker-details' || view === 'forms-take-control-review' || view === 'forms-take-control-success' || view === 'forms-fatigue-management-step1' || view === 'forms-fatigue-management-step2' || view === 'forms-fatigue-management-step3' || view === 'forms-fatigue-management-step4' || view === 'forms-fatigue-management-step5' || view === 'forms-fatigue-management-step6' || view === 'forms-fatigue-management-review' || view === 'forms-fatigue-management-success' || view === 'forms-report-hazard-step1' || view === 'forms-report-hazard-step2' || view === 'forms-report-hazard-step3' || view === 'forms-report-hazard-step4' || view === 'forms-report-hazard-review') {
       setHomeActiveTab('forms')
@@ -119,6 +120,12 @@ function App() {
       // Set forms tab as default when navigating directly to home (e.g., from dev skip button)
       setHomeActiveTab('forms')
     }
+    
+    // Set the selected site if provided
+    if (siteData) {
+      setSelectedSite(siteData)
+    }
+    
     setCurrentView(view)
   }
 
@@ -187,7 +194,20 @@ function App() {
 
       {currentView === 'forms-safemate-general-selection' && (
         <SafemateGeneralFormsSelectionPage 
-          onNavigate={navigateTo}
+          onNavigate={(view, siteData) => {
+            if (view === 'home') {
+              navigateTo('home')
+            } else {
+              // Set the selected site if provided
+              if (siteData) {
+                setSelectedSite(siteData)
+              } else {
+                // Clear the selected site if no site data provided
+                setSelectedSite(null)
+              }
+              navigateTo(view as any)
+            }
+          }}
           onClose={() => navigateTo('home')}
         />
       )}
@@ -331,9 +351,10 @@ function App() {
           onBack={() => navigateTo('forms-safemate-general-selection')}
           onNext={(formData) => {
             console.log('Safemate Take 5 form completed:', formData)
-            // Navigate back to Safemate general forms selection
-            navigateTo('forms-safemate-general-selection')
+            // Navigate to home with forms tab active
+            navigateToHome('forms')
           }}
+          onNavigateToHome={() => navigateToHome('forms')}
         />
       )}
 
@@ -478,6 +499,7 @@ function App() {
 
       {currentView === 'forms-safemate-vehicle-prestart-review' && (
         <VehiclePrestartReviewPage 
+          formData={vehiclePrestartData}
           onSubmit={() => navigateTo('forms-safemate-vehicle-prestart-success')}
           onBack={() => navigateTo('forms-safemate-vehicle-prestart-step5')}
         />

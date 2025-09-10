@@ -17,7 +17,7 @@ interface SafemateGeneralForm {
 }
 
 interface SafemateGeneralFormsSelectionPageProps {
-  onNavigate?: (view: "forms-safemate-take5" | "forms-report-hazard-step1" | "forms-safemate-fatigue-management-step1" | "forms-safemate-vehicle-prestart-step1" | "home") => void
+  onNavigate?: (view: "forms-safemate-take5" | "forms-report-hazard-step1" | "forms-safemate-fatigue-management-step1" | "forms-safemate-vehicle-prestart-step1" | "home", siteData?: {id: string, name: string, location: string, image: string}) => void
   onClose?: () => void
 }
 
@@ -63,18 +63,27 @@ const SafemateGeneralFormsSelectionPage: React.FC<SafemateGeneralFormsSelectionP
       return // Don't navigate if form is disabled
     }
     
+    // Create site data if user entered a site name
+    const siteData = workSiteName.trim() ? {
+      id: 'custom-site',
+      name: workSiteName.trim(),
+      location: 'Custom Site',
+      image: '' // No image for custom sites
+    } : undefined
+    
+    
     switch (formId) {
       case 'take5':
-        onNavigate?.('forms-safemate-take5')
+        onNavigate?.('forms-safemate-take5', siteData)
         break
       case 'fatigue-management':
-        onNavigate?.('forms-safemate-fatigue-management-step1')
+        onNavigate?.('forms-safemate-fatigue-management-step1', siteData)
         break
       case 'vehicle-prestart':
-        onNavigate?.('forms-safemate-vehicle-prestart-step1')
+        onNavigate?.('forms-safemate-vehicle-prestart-step1', siteData)
         break
       case 'report-hazard':
-        onNavigate?.('forms-report-hazard-step1')
+        onNavigate?.('forms-report-hazard-step1', siteData)
         break
       default:
         console.log('Unknown form selected:', formId)

@@ -6,6 +6,7 @@ import type { CheckItemStatus } from '../../../components/ui'
 interface CheckItemData {
   status: CheckItemStatus
   comment: string
+  photo?: File | null
 }
 
 interface VehiclePrestartStep2PageProps {
@@ -42,6 +43,7 @@ interface VehiclePrestartStep2PageProps {
     fuelLevel: string
     odometerReading: string
     lastServiced: string
+    photos: { [key: string]: File | null }
   }) => void
   onBack: () => void
 }
@@ -85,6 +87,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
   const [fuelLevelValue, setFuelLevelValue] = useState(fuelLevel)
   const [odometerReadingValue, setOdometerReadingValue] = useState(odometerReading)
   const [lastServicedValue, setLastServicedValue] = useState(lastServiced)
+  const [photos, setPhotos] = useState<{ [key: string]: File | null }>({})
 
   const updateCheckItem = (key: keyof typeof checkItems, status: CheckItemStatus, comment?: string) => {
     setCheckItems(prev => ({
@@ -107,8 +110,19 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
   }
 
   const handlePhotoAdd = (key: keyof typeof checkItems) => (photo: File) => {
-    // Photo handling is managed by the FileUpload component
-    // No state management needed here
+    setPhotos(prev => ({
+      ...prev,
+      [key]: photo
+    }))
+    
+    // Also update the check item with the photo
+    setCheckItems(prev => ({
+      ...prev,
+      [key]: {
+        ...prev[key],
+        photo
+      }
+    }))
   }
 
   const handleNext = () => {
@@ -123,7 +137,8 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
         ...checkItems,
         fuelLevel: fuelLevelValue,
         odometerReading: odometerReadingValue,
-        lastServiced: lastServicedValue
+        lastServiced: lastServicedValue,
+        photos
       })
     }
   }
@@ -169,6 +184,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="No leaks"
                 status={checkItems.walkAroundLeaks.status}
                 comment={checkItems.walkAroundLeaks.comment}
+                photo={checkItems.walkAroundLeaks.photo}
                 onStatusChange={(status) => updateCheckItem('walkAroundLeaks', status)}
                 onCommentChange={(comment) => updateCheckItemComment('walkAroundLeaks', comment)}
                 onPhotoAdd={handlePhotoAdd('walkAroundLeaks')}
@@ -178,6 +194,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="No visible damage"
                 status={checkItems.walkAroundDamage.status}
                 comment={checkItems.walkAroundDamage.comment}
+                photo={checkItems.walkAroundDamage.photo}
                 onStatusChange={(status) => updateCheckItem('walkAroundDamage', status)}
                 onCommentChange={(comment) => updateCheckItemComment('walkAroundDamage', comment)}
                 onPhotoAdd={handlePhotoAdd('walkAroundDamage')}
@@ -187,6 +204,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Panels and fittings secure"
                 status={checkItems.walkAroundPanels.status}
                 comment={checkItems.walkAroundPanels.comment}
+                photo={checkItems.walkAroundPanels.photo}
                 onStatusChange={(status) => updateCheckItem('walkAroundPanels', status)}
                 onCommentChange={(comment) => updateCheckItemComment('walkAroundPanels', comment)}
                 onPhotoAdd={handlePhotoAdd('walkAroundPanels')}
@@ -208,6 +226,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Tread condition"
                 status={checkItems.tyresTread.status}
                 comment={checkItems.tyresTread.comment}
+                photo={checkItems.tyresTread.photo}
                 onStatusChange={(status) => updateCheckItem('tyresTread', status)}
                 onCommentChange={(comment) => updateCheckItemComment('tyresTread', comment)}
                 onPhotoAdd={handlePhotoAdd('tyresTread')}
@@ -217,6 +236,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Tyre pressure"
                 status={checkItems.tyresPressure.status}
                 comment={checkItems.tyresPressure.comment}
+                photo={checkItems.tyresPressure.photo}
                 onStatusChange={(status) => updateCheckItem('tyresPressure', status)}
                 onCommentChange={(comment) => updateCheckItemComment('tyresPressure', comment)}
                 onPhotoAdd={handlePhotoAdd('tyresPressure')}
@@ -226,6 +246,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Wheel nuts tight"
                 status={checkItems.tyresWheelNuts.status}
                 comment={checkItems.tyresWheelNuts.comment}
+                photo={checkItems.tyresWheelNuts.photo}
                 onStatusChange={(status) => updateCheckItem('tyresWheelNuts', status)}
                 onCommentChange={(comment) => updateCheckItemComment('tyresWheelNuts', comment)}
                 onPhotoAdd={handlePhotoAdd('tyresWheelNuts')}
@@ -247,6 +268,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Headlights"
                 status={checkItems.lightsHeadlights.status}
                 comment={checkItems.lightsHeadlights.comment}
+                photo={checkItems.lightsHeadlights.photo}
                 onStatusChange={(status) => updateCheckItem('lightsHeadlights', status)}
                 onCommentChange={(comment) => updateCheckItemComment('lightsHeadlights', comment)}
                 onPhotoAdd={handlePhotoAdd('lightsHeadlights')}
@@ -256,6 +278,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Indicators"
                 status={checkItems.lightsIndicators.status}
                 comment={checkItems.lightsIndicators.comment}
+                photo={checkItems.lightsIndicators.photo}
                 onStatusChange={(status) => updateCheckItem('lightsIndicators', status)}
                 onCommentChange={(comment) => updateCheckItemComment('lightsIndicators', comment)}
                 onPhotoAdd={handlePhotoAdd('lightsIndicators')}
@@ -265,6 +288,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Brake lights"
                 status={checkItems.lightsBrake.status}
                 comment={checkItems.lightsBrake.comment}
+                photo={checkItems.lightsBrake.photo}
                 onStatusChange={(status) => updateCheckItem('lightsBrake', status)}
                 onCommentChange={(comment) => updateCheckItemComment('lightsBrake', comment)}
                 onPhotoAdd={handlePhotoAdd('lightsBrake')}
@@ -274,6 +298,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Reverse lights"
                 status={checkItems.lightsReverse.status}
                 comment={checkItems.lightsReverse.comment}
+                photo={checkItems.lightsReverse.photo}
                 onStatusChange={(status) => updateCheckItem('lightsReverse', status)}
                 onCommentChange={(comment) => updateCheckItemComment('lightsReverse', comment)}
                 onPhotoAdd={handlePhotoAdd('lightsReverse')}
@@ -295,6 +320,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Oil level check"
                 status={checkItems.oilLevel.status}
                 comment={checkItems.oilLevel.comment}
+                photo={checkItems.oilLevel.photo}
                 onStatusChange={(status) => updateCheckItem('oilLevel', status)}
                 onCommentChange={(comment) => updateCheckItemComment('oilLevel', comment)}
                 onPhotoAdd={handlePhotoAdd('oilLevel')}
@@ -304,6 +330,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Coolant level check"
                 status={checkItems.coolantLevel.status}
                 comment={checkItems.coolantLevel.comment}
+                photo={checkItems.coolantLevel.photo}
                 onStatusChange={(status) => updateCheckItem('coolantLevel', status)}
                 onCommentChange={(comment) => updateCheckItemComment('coolantLevel', comment)}
                 onPhotoAdd={handlePhotoAdd('coolantLevel')}
@@ -313,6 +340,7 @@ const VehiclePrestartStep2Page: React.FC<VehiclePrestartStep2PageProps> = ({
                 title="Brake fluid level check"
                 status={checkItems.brakeFluidLevel.status}
                 comment={checkItems.brakeFluidLevel.comment}
+                photo={checkItems.brakeFluidLevel.photo}
                 onStatusChange={(status) => updateCheckItem('brakeFluidLevel', status)}
                 onCommentChange={(comment) => updateCheckItemComment('brakeFluidLevel', comment)}
                 onPhotoAdd={handlePhotoAdd('brakeFluidLevel')}
