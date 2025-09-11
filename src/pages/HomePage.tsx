@@ -81,8 +81,8 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       id: '1',
       title: 'Vehicle Pre-Start – Site A',
       description: 'Inspect vehicle or machinery before operation.',
-      companyName: 'Warrikal',
-      companyLogo: warrikalIcon,
+      companyName: 'Goodline',
+      companyLogo: goodlineIcon,
       timestamp: '2024-01-15T18:20:00Z',
       status: 'completed' as const,
       icon: (
@@ -97,8 +97,8 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       id: '3',
       title: 'Hazard Report – South Pit',
       description: 'Report any unsafe condition, behavior, or near-miss at the site.',
-      companyName: 'Monadelphous',
-      companyLogo: monaIcon,
+      companyName: 'Goodline',
+      companyLogo: goodlineIcon,
       timestamp: '2024-01-13T08:01:00Z',
       status: 'completed' as const,
       icon: (
@@ -113,8 +113,8 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       id: '4',
       title: 'Vehicle Pre-Start – North Mine',
       description: 'Pre-operation safety inspection for heavy machinery.',
-      companyName: 'Warrikal',
-      companyLogo: warrikalIcon,
+      companyName: 'Goodline',
+      companyLogo: goodlineIcon,
       timestamp: '2024-01-12T14:30:00Z',
       status: 'completed' as const,
       icon: (
@@ -129,8 +129,8 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       id: '6',
       title: 'Hazard Report – Processing Plant',
       description: 'Identified potential safety risk in equipment operation.',
-      companyName: 'Monadelphous',
-      companyLogo: monaIcon,
+      companyName: 'Goodline',
+      companyLogo: goodlineIcon,
       timestamp: '2024-01-10T16:15:00Z',
       status: 'completed' as const,
       icon: (
@@ -145,8 +145,8 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
       id: '7',
       title: 'Vehicle Pre-Start – Haul Truck Fleet',
       description: 'Comprehensive inspection of haul truck before shift.',
-      companyName: 'Warrikal',
-      companyLogo: warrikalIcon,
+      companyName: 'Goodline',
+      companyLogo: goodlineIcon,
       timestamp: '2024-01-09T06:20:00Z',
       status: 'completed' as const,
       icon: (
@@ -239,9 +239,11 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate, onContractorSelect, ini
   const handleCompanySelect = (companyId: string) => {
     setSelectedCompany(companyId)
     if (companyId === 'safemate-general-forms') {
-      // Navigate to Safemate general forms selection
       onNavigate?.('forms-safemate-general-selection')
-    } else if (companyId === 'warrikal' || companyId === 'mona' || companyId === 'goodline') {
+    } else if (companyId === 'goodline') {
+      // Goodline goes to the dynamic template screen that allows switching
+      onNavigate?.('forms-goodline-form-selection')
+    } else if (companyId === 'warrikal' || companyId === 'mona') {
       // Set the selected contractor and navigate to mine company selection
       const contractorMap: Record<string, 'warrikal' | 'monadelphous' | 'goodline'> = {
         'warrikal': 'warrikal',

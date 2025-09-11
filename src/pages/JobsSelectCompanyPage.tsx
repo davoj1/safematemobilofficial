@@ -1,9 +1,6 @@
-import React, { useState } from 'react'
-import { MobileLayout, HeaderWithBack } from '../components/layout'
-import { Button } from '../components/ui'
-import warrikalIcon from '../assets/companylogo/warrikallogo.svg'
-import linkforceIcon from '../assets/companylogo/linkforcelogo.svg'
-import monaIcon from '../assets/companylogo/monalogo.svg'
+import React from 'react'
+import { HeaderWithBack } from '../components/layout'
+import goodlineIcon from '../assets/companylogo/goodlinelogo.svg'
 
 interface JobsSelectCompanyPageProps {
   onNavigate?: (view: "home" | "company" | "settings" | "onboarding" | "jobs-select-company" | "jobs-create-job" | "jobs-completed-review" | "job-team-chat" | "forms-select-mine-company" | "forms-bhp-site-selection" | "forms-warrikal-take-control" | "forms-warrikal-take-control-review" | "forms-warrikal-take-control-success" | "forms-warrikal-fatigue-management-step1" | "forms-warrikal-fatigue-management-step2" | "forms-warrikal-fatigue-management-step3" | "forms-warrikal-fatigue-management-step4" | "forms-warrikal-fatigue-management-step5" | "forms-warrikal-fatigue-management-step6" | "forms-warrikal-fatigue-management-success" | "forms-goodline-fatigue-form" | "forms-goodline-fatigue-step1" | "forms-goodline-fatigue-step2" | "forms-goodline-fatigue-step3" | "forms-goodline-fatigue-step4" | "forms-goodline-fatigue-step5" | "forms-goodline-fatigue-summary" | "forms-goodline-take-control-form" | "forms-goodline-take-control-review" | "forms-goodline-take-control-success" | "forms-goodline-pace-cards-form" | "forms-linkforce-take-control-form" | "forms-linkforce-take-control-review" | "forms-linkforce-take-control-success" | "forms-monadelphous-take-control-form" | "forms-monadelphous-take-control-review" | "forms-monadelphous-take-control-success" | "forms-rio-take5-control-selector" | "forms-rio-take5-step1" | "forms-rio-take5-step2" | "forms-rio-take5-step3" | "forms-rio-take5-step4" | "forms-rio-take5-step5" | "forms-rio-take5-step6" | "forms-rio-take5-success" | "forms-general-report-hazard-step1" | "forms-general-report-hazard-step2" | "forms-general-report-hazard-step3" | "forms-general-report-hazard-step4" | "forms-general-report-hazard-review" | "forms-hazard-identification" | "forms-company-worker-details" | "leaderboard" | "leaderboard-company-selection" | "leaderboard-team-selection" | "leaderboard-results" | "profile-enter-full-name" | "profile-created-success") => void
@@ -26,25 +23,11 @@ const JobsSelectCompanyPage: React.FC<JobsSelectCompanyPageProps> = ({
 }) => {
   const companies: Company[] = [
     {
-      id: 'warrikal',
-      name: 'Warrikal',
-      logo: warrikalIcon,
-      role: 'Supervisor',
-      status: 'active'
-    },
-    {
-      id: 'linkforce',
-      name: 'Linkforce',
-      logo: linkforceIcon,
+      id: 'goodline',
+      name: 'Goodline',
+      logo: goodlineIcon,
       role: 'Worker',
       status: 'active'
-    },
-    {
-      id: 'monadelphous',
-      name: 'Monadelphous',
-      logo: monaIcon,
-      role: 'Admin',
-      status: 'pending'
     }
   ]
 

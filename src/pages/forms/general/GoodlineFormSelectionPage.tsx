@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import { HeaderWithClose } from '../../../components/layout'
 import { FormCard, FormTemplateSwitchModal } from '../../../components/ui'
-import take5Icon from '../../../assets/history/take5icon.svg'
-import reportHazardIcon from '../../../assets/history/reporthazardicon.svg'
+import paceCardsIcon from '../../../assets/history/take5icon.svg'
 import fatigueManagementIcon from '../../../assets/fatiguemanagementicon.svg'
-import vehiclePrestartIcon from '../../../assets/vehicleprestarticon.svg'
+import reportHazardIcon from '../../../assets/history/reporthazardicon.svg'
 import goodlineIcon from '../../../assets/companylogo/goodlinelogo.svg'
 import safemateShieldLogo from '../../../assets/safemateshieldlogo.svg'
 
-interface SafemateGeneralForm {
+interface GoodlineForm {
   id: string
   name: string
   description?: string
@@ -18,34 +17,29 @@ interface SafemateGeneralForm {
   note?: string
 }
 
-interface SafemateGeneralFormsSelectionPageProps {
-  onNavigate?: (view: "forms-safemate-take5" | "forms-report-hazard-step1" | "forms-safemate-fatigue-management-step1" | "forms-safemate-vehicle-prestart-step1" | "forms-goodline-form-selection" | "home", siteData?: {id: string, name: string, location: string, image: string}) => void
+interface GoodlineFormSelectionPageProps {
+  onNavigate?: (view: "forms-goodline-pace-cards" | "forms-goodline-fatigue" | "forms-report-hazard-step1" | "forms-safemate-general-selection" | "home", siteData?: {id: string, name: string, location: string, image: string}) => void
   onClose?: () => void
 }
 
-const SafemateGeneralFormsSelectionPage: React.FC<SafemateGeneralFormsSelectionPageProps> = ({
+const GoodlineFormSelectionPage: React.FC<GoodlineFormSelectionPageProps> = ({
   onNavigate,
   onClose,
 }) => {
   const [showTemplateSwitch, setShowTemplateSwitch] = useState(false)
-  const [currentTemplate, setCurrentTemplate] = useState<'goodline' | 'safemate'>('safemate')
-  const safemateGeneralForms: SafemateGeneralForm[] = [
+  const [currentTemplate, setCurrentTemplate] = useState<'goodline' | 'safemate'>('goodline')
+
+  const goodlineForms: GoodlineForm[] = [
     {
-      id: 'take5',
-      name: 'Take 5',
-      icon: take5Icon,
+      id: 'pace-cards',
+      name: 'Pace Cards',
+      icon: paceCardsIcon,
       status: 'active',
     },
     {
       id: 'fatigue-management',
       name: 'Fatigue Management',
       icon: fatigueManagementIcon,
-      status: 'active',
-    },
-    {
-      id: 'vehicle-prestart',
-      name: 'Vehicle Pre-Start',
-      icon: vehiclePrestartIcon,
       status: 'active',
     },
     {
@@ -58,23 +52,20 @@ const SafemateGeneralFormsSelectionPage: React.FC<SafemateGeneralFormsSelectionP
   ]
 
   const handleFormSelect = (formId: string) => {
-    console.log('Selected Safemate general form:', formId)
+    console.log('Selected Goodline form:', formId)
     
     // Check if form is disabled
-    const form = safemateGeneralForms.find(f => f.id === formId)
+    const form = goodlineForms.find(f => f.id === formId)
     if (form?.disabled || form?.status === 'coming-soon' || form?.status === 'unavailable') {
       return // Don't navigate if form is disabled
     }
     
     switch (formId) {
-      case 'take5':
-        onNavigate?.('forms-safemate-take5')
+      case 'pace-cards':
+        onNavigate?.('forms-goodline-pace-cards')
         break
       case 'fatigue-management':
-        onNavigate?.('forms-safemate-fatigue-management-step1')
-        break
-      case 'vehicle-prestart':
-        onNavigate?.('forms-safemate-vehicle-prestart-step1')
+        onNavigate?.('forms-goodline-fatigue')
         break
       case 'report-hazard':
         onNavigate?.('forms-report-hazard-step1')
@@ -94,9 +85,9 @@ const SafemateGeneralFormsSelectionPage: React.FC<SafemateGeneralFormsSelectionP
 
   const handleTemplateSelect = (template: 'goodline' | 'safemate') => {
     setCurrentTemplate(template)
-    // If switching to Goodline, navigate to Goodline form selection
-    if (template === 'goodline') {
-      onNavigate?.('forms-goodline-form-selection')
+    // If switching to SafeMate, navigate to SafeMate form selection
+    if (template === 'safemate') {
+      onNavigate?.('forms-safemate-general-selection')
     }
   }
 
@@ -104,7 +95,7 @@ const SafemateGeneralFormsSelectionPage: React.FC<SafemateGeneralFormsSelectionP
     <div className="h-screen flex flex-col bg-[#f8f7f2] overflow-hidden">
       {/* Header - Fixed */}
       <HeaderWithClose
-        title="Choose a Safemate Form"
+        title="Choose a Goodline Form"
         onClose={handleClose}
         className="flex-shrink-0"
       />
@@ -159,7 +150,7 @@ const SafemateGeneralFormsSelectionPage: React.FC<SafemateGeneralFormsSelectionP
           </h2>
           
           <div className="space-y-2">
-            {safemateGeneralForms.map((form) => (
+            {goodlineForms.map((form) => (
               <FormCard
                 key={form.id}
                 name={form.name}
@@ -185,4 +176,4 @@ const SafemateGeneralFormsSelectionPage: React.FC<SafemateGeneralFormsSelectionP
   )
 }
 
-export default SafemateGeneralFormsSelectionPage
+export default GoodlineFormSelectionPage

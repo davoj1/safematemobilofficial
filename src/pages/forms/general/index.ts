@@ -13,6 +13,7 @@ export { default as SafemateTake5Step3 } from './SafemateTake5Step3'
 export { default as SafemateTake5Step5 } from './SafemateTake5Step5'
 export { default as SafemateTake5ReviewPage } from './SafemateTake5ReviewPage'
 export { default as SafemateTake5SuccessPage } from './SafemateTake5SuccessPage'
+export { default as GoodlineFormSelectionPage } from './GoodlineFormSelectionPage'
 export { default as SafemateGeneralFormsSelectionPage } from './SafemateGeneralFormsSelectionPage'
 
 // Safemate Fatigue Management Forms
