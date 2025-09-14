@@ -10,18 +10,18 @@ function OnboardingPage() {
   
   const slides = [
     {
-      title: 'Start Safe, Stay Safe',
-      subtitle: 'Begin every shift with a quick risk check to protect yourself and your team.',
+      title: 'Start Safe',
+      subtitle: 'Kick off every shift with safety checks and clear communication.',
       image: onboarding1
     },
     {
-      title: 'Stay On Track', 
-      subtitle: 'Complete short safety check-ins throughout the day to stay alert and compliant.',
+      title: 'Work Safe', 
+      subtitle: 'Stay on track with jobs, forms, and team updates in one place.',
       image: onboarding2
     },
     {
-      title: 'Report Fast, Act Fast',
-      subtitle: 'Easily flag issues or hazards so your team can act before it\'s too late.',
+      title: 'Go Home Safe',
+      subtitle: 'Look after yourself and your mates, so everyone makes it back safe.',
       image: onboarding3
     }
   ]

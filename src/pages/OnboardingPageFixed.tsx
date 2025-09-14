@@ -11,20 +11,20 @@ import safemateonboard3 from '../assets/safemateonboard3.png'
 const onboardingData = [
   {
     id: 1,
-    title: 'Start Safe, Stay Safe',
-    subtitle: 'Begin every shift with a quick risk check to protect yourself and your team.',
+    title: 'Start Safe',
+    subtitle: 'Kick off every shift with safety checks and clear communication.',
     image: safemateonboard1,
   },
   {
     id: 2,
-    title: 'Stay On Track',
-    subtitle: 'Complete short safety check-ins throughout the day to stay alert and compliant.',
+    title: 'Work Safe',
+    subtitle: 'Stay on track with jobs, forms, and team updates in one place.',
     image: safemateonboard2,
   },
   {
     id: 3,
-    title: 'Report Fast, Act Fast',
-    subtitle: 'Easily flag issues or hazards so your team can act before it\'s too late.',
+    title: 'Go Home Safe',
+    subtitle: 'Look after yourself and your mates, so everyone makes it back safe.',
     image: safemateonboard3,
   },
 ]
